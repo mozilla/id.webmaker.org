@@ -4,7 +4,7 @@ var React = require('react');
 var App = React.createClass({
   render: function() {
     return (
-      <div>Hellaaao</div>
+      <div>Hello World Cade is here!</div>
     );
   }
 });

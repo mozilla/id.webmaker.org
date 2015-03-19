@@ -9,7 +9,7 @@
     "watch-css": "catw -c 'lessc $FILE' 'templates/less/styles.less' -o dist/bundle.css -v",
     "build": "webpack --config webpack.config.js --progress --profile --colors",
     "watch-js": "webpack --config webpack.config.js --progress --profile --colors --watch",
-    "watch": "npm run watch-css && npm run watch-js"
+    "watch": "npm run watch-css & npm run watch-js"
   },
   "repository": {
     "type": "git",
@@ -28,15 +28,14 @@
   },
   "homepage": "https://github.com/mozilla/id.webmaker.org",
   "dependencies": {
+    "catw": "^0.2.0",
+    "es5-shim": "^4.1.0",
     "hapi": "^8.4.0",
     "hoek": "^2.11.1",
-    "es5-shim": "^4.1.0",
     "imports-loader": "^0.6.3",
-    "install": "^0.1.8",
     "json-loader": "^0.5.1",
     "jsx-loader": "^0.12.2",
     "less": "^2.4.0",
-    "npm": "^2.7.1",
     "react": "^0.13.1",
     "webpack": "^1.7.3"
   },
