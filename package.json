@@ -1,0 +1,25 @@
+{
+  "name": "id.webmaker.org",
+  "version": "1.0.0",
+  "description": "OAuth 2.0 identity provider for Webmaker https://id.webmaker.org",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mozilla/id.webmaker.org"
+  },
+  "keywords": [
+    "OAuth",
+    "webmaker",
+    "id.webmaker.org",
+    "login"
+  ],
+  "author": "Webmaker",
+  "license": "MPL-2.0",
+  "bugs": {
+    "url": "https://github.com/mozilla/id.webmaker.org/issues"
+  },
+  "homepage": "https://github.com/mozilla/id.webmaker.org"
+}
