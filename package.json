@@ -28,6 +28,7 @@
   },
   "homepage": "https://github.com/mozilla/id.webmaker.org",
   "dependencies": {
+    "boom": "^2.6.1",
     "catw": "^0.2.0",
     "es5-shim": "^4.1.0",
     "hapi": "^8.4.0",
