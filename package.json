@@ -4,6 +4,7 @@
   "description": "OAuth 2.0 identity provider for Webmaker https://id.webmaker.org",
   "main": "index.js",
   "scripts": {
+    "start": "node web/index.js",
     "test": "echo 'No tests yet!'"
   },
   "repository": {
@@ -21,5 +22,9 @@
   "bugs": {
     "url": "https://github.com/mozilla/id.webmaker.org/issues"
   },
-  "homepage": "https://github.com/mozilla/id.webmaker.org"
+  "homepage": "https://github.com/mozilla/id.webmaker.org",
+  "dependencies": {
+    "hapi": "^8.4.0",
+    "hoek": "^2.11.1"
+  }
 }
