@@ -8,5 +8,27 @@ module.exports = function(options) {
     port: options.port
   })
 
+  server.route([
+    {
+      method: 'GET',
+      path: '/login/oauth/authorize',
+      handler: function(request, reply) {
+        reply('ok');
+      }
+    }, {
+      method: 'POST',
+      path: '/login/oauth/authorize',
+      handler: function(request, reply) {
+        reply('ok');
+      }
+    }, {
+      method: 'POST',
+      path: '/login/oauth/access_token',
+      handler: function(request, reply) {
+        reply('ok');
+      }
+    }
+  ]);
+
   return server;
 };
