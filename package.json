@@ -4,7 +4,7 @@
   "description": "OAuth 2.0 identity provider for Webmaker https://id.webmaker.org",
   "main": "index.js",
   "scripts": {
-    "test": "npm test"
+    "test": "echo 'No tests yet!'"
   },
   "repository": {
     "type": "git",
