@@ -2,7 +2,8 @@ var Hoek = require("hoek");
 
 var options = {
   host: process.env.HOST,
-  port: process.env.PORT
+  port: process.env.PORT,
+  loginAPI: process.env.LOGINAPI
 };
 
 var server = require("./server")(options);
