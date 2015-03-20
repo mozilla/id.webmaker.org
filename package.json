@@ -6,10 +6,10 @@
   "scripts": {
     "start": "node web/index.js",
     "test": "lab -t 100",
-    "watch-css": "catw -c 'lessc $FILE' 'templates/less/styles.less' -o dist/bundle.css -v",
     "build": "webpack --config webpack.config.js --progress --profile --colors",
+    "watch-css": "node node_modules/autoless/bin/autoless --source-map templates/less public",
     "watch-js": "webpack --config webpack.config.js --progress --profile --colors --watch",
-    "watch": "npm run watch-css & npm run watch-js"
+    "watch": "node watch.js"
   },
   "repository": {
     "type": "git",
@@ -29,19 +29,23 @@
   "homepage": "https://github.com/mozilla/id.webmaker.org",
   "dependencies": {
     "boom": "^2.6.1",
-    "catw": "^0.2.0",
+    "bootstrap": "^3.3.4",
     "es5-shim": "^4.1.0",
+    "font-awesome": "^4.3.0",
     "hapi": "^8.4.0",
     "hoek": "^2.11.1",
     "hyperquest": "^1.0.1",
     "imports-loader": "^0.6.3",
+    "joi": "^6.0.8",
     "json-loader": "^0.5.1",
     "jsx-loader": "^0.12.2",
     "less": "^2.4.0",
     "react": "^0.13.1",
+    "react-validation-mixin": "^4.0.3",
     "webpack": "^1.7.3"
   },
   "devDependencies": {
+    "autoless": "^0.1.6",
     "code": "^1.3.0",
     "lab": "^5.5.0"
   }

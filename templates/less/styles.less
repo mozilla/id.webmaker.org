@@ -1,56 +1,39 @@
-@import "components/index";
+@import "../../node_modules/bootstrap/less/bootstrap";
+// Font awesome
+@import "../../node_modules/font-awesome/less/font-awesome";
+@fa-font-path: "/font-awesome/fonts";
 
-html, body {
-  font-size: 62.5%;
-}
+@import "mixins";
+@import "components/index";
 
 body {
   font-family: 'Open Sans', sans-serif;
   font-size: 1.6rem;
   font-weight: 300;
+  background-color: #F6F6F6;
+  color: #464646;
+  padding: 0;
+  margin: 0;
 }
 
 h1 {
-  font-weight: 600;
-  font-size: 4.5rem;
-  text-shadow: rgba(0, 0, 0, 0.6) 0 .2rem .1rem;
+  font-weight: 500;
+  font-size: 3.9rem;
   letter-spacing: 0.05rem;
+  text-shadow: rgba(0, 0, 0, 0.6) 0 0.2rem 0.1rem;
 }
 
 h2 {
   font-weight: 200;
-  font-size: 3.5rem;
+  font-size: 2.5rem;
   margin: 1rem 0 2.5rem 0;
 }
 
 h3 {
   font-weight: 400;
-  font-size: 2.6rem;
+  font-size: 1.6rem;
 }
 
-main {
-  .list-with-illust {
-    img {
-      display: block;
-      margin: 4rem auto 0 auto;
-    }
-  }
-  ol,
-  ul {
-    font-size: 1.8rem;
-    list-style-type: none;
-    padding-left: 0;
-  }
-}
-
-section {
-  padding: 2.5rem;
-}
-
-a.bold-link {
-  color: #9f9f9f;
-  text-transform: uppercase;
-  font-weight: 700;
-  font-size: 1.5rem;
-  white-space: pre;
+.underline {
+  text-decoration: underline;
 }

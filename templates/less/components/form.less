@@ -1,0 +1,86 @@
+.formContainer {
+  width: 290px;
+  margin: 0 auto;
+  @media (min-width : 360px) and
+  (max-width : 450px){
+    width: 320px;
+  }
+  @media (min-width : 451px) {
+    width: 400px;
+  }
+  border-radius: 7px;
+  padding-top: 25px;
+  margin-bottom: 30px;
+  background-color: white;
+
+  input {
+    width: 280px;
+    max-width: 90%;
+    font-size: 16px;
+    font-weight: 200;
+    padding-left: 38px;
+    height: 55px;
+    @media (min-width : 360px) and
+    (max-width : 450px){
+      width: 320px;
+      max-width: 90%;
+    }
+    @media (min-width : 451px) {
+      width: 400px;
+      max-width: 85%;
+    }
+    margin: 0 auto;
+  }
+  label {
+    margin-bottom: 4px;
+  }
+
+.icon(@fa-icon) {
+  content: @fa-icon;
+  .fa();
+}
+
+.label(@fa-icon) {
+  .icon(@fa-icon);
+  color: #B5B1A6;
+  font-family: FontAwesome;
+  position: absolute;
+  top: 15px;
+  left: 30px;
+  @media (min-width : 451px) {
+    top: 16px;
+    left: 45px;
+  }
+  font-size: 18px;
+}
+  .phone-label-username:before {
+    .label(@fa-username);
+  }
+  .phone-label-password:before {
+    .label(@fa-password);
+  }
+  .phone-label-email:before {
+    .label(@fa-email);
+  }
+  .phone-label-username,
+  .phone-label-password,
+  .phone-label-email {
+    position: relative;
+  }
+}
+.has-error {
+  border: 1px solid #E95B95;
+  background-color: #FEEDED;
+}
+@media (min-width : 451px) {
+  .centerDiv {
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    margin: auto;
+    height: 250px;
+    width: 400px;
+  }
+}

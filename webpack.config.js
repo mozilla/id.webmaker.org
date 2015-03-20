@@ -17,11 +17,11 @@ function importEnvVars(keys) {
 
 module.exports = {
   entry: {
-    app: './templates/components/main.jsx',
+    app: './templates/index.jsx',
   },
   devtool: process.env.WEBPACK_DEVTOOL || 'source-map',
   output: {
-    path: __dirname + '/dist',
+    path: __dirname + '/public',
     filename: '[name].bundle.js'
   },
   module: {
@@ -32,6 +32,10 @@ module.exports = {
       { test: require.resolve('react/addons'), loader: IMPORT_ES5_SHIM },
       { test: /\.json$/, loader: 'json-loader' }
     ]
+  },
+  node: {
+    net: "empty",
+    dns: "empty"
   },
   plugins: [
     new webpack.DefinePlugin(importEnvVars([

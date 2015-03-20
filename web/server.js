@@ -1,6 +1,7 @@
 var Boom = require("boom");
 var Hapi = require('hapi');
 var Hoek = require('hoek');
+var Path = require('path');
 
 module.exports = function(options) {
   var server = new Hapi.Server({
@@ -17,6 +18,14 @@ module.exports = function(options) {
 
   server.route([
     {
+        method: 'GET',
+        path: '/{param*}',
+        handler: {
+          directory: {
+              path: Path.join(__dirname, '../public')
+          }
+        }
+    }, {
       method: 'GET',
       path: '/login/oauth/authorize',
       handler: function(request, reply) {
