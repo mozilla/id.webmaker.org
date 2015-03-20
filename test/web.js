@@ -58,12 +58,10 @@ lab.experiment("OAuth", function() {
         method: "POST",
         url: "/login/oauth/authorize",
         headers: {
-          "x-forwarded-for": "192.168.1.1"
+          "x-forwarded-for": "192.168.1.1",
+          "Content-Type": "application/x-www-form-urlencoded"
         },
-        payload: {
-          uid: "webmaker",
-          password: "password"
-        }
+        payload: "uid=webmaker&password=password"
       };
 
       s.inject(request, function(response) {
@@ -83,9 +81,9 @@ lab.experiment("OAuth", function() {
       var request = {
         method: "POST",
         url: "/login/oauth/authorize",
-        payload: {
-          uid: "invalidResponse",
-          password: "password"
+        payload: "uid=invalidResponse&password=password",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
         }
       };
 
@@ -103,9 +101,9 @@ lab.experiment("OAuth", function() {
       var request = {
         method: "POST",
         url: "/login/oauth/authorize",
-        payload: {
-          uid: "not a user",
-          password: "password"
+        payload: "uid=not%20a%20user&password=password",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
         }
       };
 
