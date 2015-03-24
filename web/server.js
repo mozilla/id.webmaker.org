@@ -1,7 +1,9 @@
 var Boom = require("boom");
 var Hapi = require('hapi');
 var Hoek = require('hoek');
+var OAuthDB = require('../lib/oauth-db');
 var Path = require('path');
+var url = require('url');
 
 module.exports = function(options) {
   var server = new Hapi.Server({
@@ -15,6 +17,8 @@ module.exports = function(options) {
   var account = require("../lib/account")({
     loginAPI: options.loginAPI
   });
+
+  var oauth_db = new OAuthDB(options.oauth_clients);
 
   server.route([
     {
@@ -34,16 +38,49 @@ module.exports = function(options) {
     }, {
       method: 'POST',
       path: '/login/oauth/authorize',
+      config: {
+        pre: [
+          {
+            assign: 'user',
+            method: function(request, reply) {
+              account.verifyPassword(request, function(err, user) {
+                if ( err ) {
+                  return reply(Boom.badImplementation(err));
+                }
+                if ( !user ) {
+                  return reply(Boom.unauthorized("Invalid username/email or password"));
+                }
+
+                reply(user);
+              });
+            }
+          },
+          {
+            assign: 'client',
+            method: function(request, reply) {
+              oauth_db.get_client(request.payload.client_id, reply);
+            }
+          },
+          {
+            assign: 'auth_code',
+            method: function(request, reply) {
+              var scopes = request.payload.scopes;
+              var expires_at = Date.now() + 60 * 1000;
+
+              oauth_db.generate_auth_code(request.pre.client.client_id, request.pre.user.username, scopes, expires_at, reply);
+            }
+          }
+        ]
+      },
       handler: function(request, reply) {
-        account.verifyPassword(request, function(err, user) {
-          if ( err ) {
-            return reply(Boom.badImplementation(err));
-          }
-          if ( !user ) {
-            return reply(Boom.unauthorized("Invalid username/email or password"));
-          }
-          reply(user);
-        });
+        var state = request.payload.state;
+        var redirect_obj = url.parse(request.pre.client.redirect_uri, true);
+        redirect_obj.search = null;
+        redirect_obj.query.code = request.pre.auth_code;
+        redirect_obj.query.state = state;
+        var redirect_uri = url.format(redirect_obj);
+
+        reply.redirect(redirect_uri);
       }
     }, {
       method: 'POST',

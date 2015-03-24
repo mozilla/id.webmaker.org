@@ -3,7 +3,8 @@ var Hoek = require("hoek");
 var options = {
   host: process.env.HOST,
   port: process.env.PORT,
-  loginAPI: process.env.LOGINAPI
+  loginAPI: process.env.LOGINAPI,
+  oauth_clients: JSON.parse(process.env.OAUTH_DB)
 };
 
 var server = require("./server")(options);
