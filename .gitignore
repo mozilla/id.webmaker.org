@@ -2,3 +2,5 @@
 node_modules/
 app.bundle.*
 styles.css*
+tests.bundle.*
+public/tests/mocha*

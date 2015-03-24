@@ -13,6 +13,21 @@ npm install
 npm start
 ```
 
+## Tests
+
+To run all tests run the following command
+
+```
+npm test
+```
+
+### Front end tests
+
+Front end tests can be run via mocha-phantom with `npm run test:browser`. You can also see the tests run in a browser if you run the app and visit `/tests`.
+
+To add a new test, simply add it to the folder containing your component. The browser test command **automatically requires** all files matching `*.test.jsx` in the `templates/` folder.
+
+
 ## Environment
 
 We haven't yet added any utilities to help load environment variables; you can do it yourself by typing in the following in your terminal:
