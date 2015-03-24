@@ -19,11 +19,19 @@ module.exports = function(options) {
   server.route([
     {
         method: 'GET',
-        path: '/{param*}',
+        path: '/{params*}',
         handler: {
-          directory: {
-              path: Path.join(__dirname, '../public')
+          file: {
+            path: Path.join(__dirname, '../public/index.html')
           }
+        }
+    }, {
+        method: 'GET',
+        path: '/assets/{param*}',
+        handler: {
+            directory: {
+              path: Path.join(__dirname, '../public')
+            }
         }
     }, {
       method: 'GET',

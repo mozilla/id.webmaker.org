@@ -1,5 +1,6 @@
 .formContainer {
   width: 290px;
+  height: 250px;
   margin: 0 auto;
   @media (min-width : 360px) and
   (max-width : 450px){
@@ -14,25 +15,16 @@
   background-color: white;
 
   input {
-    width: 280px;
-    max-width: 90%;
+    width: 100%;
     font-size: 16px;
     font-weight: 200;
-    padding-left: 38px;
     height: 55px;
-    @media (min-width : 360px) and
-    (max-width : 450px){
-      width: 320px;
-      max-width: 90%;
-    }
-    @media (min-width : 451px) {
-      width: 400px;
-      max-width: 85%;
-    }
+    padding-left: 12.5%;
     margin: 0 auto;
   }
   label {
-    margin-bottom: 4px;
+    width: 100%;
+    padding-bottom: 10px;
   }
 
 .icon(@fa-icon) {
@@ -45,12 +37,8 @@
   color: #B5B1A6;
   font-family: FontAwesome;
   position: absolute;
-  top: 15px;
-  left: 30px;
-  @media (min-width : 451px) {
-    top: 16px;
-    left: 45px;
-  }
+  top: 16px;
+  left: 5%;
   font-size: 18px;
 }
   .phone-label-username:before {
@@ -72,6 +60,10 @@
   border: 1px solid #E95B95;
   background-color: #FEEDED;
 }
+.innerForm {
+  float: right;
+  padding: 0px 30px;
+}
 @media (min-width : 451px) {
   .centerDiv {
     position: absolute;
@@ -80,7 +72,6 @@
     left: 0px;
     right: 0px;
     margin: auto;
-    height: 250px;
     width: 400px;
   }
 }

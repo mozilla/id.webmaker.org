@@ -41,6 +41,7 @@
     "jsx-loader": "^0.12.2",
     "less": "^2.4.0",
     "react": "^0.13.1",
+    "react-router": "^0.13.1",
     "react-validation-mixin": "^4.0.3",
     "webpack": "^1.7.3"
   },
