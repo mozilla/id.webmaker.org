@@ -4,7 +4,7 @@ var options = {
   host: process.env.HOST,
   port: process.env.PORT,
   loginAPI: process.env.LOGINAPI,
-  oauth_clients: JSON.parse(process.env.OAUTH_DB)
+  oauth_clients: process.env.OAUTH_DB ? JSON.parse(process.env.OAUTH_DB) : []
 };
 
 var server = require("./server")(options);

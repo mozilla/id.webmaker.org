@@ -1,0 +1,106 @@
+.signup-page {
+
+  .navbar {
+    background: transparent;
+  }
+
+  @white: /* not #F9F7FF...? */ white;
+  @dim: 6rem;
+  @border: 1.7px solid rgba(255,255,255,0.7);
+  @contentWidth: 47rem;
+
+  width: 100vw;
+  height: 100vh;
+  background: url(img/background.jpg);
+  background-size: 100% 100%;
+
+  h1, h2 {
+    color: @white;
+    text-shadow: none;
+    text-align: center;
+  }
+
+  .wordmark {
+    display: inline-block;
+    color: @white;
+  }
+
+  div[role=form] {
+    background: @white;
+    padding: 4rem;
+    margin: auto;
+    width: @contentWidth;
+    border-radius: 0.5rem;
+
+    label {
+      display: block;
+      input {
+        height: @dim;
+        font-weight: normal;
+        font-size: 2rem;
+      }
+      span {
+        font-weight: normal;
+      }
+    }
+
+    #feedback {
+      display: none;
+
+      & + span {
+        display:inline-block;
+        width: 2.5rem;
+        height: 2.5rem;
+        vertical-align: bottom;
+        border: 1px solid rgba(0,0,0,0.25);
+        border-radius: 0.5em;
+        margin-right: 1rem;
+      }
+      &:checked + span {
+        background: url('img/icon-check.svg');
+        background-size: 100% 100%;
+      }
+    }
+  }
+
+  .commit {
+
+    width: @contentWidth;
+    margin: auto;
+    height: @dim;
+    color: @white;
+    margin-top: 3rem;
+
+    div {
+      display: inline-block;
+
+      &.eula {
+        max-width: calc(@contentWidth * 0.45);
+      }
+
+      &.agreement {
+        position: relative;
+        width: @dim;
+        height: @dim;
+        border: @border;
+        border-radius: @dim;
+        background: url('img/icon-check.svg');
+        background-size: 3.5rem 3.5rem;
+        background-position: center center;
+        background-repeat: no-repeat;
+      }
+
+      & + div {
+        margin-left: 1rem;
+      }
+
+      a {
+        color: rgba(255,255,255,0.8);
+      }
+
+      button {
+        width: calc(@dim*3);
+      }
+    }
+  }
+}
