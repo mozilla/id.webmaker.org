@@ -1,6 +1,5 @@
-var Boom = require("boom");
+var Boom = require('boom');
 var Hapi = require('hapi');
-var Hoek = require('hoek');
 var OAuthDB = require('../lib/oauth-db');
 var Path = require('path');
 var url = require('url');
@@ -14,11 +13,11 @@ module.exports = function(options) {
     port: options.port
   });
 
-  var account = require("../lib/account")({
+  var account = require('../lib/account')({
     loginAPI: options.loginAPI
   });
 
-  var oauth_db = new OAuthDB(options.oauth_clients);
+  var oauthDb = new OAuthDB(options.oauth_clients);
 
   server.route([
     {
@@ -29,7 +28,8 @@ module.exports = function(options) {
             path: Path.join(__dirname, '../public/index.html')
           }
         }
-    }, {
+    },
+    {
         method: 'GET',
         path: '/assets/{param*}',
         handler: {
@@ -37,13 +37,15 @@ module.exports = function(options) {
               path: Path.join(__dirname, '../public')
             }
         }
-    }, {
+    },
+    {
       method: 'GET',
       path: '/login/oauth/authorize',
       handler: function(request, reply) {
         reply('ok');
       }
-    }, {
+    },
+    {
       method: 'POST',
       path: '/login/oauth/authorize',
       config: {
@@ -56,7 +58,7 @@ module.exports = function(options) {
                   return reply(Boom.badImplementation(err));
                 }
                 if ( !user ) {
-                  return reply(Boom.unauthorized("Invalid username/email or password"));
+                  return reply(Boom.unauthorized('Invalid username/email or password'));
                 }
 
                 reply(user);
@@ -66,31 +68,38 @@ module.exports = function(options) {
           {
             assign: 'client',
             method: function(request, reply) {
-              oauth_db.get_client(request.payload.client_id, reply);
+              oauthDb.get_client(request.payload.client_id, reply);
             }
           },
           {
             assign: 'auth_code',
             method: function(request, reply) {
               var scopes = request.payload.scopes;
-              var expires_at = Date.now() + 60 * 1000;
+              var expiresAt = Date.now() + 60 * 1000;
 
-              oauth_db.generate_auth_code(request.pre.client.client_id, request.pre.user.username, scopes, expires_at, reply);
+              oauthDb.generate_auth_code(
+                request.pre.client.client_id,
+                request.pre.user.username,
+                scopes,
+                expiresAt,
+                reply
+              );
             }
           }
         ]
       },
       handler: function(request, reply) {
         var state = request.payload.state;
-        var redirect_obj = url.parse(request.pre.client.redirect_uri, true);
-        redirect_obj.search = null;
-        redirect_obj.query.code = request.pre.auth_code;
-        redirect_obj.query.state = state;
-        var redirect_uri = url.format(redirect_obj);
+        var redirectObj = url.parse(request.pre.client.redirect_uri, true);
+        redirectObj.search = null;
+        redirectObj.query.code = request.pre.auth_code;
+        redirectObj.query.state = state;
+        var redirectUri = url.format(redirectObj);
 
-        reply.redirect(redirect_uri);
+        reply.redirect(redirectUri);
       }
-    }, {
+    },
+    {
       method: 'POST',
       path: '/login/oauth/access_token',
       handler: function(request, reply) {

@@ -1,11 +1,10 @@
-var Boom = require("boom");
+var Boom = require('boom');
 var Hapi = require('hapi');
-var Hoek = require('hoek');
 
 module.exports = function() {
   var server = new Hapi.Server({ debug: false });
   server.connection({
-    host: "localhost",
+    host: 'localhost',
     port: 3232
   });
 
@@ -15,21 +14,21 @@ module.exports = function() {
       path: '/api/v2/user/verify-password',
       handler: function(request, reply) {
         var payload = request.payload;
-        if ( payload.uid === "webmaker" && payload.password === "password" ) {
+        if ( payload.uid === 'webmaker' && payload.password === 'password' ) {
           return reply({
             user: {
-              username: "webmaker",
-              email: "webmaker@example.com"
+              username: 'webmaker',
+              email: 'webmaker@example.com'
             }
           })
-          .type("application/json");
+          .type('application/json');
         }
 
-        if ( payload.uid === "invalidResponse" ) {
-          return reply("not json");
+        if ( payload.uid === 'invalidResponse' ) {
+          return reply('not json');
         }
 
-        reply(Boom.unauthorized("Invalid username/email or password"));
+        reply(Boom.unauthorized('Invalid username/email or password'));
       }
     }
   ]);
