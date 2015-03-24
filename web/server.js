@@ -59,7 +59,7 @@ module.exports = function(options) {
           {
             assign: 'client',
             method: function(request, reply) {
-              oauthDb.get_client(request.payload.client_id, reply);
+              oauthDb.getClient(request.payload.client_id, reply);
             }
           },
           {
@@ -68,7 +68,7 @@ module.exports = function(options) {
               var scopes = request.payload.scopes;
               var expiresAt = Date.now() + 60 * 1000;
 
-              oauthDb.generate_auth_code(
+              oauthDb.generateAuthCode(
                 request.pre.client.client_id,
                 request.pre.user.username,
                 scopes,
