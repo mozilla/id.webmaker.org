@@ -30,4 +30,6 @@ You can configure the following environment variables:
 HOST - host for this server. defaults to 0.0.0.0
 PORT - port of this server, defaults to 0 (a random port above 1024)
 LOGINAPI - fully qualified login.wm.org URL e.g. https://user:password@login.webmaker.org
+OAUTH_DB - JSON array of oauth clients e.g.
+  [{"client_id":"test","secret":"test","redirect_uri":"http://localhost:3000/account"}]
 ```
