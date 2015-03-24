@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node web/index.js",
-    "test": "lab -t 100",
+    "test": "lab -t 100 && npm run validate",
     "build": "webpack --config webpack.config.js --progress --profile --colors",
     "watch-css": "node node_modules/autoless/bin/autoless --source-map templates/less public",
     "watch-js": "webpack --config webpack.config.js --progress --profile --colors --watch",
