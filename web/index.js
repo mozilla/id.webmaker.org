@@ -1,4 +1,4 @@
-var Hoek = require("hoek");
+var Hoek = require('hoek');
 
 var options = {
   host: process.env.HOST,
@@ -7,7 +7,7 @@ var options = {
   oauth_clients: JSON.parse(process.env.OAUTH_DB)
 };
 
-var server = require("./server")(options);
+var server = require('./server')(options);
 
 server.start(function(error) {
   Hoek.assert(!error, error);

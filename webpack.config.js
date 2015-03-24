@@ -17,7 +17,7 @@ function importEnvVars(keys) {
 
 module.exports = {
   entry: {
-    app: './templates/index.jsx',
+    app: './templates/index.jsx'
   },
   devtool: process.env.WEBPACK_DEVTOOL || 'source-map',
   output: {
@@ -34,8 +34,8 @@ module.exports = {
     ]
   },
   node: {
-    net: "empty",
-    dns: "empty"
+    net: 'empty',
+    dns: 'empty'
   },
   plugins: [
     new webpack.DefinePlugin(importEnvVars([

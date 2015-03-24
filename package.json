@@ -10,8 +10,9 @@
     "watch-css": "node node_modules/autoless/bin/autoless --source-map templates/less public",
     "watch-js": "webpack --config webpack.config.js --progress --profile --colors --watch",
     "watch": "node watch.js",
-    "jshint": "jshint **.js --exclude node_modules",
+    "jshint": "jshint  lib test web *.js",
     "jscs": "jscs lib test web *.js",
+    "js-beautify": "js-beautify  lib test web *.js -r ",
     "validate": "npm run jshint && npm run jscs"
   },
   "repository": {

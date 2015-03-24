@@ -14,7 +14,7 @@ lab.experiment("OAuth", function() {
       {
         client_id: "test",
         client_secret: "test",
-        redirect_uri: "http://example.org/oauth_redirect",
+        redirect_uri: "http://example.org/oauth_redirect"
       }
     ]
   });
@@ -54,17 +54,17 @@ lab.experiment("OAuth", function() {
 
       s.inject(request, function(response) {
         Code.expect(response.statusCode).to.equal(302);
-        Code.expect(response.headers["location"]).to.exist();
+        Code.expect(response.headers.location).to.exist();
 
-        var redirect_uri = url.parse(response.headers["location"], true);
+        var redirectUri = url.parse(response.headers.location, true);
 
-        Code.expect(redirect_uri.protocol).to.equal("http:");
-        Code.expect(redirect_uri.host).to.equal("example.org");
-        Code.expect(redirect_uri.pathname).to.equal("/oauth_redirect");
-        Code.expect(redirect_uri.query.code).to.be.a.string();
-        Code.expect(redirect_uri.query.state).to.equal("test");
+        Code.expect(redirectUri.protocol).to.equal("http:");
+        Code.expect(redirectUri.host).to.equal("example.org");
+        Code.expect(redirectUri.pathname).to.equal("/oauth_redirect");
+        Code.expect(redirectUri.query.code).to.be.a.string();
+        Code.expect(redirectUri.query.state).to.equal("test");
 
-        ls.stop(done)
+        ls.stop(done);
       });
     });
   });
@@ -84,17 +84,17 @@ lab.experiment("OAuth", function() {
 
       s.inject(request, function(response) {
         Code.expect(response.statusCode).to.equal(302);
-        Code.expect(response.headers["location"]).to.exist();
+        Code.expect(response.headers.location).to.exist();
 
-        var redirect_uri = url.parse(response.headers["location"], true);
+        var redirectUri = url.parse(response.headers.location, true);
 
-        Code.expect(redirect_uri.protocol).to.equal("http:");
-        Code.expect(redirect_uri.host).to.equal("example.org");
-        Code.expect(redirect_uri.pathname).to.equal("/oauth_redirect");
-        Code.expect(redirect_uri.query.code).to.be.a.string();
-        Code.expect(redirect_uri.query.state).to.equal("test");
+        Code.expect(redirectUri.protocol).to.equal("http:");
+        Code.expect(redirectUri.host).to.equal("example.org");
+        Code.expect(redirectUri.pathname).to.equal("/oauth_redirect");
+        Code.expect(redirectUri.query.code).to.be.a.string();
+        Code.expect(redirectUri.query.state).to.equal("test");
 
-        ls.stop(done)
+        ls.stop(done);
       });
     });
   });
@@ -115,7 +115,7 @@ lab.experiment("OAuth", function() {
         Code.expect(response.statusCode).to.equal(400);
         Code.expect(response.result.message).to.equal("invalid client_id");
 
-        ls.stop(done)
+        ls.stop(done);
       });
     });
   });
@@ -135,7 +135,7 @@ lab.experiment("OAuth", function() {
       s.inject(request, function(response) {
         Code.expect(response.statusCode).to.equal(500);
 
-        ls.stop(done)
+        ls.stop(done);
       });
     });
   });
@@ -156,7 +156,7 @@ lab.experiment("OAuth", function() {
         Code.expect(response.statusCode).to.equal(401);
         Code.expect(response.result.message).to.equal("Invalid username/email or password");
 
-        ls.stop(done)
+        ls.stop(done);
       });
     });
   });
