@@ -49,10 +49,10 @@ var fieldValidators = validators.getValidatorSet(fieldValues);
 describe('form', function() {
 
   describe('prop validation', function() {
-    it('should take an array in fields prop', function () {
+    it('should take field and validators props', function () {
       var instance = TestUtils.renderIntoDocument(<Form fields={fieldValues} validators={fieldValidators} />);
     });
-    it('should not allow an empty fields prop', function () {
+    it('should not allow an empty fields or validators prop', function () {
       should.throws(function () {
         var instance = TestUtils.renderIntoDocument(<Form />);
       });

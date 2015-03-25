@@ -3,7 +3,8 @@ var ValidationMixin = require('react-validation-mixin');
 
 var Form = React.createClass({
   propTypes: {
-    fields: React.PropTypes.array.isRequired
+    fields: React.PropTypes.array.isRequired,
+    validators: React.PropTypes.object.isRequired
   },
   statics: {
       'iconLabels': {

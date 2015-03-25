@@ -23,9 +23,11 @@ npm test
 
 ### Front end tests
 
-Front end tests can be run via mocha-phantom with `npm run test:browser`. You can also see the tests run in a browser if you run the app and visit `/tests`.
+Front end tests can be run via mocha-phantom with `npm run test:browser`. You can also see the tests run in a browser if you run the app and visit `/assets/tests`.
 
-To add a new test, simply add it to the folder containing your component. The browser test command **automatically requires** all files matching `*.test.jsx` in the `templates/` folder.
+#### How to add a new component test
+
+Simply add it to the folder containing your component. The browser test command **automatically requires** all files matching `*.test.jsx` in the `templates/` folder.
 
 
 ## Environment
