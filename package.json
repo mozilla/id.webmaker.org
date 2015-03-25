@@ -4,16 +4,17 @@
   "description": "OAuth 2.0 identity provider for Webmaker https://id.webmaker.org",
   "main": "index.js",
   "scripts": {
-    "serve": "node web/index.js",
-    "start": "parallelshell \"npm run serve\" \"npm run watch-css\" \"npm run watch-js\"",
-    "test": "lab -t 100 && npm run validate",
     "build": "webpack --config webpack.config.js --progress --profile --colors",
-    "watch-css": "node node_modules/autoless/bin/autoless --source-map templates/less public",
-    "watch-js": "webpack --config webpack.config.js --progress --profile --colors --watch",
-    "jshint": "jshint  lib test web *.js",
-    "jscs": "jscs lib test web *.js",
     "js-beautify": "js-beautify  lib test web *.js -r ",
-    "validate": "npm run jshint && npm run jscs"
+    "jscs": "jscs lib test web *.js",
+    "jshint": "jshint  lib test web *.js",
+    "start": "node web/index.js",
+    "start:dev": "parallelshell \"npm start\" \"npm run watch\"",
+    "test": "lab -t 100 && npm run validate",
+    "validate": "npm run jshint && npm run jscs",
+    "watch": "parallelshell \"npm run watch:css\" \"npm run watch:js\"",
+    "watch:css": "node node_modules/autoless/bin/autoless --source-map templates/less public",
+    "watch:js": "webpack --config webpack.config.js --progress --profile --colors --watch"
   },
   "repository": {
     "type": "git",
