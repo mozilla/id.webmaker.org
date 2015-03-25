@@ -35,24 +35,24 @@ To start the web application flow you need to redirect your users browser to Web
 
 <table>
   <tr>
-  	<th>Name</th>
-  	<th>Description</th>
+    <th>Name</th>
+    <th>Description</th>
   </tr>
   <tr>
-  	<td>client_id</td>
-  	<td>The client ID you received when you registered your application.</td>
+    <td>client_id</td>
+    <td>The client ID you received when you registered your application.</td>
   </tr>
   <tr>
-  	<td>response_type</td>
-  	<td>The response_type must be set to "code".</td>
+    <td>response_type</td>
+    <td>The response_type must be set to "code".</td>
   </tr>
   <tr>
-  	<td>scopes</td>
-  	<td>A space separated list of scopes.</td>
+    <td>scopes</td>
+    <td>A space separated list of scopes.</td>
   </tr>
   <tr>
-  	<td>state</td>
-  	<td>An unguessable random string. It is used to protect against cross-site request forgery attacks.</td>
+    <td>state</td>
+    <td>An unguessable random string. It is used to protect against cross-site request forgery attacks.</td>
   </tr>
 </table>
 
@@ -64,7 +64,7 @@ To start the web application flow you need to redirect your users browser to Web
 
 If the user accepts your request, Webmaker redirects back to your application with a temporary authorization code in a `code` parameter, your application's client ID in a `client_id` parameter, and the state you provided in the previous step in a `state` parameter.
 
-Your application must verify that the `state` and `client_id` parameters match the ones it provided when the sign-in process started. If you do not verify these parameters, a malicious party could hijack the sign-in process. 
+Your application must verify that the `state` and `client_id` parameters match the ones it provided when the sign-in process started. If you do not verify these parameters, a malicious party could hijack the sign-in process.
 
 `GET https://buckleysbees.ca/oauth2/callback`
 
@@ -72,20 +72,20 @@ Your application must verify that the `state` and `client_id` parameters match t
 
 <table>
   <tr>
-  	<th>Name</th>
-  	<th>Description</th>
+    <th>Name</th>
+    <th>Description</th>
   </tr>
   <tr>
-  	<td>client_id</td>
-  	<td>The client ID you received when you registered your application.</td>
+    <td>client_id</td>
+    <td>The client ID you received when you registered your application.</td>
   </tr>
   <tr>
-  	<td>code</td>
-  	<td>A temporary authorization code</td>
+    <td>code</td>
+    <td>A temporary authorization code.</td>
   </tr>
   <tr>
-  	<td>state</td>
-  	<td>An unguessable random string. It is used to protect against cross-site request forgery attacks.</td>
+    <td>state</td>
+    <td>The state value the application sent when starting the login flow.</td>
   </tr>
 </table>
 
@@ -103,24 +103,24 @@ Exchanging the authorization code must be done server-side to ensure that you do
 
 <table>
   <tr>
-  	<th>Name</th>
-  	<th>Description</th>
+    <th>Name</th>
+    <th>Description</th>
   </tr>
   <tr>
-  	<td>client_id</td>
-  	<td>The client ID you received when you registered your application</td>
+    <td>client_id</td>
+    <td>The client ID you received when you registered your application.</td>
   </tr>
   <tr>
-  	<td>client_secret</td>
-  	<td>The client secret you received when you registered your application</td>
+    <td>client_secret</td>
+    <td>The client secret you received when you registered your application.</td>
   </tr>
   <tr>
-  	<td>grant_type</td>
-  	<td>The grant_type must be set to "authorization_code"</td>
+    <td>grant_type</td>
+    <td>The grant_type must be set to "authorization_code".</td>
   </tr>
   <tr>
-  	<td>code</td>
-  	<td>The temporary authorization code you obtained in the previous step</td>
+    <td>code</td>
+    <td>The temporary authorization code you obtained in the previous step.</td>
   </tr>
 </table>
 
@@ -159,11 +159,11 @@ Scopes let you specify exactly what type of access you need. Scopes limit access
 
 <table>
   <tr>
-  	<th>Name</th>
-  	<th>Description</th>
+    <th>Name</th>
+    <th>Description</th>
   </tr>
   <tr>
-  	<td>(no scope)</td>
-  	<td>Grants read-only access to public information</td>
+    <td>(no scope)</td>
+    <td>Grants read-only access to public information.</td>
   </tr>
 </table>
