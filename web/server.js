@@ -117,6 +117,7 @@ module.exports = function(options) {
       method: 'POST',
       path: '/login/oauth/access_token',
       config: {
+        auth: false,
         pre: [
           {
             assign: 'client',

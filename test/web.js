@@ -131,7 +131,6 @@ lab.experiment("OAuth", function() {
         email: "webmaker@example.org"
       },
       payload: {
-        authorizationGranted: true,
         client_id: "test",
         scopes: "user:email",
         state: "test"
@@ -159,7 +158,6 @@ lab.experiment("OAuth", function() {
       method: "POST",
       url: "/login/oauth/authorize",
       payload: {
-        authorizationGranted: true,
         client_id: "test",
         scopes: "user:email",
         state: "test"
@@ -203,9 +201,11 @@ lab.experiment("OAuth", function() {
   var authTokenRequest = {
     method: "POST",
     url: "/login/oauth/authorize",
+    credentials: {
+      username: "webmaker",
+      email: "webmaker@example.com"
+    },
     payload: {
-      uid: "webmaker",
-      password: "password",
       client_id: "test",
       scopes: "user:email",
       state: "test"
