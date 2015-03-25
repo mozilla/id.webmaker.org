@@ -35,13 +35,19 @@ var Form = React.createClass({
     var labelPosition = this.props.fields[i][id].labelPosition;
     var className = this.getIconClass(id);
 
+    function foo() {
+      console.log('foo');
+      this.handleValidation(id);
+    }
+
     var input = (
       <input type={type}
              id={id}
              placeholder={placeholder}
              valueLink={this.linkState(id)}
              onBlur={this.handleValidation(id)}
-             className={this.getClasses(id)} />
+             className={this.getClasses(id)}
+             ref={id} />
     );
 
     if (type === 'checkbox') {

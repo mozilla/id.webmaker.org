@@ -8,19 +8,32 @@ var fieldValues = [
     'username': {
       'placeholder': 'Username',
       'type': 'text',
-      'validTest': 'user123',
-      'invalidTest': 'x adasd 1'
+      'validator': 'username'
     }
   },
   {
     'password': {
       'placeholder': 'Password',
       'type': 'password',
-      'validTest': 'pAssw0rd123',
-      'invalidTest': 'foo'
+      'validator': 'password'
     }
   }
 ];
+
+var fixtures = {
+  'username': {
+    'valid': 'hello123',
+    'invalid': ''
+  },
+  'password': {
+    'valid': 'pas02easdaw',
+    'invalid': 'f'
+  }
+};
+
+var validators = require('../../lib/validatorset');
+
+var fieldValidators = validators.getValidatorSet(fieldValues);
 
 describe('form', function() {
 
@@ -40,7 +53,7 @@ describe('form', function() {
 
   describe('inputs', function () {
     beforeEach(function () {
-      instance = TestUtils.renderIntoDocument(<Form fields={fieldValues} />);
+      instance = TestUtils.renderIntoDocument(<Form fields={fieldValues} validators={fieldValidators} />);
       el = instance.getDOMNode();
     });
 
@@ -49,22 +62,23 @@ describe('form', function() {
         var field = set[name];
 
         describe(name, function () {
+          var ref;
           var inputEl;
           it('should create an input element', function () {
-            inputEl = el.querySelector('input[id="' + name +'"]');
+            ref = instance.refs[name];
+            inputEl = ref.getDOMNode();
             should(inputEl).be.ok;
           });
           it('should accept the valid value', function () {
-            el.value = field.validTest;
-            TestUtils.Simulate.blur(el);
-            should(instance.isValid()).be.equal(true);
+            TestUtils.Simulate.change(inputEl, {target: {value: fixtures[name].valid}});
+            TestUtils.Simulate.blur(inputEl);
+            should(instance.isValid(name)).be.equal(true);
           });
-          // Doesn't seem like validation is working :S actually
-          // it('should not accept an invalid value', function () {
-          //   el.value = field.invalidTest;
-          //   TestUtils.Simulate.blur(el);
-          //   should(instance.isValid()).be.equal(false);
-          // });
+          it('should not accept an invalid value', function () {
+            TestUtils.Simulate.change(inputEl, {target: {value: fixtures[name].invalid}});
+            TestUtils.Simulate.blur(inputEl);
+            should(instance.isValid(name)).be.equal(false);
+          });
         });
 
       });
