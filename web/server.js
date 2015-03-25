@@ -127,10 +127,10 @@ module.exports = function(options) {
               var redirectUri = url.parse(request.payload.redirect_uri, true);
               var clientRedirectUri = url.parse(request.pre.client.redirect_uri);
 
-              // redirect URI host and port must match registered URI, and the path
+              // redirect URI hostname and port must match registered URI, and the path
               // must be a subdirectory of the registered path
               if (
-                redirectUri.host !== clientRedirectUri.host ||
+                redirectUri.hostname !== clientRedirectUri.hostname ||
                 redirectUri.port !== clientRedirectUri.port ||
                 Path.relative(clientRedirectUri.path, redirectUri.path).indexOf('../') !== -1
               ) {

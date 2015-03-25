@@ -15,6 +15,11 @@ lab.experiment("OAuth", function() {
         client_id: "test",
         client_secret: "test",
         redirect_uri: "http://example.org/oauth_redirect"
+      },
+      {
+        client_id: "test2",
+        client_secret: "test2",
+        redirect_uri: "http://example2.org/oauth_redirect"
       }
     ]
   });
@@ -161,20 +166,20 @@ lab.experiment("OAuth", function() {
     });
   });
 
+  var authTokenRequest = {
+    method: "POST",
+    url: "/login/oauth/authorize",
+    payload: {
+      uid: "webmaker",
+      password: "password",
+      client_id: "test",
+      scopes: "user:email",
+      state: "test"
+    }
+  };
+
   lab.test("POST access_token", function(done) {
     ls.start(function(error) {
-      var authTokenRequest = {
-        method: "POST",
-        url: "/login/oauth/authorize",
-        payload: {
-          uid: "webmaker",
-          password: "password",
-          client_id: "test",
-          scopes: "user:email",
-          state: "test"
-        }
-      };
-
       var accessTokenRequest = {
         method: "POST",
         url: "/login/oauth/access_token",
@@ -202,6 +207,213 @@ lab.experiment("OAuth", function() {
           Code.expect(redirectUri.query.scopes).to.equal("user:email");
           Code.expect(redirectUri.query.type).to.equal("bearer");
 
+          done();
+        });
+      });
+    });
+  });
+
+  lab.test("POST access_token - unknown client_id", function(done) {
+    ls.start(function(error) {
+      var accessTokenRequest = {
+        method: "POST",
+        url: "/login/oauth/access_token",
+        payload: {
+          client_id: "fake",
+          client_secret: "test",
+          scopes: "user:email"
+        }
+      };
+
+      s.inject(authTokenRequest, function(authTokResponse) {
+        var redirectUri = url.parse(authTokResponse.headers.location, true);
+        accessTokenRequest.payload.auth_code = redirectUri.query.code;
+
+        s.inject(accessTokenRequest, function(response) {
+          Code.expect(response.statusCode).to.equal(400);
+
+          done();
+        });
+      });
+    });
+  });
+
+  lab.test("POST access_token - invalid client_secret", function(done) {
+    ls.start(function(error) {
+      var accessTokenRequest = {
+        method: "POST",
+        url: "/login/oauth/access_token",
+        payload: {
+          client_id: "test",
+          client_secret: "fake",
+          scopes: "user:email"
+        }
+      };
+
+      s.inject(authTokenRequest, function(authTokResponse) {
+        var redirectUri = url.parse(authTokResponse.headers.location, true);
+        accessTokenRequest.payload.auth_code = redirectUri.query.code;
+
+        s.inject(accessTokenRequest, function(response) {
+          Code.expect(response.statusCode).to.equal(403);
+
+          done();
+        });
+      });
+    });
+  });
+
+  lab.test("POST access_token - redirect_uri (subdirectory)", function(done) {
+    ls.start(function(error) {
+      var accessTokenRequest = {
+        method: "POST",
+        url: "/login/oauth/access_token",
+        payload: {
+          client_id: "test",
+          client_secret: "test",
+          scopes: "user:email",
+          redirect_uri: "http://example.org/oauth_redirect/foo"
+        }
+      };
+
+      s.inject(authTokenRequest, function(authTokResponse) {
+        var redirectUri = url.parse(authTokResponse.headers.location, true);
+        accessTokenRequest.payload.auth_code = redirectUri.query.code;
+
+        s.inject(accessTokenRequest, function(response) {
+          Code.expect(response.statusCode).to.equal(302);
+          Code.expect(response.headers.location).to.exist();
+
+          var redirectUri = url.parse(response.headers.location, true);
+
+          Code.expect(redirectUri.protocol).to.equal("http:");
+          Code.expect(redirectUri.host).to.equal("example.org");
+          Code.expect(redirectUri.pathname).to.equal("/oauth_redirect/foo");
+          Code.expect(redirectUri.query.access_token).to.be.a.string();
+          Code.expect(redirectUri.query.scopes).to.equal("user:email");
+          Code.expect(redirectUri.query.type).to.equal("bearer");
+
+          done();
+        });
+      });
+    });
+  });
+
+  lab.test("POST access_token - redirect_uri (invalid host)", function(done) {
+    ls.start(function(error) {
+      var accessTokenRequest = {
+        method: "POST",
+        url: "/login/oauth/access_token",
+        payload: {
+          client_id: "test",
+          client_secret: "test",
+          scopes: "user:email",
+          redirect_uri: "http://example.com/oauth_redirect"
+        }
+      };
+
+      s.inject(authTokenRequest, function(authTokResponse) {
+        var redirectUri = url.parse(authTokResponse.headers.location, true);
+        accessTokenRequest.payload.auth_code = redirectUri.query.code;
+
+        s.inject(accessTokenRequest, function(response) {
+          Code.expect(response.statusCode).to.equal(403);
+          done();
+        });
+      });
+    });
+  });
+
+  lab.test("POST access_token - redirect_uri (invalid port)", function(done) {
+    ls.start(function(error) {
+      var accessTokenRequest = {
+        method: "POST",
+        url: "/login/oauth/access_token",
+        payload: {
+          client_id: "test",
+          client_secret: "test",
+          scopes: "user:email",
+          redirect_uri: "http://example.org:5000/oauth_redirect"
+        }
+      };
+
+      s.inject(authTokenRequest, function(authTokResponse) {
+        var redirectUri = url.parse(authTokResponse.headers.location, true);
+        accessTokenRequest.payload.auth_code = redirectUri.query.code;
+
+        s.inject(accessTokenRequest, function(response) {
+          Code.expect(response.statusCode).to.equal(403);
+          done();
+        });
+      });
+    });
+  });
+
+  lab.test("POST access_token - redirect_uri (invalid subdirectory)", function(done) {
+    ls.start(function(error) {
+      var accessTokenRequest = {
+        method: "POST",
+        url: "/login/oauth/access_token",
+        payload: {
+          client_id: "test",
+          client_secret: "test",
+          scopes: "user:email",
+          redirect_uri: "http://example.com/not_oauth_redirect"
+        }
+      };
+
+      s.inject(authTokenRequest, function(authTokResponse) {
+        var redirectUri = url.parse(authTokResponse.headers.location, true);
+        accessTokenRequest.payload.auth_code = redirectUri.query.code;
+
+        s.inject(accessTokenRequest, function(response) {
+          Code.expect(response.statusCode).to.equal(403);
+          done();
+        });
+      });
+    });
+  });
+
+  lab.test("POST access_token - invalid auth code", function(done) {
+    ls.start(function(error) {
+      var accessTokenRequest = {
+        method: "POST",
+        url: "/login/oauth/access_token",
+        payload: {
+          client_id: "test",
+          client_secret: "test",
+          auth_code: "fake",
+          scopes: "user:email",
+          redirect_uri: "http://example.org/oauth_redirect/foo"
+        }
+      };
+
+      s.inject(accessTokenRequest, function(response) {
+        Code.expect(response.statusCode).to.equal(403);
+        done();
+      });
+    });
+  });
+
+  lab.test("POST access_token - invalid client id", function(done) {
+    ls.start(function(error) {
+      var accessTokenRequest = {
+        method: "POST",
+        url: "/login/oauth/access_token",
+        payload: {
+          client_id: "test2",
+          client_secret: "test2",
+          scopes: "user:email",
+          redirect_uri: "http://example2.org/oauth_redirect/foo"
+        }
+      };
+
+      s.inject(authTokenRequest, function(authTokResponse) {
+        var redirectUri = url.parse(authTokResponse.headers.location, true);
+        accessTokenRequest.payload.auth_code = redirectUri.query.code;
+
+        s.inject(accessTokenRequest, function(response) {
+          Code.expect(response.statusCode).to.equal(403);
           done();
         });
       });
