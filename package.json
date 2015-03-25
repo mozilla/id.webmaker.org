@@ -4,7 +4,7 @@
   "description": "OAuth 2.0 identity provider for Webmaker https://id.webmaker.org",
   "main": "index.js",
   "scripts": {
-    "serve": "PORT=1234 node web/index.js",
+    "serve": "node web/index.js",
     "start": "parallelshell \"npm run serve\" \"npm run watch-css\" \"npm run watch-js\"",
     "test": "lab -t 95 && npm run validate && npm run test:browser",
     "test:browser": "npm run build && mocha-phantomjs -s loadImages=false public/tests/index.html",
