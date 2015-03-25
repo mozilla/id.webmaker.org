@@ -17,6 +17,13 @@ var fieldValues = [
       'type': 'password',
       'validator': 'password'
     }
+  },
+  {
+    'email': {
+      'placeholder': 'Email',
+      'type': 'email',
+      'validator': 'email'
+    }
   }
 ];
 
@@ -28,6 +35,10 @@ var fixtures = {
   'password': {
     'valid': 'pas02easdaw',
     'invalid': 'f'
+  },
+  'email': {
+    'valid': 'jon@jbuck.ca',
+    'invalid': 'fook'
   }
 };
 
@@ -37,33 +48,31 @@ var fieldValidators = validators.getValidatorSet(fieldValues);
 
 describe('form', function() {
 
-  var instance;
-  var el;
-
   describe('prop validation', function() {
     it('should take an array in fields prop', function () {
-      instance = TestUtils.renderIntoDocument(<Form fields={fieldValues} />);
+      var instance = TestUtils.renderIntoDocument(<Form fields={fieldValues} validators={fieldValidators} />);
     });
     it('should not allow an empty fields prop', function () {
       should.throws(function () {
-        instance = TestUtils.renderIntoDocument(<Form />);
+        var instance = TestUtils.renderIntoDocument(<Form />);
       });
     });
   });
 
   describe('inputs', function () {
-    beforeEach(function () {
-      instance = TestUtils.renderIntoDocument(<Form fields={fieldValues} validators={fieldValidators} />);
-      el = instance.getDOMNode();
-    });
+
+    var instance = TestUtils.renderIntoDocument(<Form fields={fieldValues} validators={fieldValidators} />);
+    var el = instance.getDOMNode();
 
     fieldValues.forEach(function (set) {
       Object.keys(set).forEach(function (name) {
         var field = set[name];
 
         describe(name, function () {
+
           var ref;
           var inputEl;
+
           it('should create an input element', function () {
             ref = instance.refs[name];
             inputEl = ref.getDOMNode();
