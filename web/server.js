@@ -12,6 +12,13 @@ module.exports = function(options) {
     host: options.host,
     port: options.port
   });
+  server.state('webmaker', {
+    ttl: 1000 * 60 * 60 * 24,
+    isSecure: options.secureCookies || false,
+    isHttpOnly: true,
+    encoding: 'iron',
+    password: options.cookieSecret
+  });
 
   var account = require('../lib/account')({
     loginAPI: options.loginAPI
@@ -53,16 +60,18 @@ module.exports = function(options) {
           {
             assign: 'user',
             method: function(request, reply) {
-              account.verifyPassword(request, function(err, user) {
-                if ( err ) {
-                  return reply(Boom.badImplementation(err));
-                }
-                if ( !user ) {
-                  return reply(Boom.unauthorized('Invalid username/email or password'));
-                }
+              if ( request.state.webmaker ) {
+                return reply(request.state.webmaker);
+              }
 
-                reply(user);
-              });
+              var loginRedirectObj = url.parse('/login');
+
+              loginRedirectObj.query.client_id = request.payload.client_id;
+              loginRedirectObj.query.response_type = request.payload.response_type;
+              loginRedirectObj.query.scopes = request.payload.scopes;
+
+              reply.redirect(url.format(loginRedirectObj));
+
             }
           },
           {
@@ -147,6 +156,38 @@ module.exports = function(options) {
         var redirectUri = url.format(redirectObj);
 
         reply.redirect(redirectUri);
+      }
+    },
+    {
+      method: 'POST',
+      path: '/login',
+      config: {
+        pre: [
+          {
+            assign: 'user',
+            method: function(request, reply) {
+              account.verifyPassword(request, function(err, user) {
+                if ( err ) {
+                  return reply(Boom.badImplementation(err));
+                }
+                if ( !user ) {
+                  return reply(Boom.unauthorized('Invalid username/email or password'));
+                }
+
+                reply(user);
+              });
+            }
+          }
+        ]
+      },
+      handler: function(request, reply) {
+        var redirectObj = url.parse('/login/oauth/authorize');
+
+        redirectObj.query.client_id = request.payload.client_id;
+        redirectObj.query.response_type = request.payload.response_type;
+        redirectObj.query.scopes = request.payload.scopes;
+
+        reply().state('webmaker', request.pre.user).redirect(url.format(redirectObj));
       }
     }
   ]);
