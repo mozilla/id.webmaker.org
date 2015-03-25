@@ -1,7 +1,7 @@
 var React = require('react');
 
-var Form = require('../components/form.jsx');
-var Header = require('../components/header.jsx');
+var Form = require('../components/form/form.jsx');
+var Header = require('../components/header/header.jsx');
 
 var fieldValues = [
   {

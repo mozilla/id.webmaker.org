@@ -17,7 +17,8 @@ function importEnvVars(keys) {
 
 module.exports = {
   entry: {
-    app: './templates/index.jsx'
+    app: './templates/index.jsx',
+    tests: './test/browser.tests.jsx'
   },
   devtool: process.env.WEBPACK_DEVTOOL || 'source-map',
   output: {
