@@ -43,8 +43,8 @@
     "hoek": "^2.11.1",
     "hyperquest": "^1.0.1",
     "joi": "^6.0.8",
-    "react": "^0.13.1",
-    "react-router": "^0.13.1",
+    "react": "^0.12.2",
+    "react-router": "^0.12.4",
     "react-validation-mixin": "^4.0.3"
   },
   "devDependencies": {
@@ -65,7 +65,7 @@
     "ncp": "^2.0.0",
     "parallelshell": "^1.1.1",
     "phantomjs": "^1.9.16",
-    "react-router-stub": "0.0.2",
+    "react-router-stub": "0.0.5",
     "should": "^5.2.0",
     "sinon": "git://github.com/cjohansen/Sinon.JS#b672042043517b9f84e14ed0fb8265126168778a",
     "webpack": "^1.7.3"

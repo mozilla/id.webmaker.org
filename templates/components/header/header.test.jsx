@@ -10,21 +10,28 @@ var testProps = {
   redirectLabel: 'login'
 };
 
+
 describe('header', function() {
 
   var instance;
+  var el;
 
   beforeEach(function() {
     instance = RouterStub.render(Header, testProps);
+    el = instance.getDOMNode();
   });
+
   afterEach(function () {
     RouterStub.unmount(instance);
+    el = null;
   });
 
   it('should contain the redirectText', function () {
-    console.log(instance);
-    var signUpEl = instance.refs.signUp.getDOMNode();
-    should(signUpEl.innerHTML).equal('Sign up');
+    should(instance.refs.text.props.children).be.equal(testProps.redirectText);
+  });
+  it('should create a link to the redirect page', function () {
+    should(instance.refs.link.props.to).be.equal(testProps.redirectPage);
+    should(el.querySelector('a')).be.ok;
   });
 
 });
