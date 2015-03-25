@@ -162,16 +162,49 @@ lab.experiment("OAuth", function() {
   });
 
   lab.test("POST access_token", function(done) {
-    var request = {
-      method: "POST",
-      url: "/login/oauth/access_token"
-    };
+    ls.start(function(error) {
+      var authTokenRequest = {
+        method: "POST",
+        url: "/login/oauth/authorize",
+        payload: {
+          uid: "webmaker",
+          password: "password",
+          client_id: "test",
+          scopes: "user:email",
+          state: "test"
+        }
+      };
 
-    s.inject(request, function(response) {
-      Code.expect(response.statusCode).to.equal(200);
-      Code.expect(response.result).to.equal("ok");
+      var accessTokenRequest = {
+        method: "POST",
+        url: "/login/oauth/access_token",
+        payload: {
+          client_id: "test",
+          client_secret: "test",
+          scopes: "user:email"
+        }
+      };
 
-      done();
+      s.inject(authTokenRequest, function(authTokResponse) {
+        var redirectUri = url.parse(authTokResponse.headers.location, true);
+        accessTokenRequest.payload.auth_code = redirectUri.query.code;
+
+        s.inject(accessTokenRequest, function(response) {
+          Code.expect(response.statusCode).to.equal(302);
+          Code.expect(response.headers.location).to.exist();
+
+          var redirectUri = url.parse(response.headers.location, true);
+
+          Code.expect(redirectUri.protocol).to.equal("http:");
+          Code.expect(redirectUri.host).to.equal("example.org");
+          Code.expect(redirectUri.pathname).to.equal("/oauth_redirect");
+          Code.expect(redirectUri.query.access_token).to.be.a.string();
+          Code.expect(redirectUri.query.scopes).to.equal("user:email");
+          Code.expect(redirectUri.query.type).to.equal("bearer");
+
+          done();
+        });
+      });
     });
   });
 });
