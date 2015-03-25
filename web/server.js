@@ -1,5 +1,6 @@
 var Boom = require('boom');
 var Hapi = require('hapi');
+var Hoek = require('hoek');
 var OAuthDB = require('../lib/oauth-db');
 var Path = require('path');
 var url = require('url');
@@ -12,12 +13,23 @@ module.exports = function(options) {
     host: options.host,
     port: options.port
   });
-  server.state('webmaker', {
-    ttl: 1000 * 60 * 60 * 24,
-    isSecure: options.secureCookies || false,
-    isHttpOnly: true,
-    encoding: 'iron',
-    password: options.cookieSecret
+
+  server.register(require('hapi-auth-cookie'), function(err) {
+    // MAYDAY, MAYDAY, MAYDAY!
+    Hoek.assert(!err, err);
+
+    server.auth.strategy('session', 'cookie', {
+      password: options.cookieSecret,
+      cookie: 'webmaker',
+      ttl: 1000 * 60 * 60 * 24,
+      isSecure: options.secureCookies,
+      isHttpOnly: true
+    });
+
+    server.auth.default({
+      strategy: 'session',
+      mode: 'try'
+    });
   });
 
   var account = require('../lib/account')({
@@ -60,18 +72,11 @@ module.exports = function(options) {
           {
             assign: 'user',
             method: function(request, reply) {
-              if ( request.state.webmaker ) {
-                return reply(request.state.webmaker);
+              if ( request.auth.isAuthenticated ) {
+                return reply(request.auth.session);
               }
 
-              var loginRedirectObj = url.parse('/login');
-
-              loginRedirectObj.query.client_id = request.payload.client_id;
-              loginRedirectObj.query.response_type = request.payload.response_type;
-              loginRedirectObj.query.scopes = request.payload.scopes;
-
-              reply.redirect(url.format(loginRedirectObj));
-
+              reply().takeover().redirect(url.format('/login'));
             }
           },
           {
@@ -181,13 +186,9 @@ module.exports = function(options) {
         ]
       },
       handler: function(request, reply) {
-        var redirectObj = url.parse('/login/oauth/authorize');
+        request.auth.session.set(request.pre.user);
 
-        redirectObj.query.client_id = request.payload.client_id;
-        redirectObj.query.response_type = request.payload.response_type;
-        redirectObj.query.scopes = request.payload.scopes;
-
-        reply().state('webmaker', request.pre.user).redirect(url.format(redirectObj));
+        reply({ status: 'Logged In' });
       }
     }
   ]);

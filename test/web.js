@@ -10,6 +10,7 @@ lab.experiment("OAuth", function() {
   var s = server({
     debug: false,
     loginAPI: "http://localhost:3232",
+    cookieSecret: "test",
     oauth_clients: [
       {
         client_id: "test",
@@ -42,127 +43,160 @@ lab.experiment("OAuth", function() {
     });
   });
 
-  lab.test("POST authorize", function(done) {
+  lab.test("POST login", function(done) {
     ls.start(function(error) {
       Code.expect(error).to.be.undefined();
       var request = {
         method: "POST",
-        url: "/login/oauth/authorize",
+        url: "/login",
         payload: {
           uid: "webmaker",
-          password: "password",
-          client_id: "test",
-          scopes: "user:email",
-          state: "test"
+          password: "password"
         }
       };
 
       s.inject(request, function(response) {
-        Code.expect(response.statusCode).to.equal(302);
-        Code.expect(response.headers.location).to.exist();
-
-        var redirectUri = url.parse(response.headers.location, true);
-
-        Code.expect(redirectUri.protocol).to.equal("http:");
-        Code.expect(redirectUri.host).to.equal("example.org");
-        Code.expect(redirectUri.pathname).to.equal("/oauth_redirect");
-        Code.expect(redirectUri.query.code).to.be.a.string();
-        Code.expect(redirectUri.query.state).to.equal("test");
-
+        Code.expect(response.statusCode).to.equal(200);
         ls.stop(done);
       });
     });
   });
 
-  lab.test("POST authorize - x-forwarded-for", function(done) {
+  lab.test("POST login - x-forwarded-for", function(done) {
     ls.start(function(error) {
       Code.expect(error).to.be.undefined();
       var request = {
         method: "POST",
-        url: "/login/oauth/authorize",
+        url: "/login",
         headers: {
-          "x-forwarded-for": "192.168.1.1",
-          "Content-Type": "application/x-www-form-urlencoded"
+          "x-forwarded-for": "192.168.1.1"
         },
-        payload: "uid=webmaker&password=password&client_id=test&scopes=user:email&state=test"
+        payload: {
+          uid: "webmaker",
+          password: "password"
+        }
       };
 
       s.inject(request, function(response) {
-        Code.expect(response.statusCode).to.equal(302);
-        Code.expect(response.headers.location).to.exist();
-
-        var redirectUri = url.parse(response.headers.location, true);
-
-        Code.expect(redirectUri.protocol).to.equal("http:");
-        Code.expect(redirectUri.host).to.equal("example.org");
-        Code.expect(redirectUri.pathname).to.equal("/oauth_redirect");
-        Code.expect(redirectUri.query.code).to.be.a.string();
-        Code.expect(redirectUri.query.state).to.equal("test");
-
+        Code.expect(response.statusCode).to.equal(200);
         ls.stop(done);
       });
     });
   });
 
-  lab.test("POST authorize - invalid client_id", function(done) {
+  lab.test("POST login - invalid json response", function(done) {
     ls.start(function(error) {
       Code.expect(error).to.be.undefined();
       var request = {
         method: "POST",
-        url: "/login/oauth/authorize",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        payload: "uid=webmaker&password=password&client_id=invalid&scopes=user:email&state=test"
-      };
-
-      s.inject(request, function(response) {
-        Code.expect(response.statusCode).to.equal(400);
-        Code.expect(response.result.message).to.equal("invalid client_id");
-
-        ls.stop(done);
-      });
-    });
-  });
-
-  lab.test("POST authorize - invalid json response", function(done) {
-    ls.start(function(error) {
-      Code.expect(error).to.be.undefined();
-      var request = {
-        method: "POST",
-        url: "/login/oauth/authorize",
-        payload: "uid=invalidResponse&password=password",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
+        url: "/login",
+        payload: {
+          uid: "invalidResponse",
+          password: "password"
         }
       };
 
       s.inject(request, function(response) {
         Code.expect(response.statusCode).to.equal(500);
-
         ls.stop(done);
       });
     });
   });
 
-  lab.test("POST authorize - unauthorized", function(done) {
+  lab.test("POST login - unauthorized", function(done) {
     ls.start(function(error) {
       Code.expect(error).to.be.undefined();
       var request = {
         method: "POST",
-        url: "/login/oauth/authorize",
-        payload: "uid=not%20a%20user&password=password",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
+        url: "/login",
+        payload: {
+          uid: "webmaker",
+          password: "notThePassword"
         }
       };
 
       s.inject(request, function(response) {
         Code.expect(response.statusCode).to.equal(401);
-        Code.expect(response.result.message).to.equal("Invalid username/email or password");
-
         ls.stop(done);
       });
+    });
+  });
+
+  lab.test("POST authorize", function(done) {
+    var request = {
+      method: "POST",
+      url: "/login/oauth/authorize",
+      credentials: {
+        username: "webmaker",
+        email: "webmaker@example.org"
+      },
+      payload: {
+        authorizationGranted: true,
+        client_id: "test",
+        scopes: "user:email",
+        state: "test"
+      }
+    };
+
+    s.inject(request, function(response) {
+      Code.expect(response.statusCode).to.equal(302);
+      Code.expect(response.headers.location).to.exist();
+
+      var redirectUri = url.parse(response.headers.location, true);
+
+      Code.expect(redirectUri.protocol).to.equal("http:");
+      Code.expect(redirectUri.host).to.equal("example.org");
+      Code.expect(redirectUri.pathname).to.equal("/oauth_redirect");
+      Code.expect(redirectUri.query.code).to.be.a.string();
+      Code.expect(redirectUri.query.state).to.equal("test");
+
+      done();
+    });
+  });
+
+  lab.test("POST authorize - no session", function(done) {
+    var request = {
+      method: "POST",
+      url: "/login/oauth/authorize",
+      payload: {
+        authorizationGranted: true,
+        client_id: "test",
+        scopes: "user:email",
+        state: "test"
+      }
+    };
+
+    s.inject(request, function(response) {
+      Code.expect(response.statusCode).to.equal(302);
+      Code.expect(response.headers.location).to.exist();
+
+      var redirectUri = url.parse(response.headers.location, true);
+
+      Code.expect(redirectUri.pathname).to.equal("/login");
+
+      done();
+    });
+  });
+
+  lab.test("POST authorize - invalid client_id", function(done) {
+    var request = {
+      method: "POST",
+      url: "/login/oauth/authorize",
+      credentials: {
+        username: "webmaker",
+        email: "webmaker@example.org"
+      },
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      payload: "uid=webmaker&password=password&client_id=invalid&scopes=user:email&state=test"
+    };
+
+    s.inject(request, function(response) {
+      Code.expect(response.statusCode).to.equal(400);
+      Code.expect(response.result.message).to.equal("invalid client_id");
+
+      done();
     });
   });
 
