@@ -1,44 +1,58 @@
 var React = require('react/addons');
 var ValidationMixin = require('react-validation-mixin');
-var Joi = require('joi');
 
 var Form = React.createClass({
   propTypes: {
     fields: React.PropTypes.array.isRequired
   },
   statics: {
-      'phoneLabels': {
-        'username': 'phone-label-username',
-        'password': 'phone-label-password'
+      'iconLabels': {
+        'username': 'icon-label-username',
+        'password': 'icon-label-password',
+        'email':    'icon-label-email'
       }
   },
   mixins: [
     ValidationMixin,
     React.addons.LinkedStateMixin
   ],
-  validatorTypes:  {
-    username: Joi.string().min(1).required().label('Username'),
-    password: Joi.string().min(3).required().label('Password')
+  validatorTypes: false,
+  componentWillMount: function() {
+    this.validatorTypes = this.props.validators;
   },
   getInitialState: function() {
     return {
       username: null,
-      password: null
+      password: null,
+      email: null
     };
   },
   buildFormElement: function(key, i) {
     var id = Object.keys(this.props.fields[i]);
     var placeholder = this.props.fields[i][id].placeholder;
     var type = this.props.fields[i][id].type;
+    var label = this.props.fields[i][id].label;
+    var labelPosition = this.props.fields[i][id].labelPosition;
     var className = this.getIconClass(id);
+
+    var input = (
+      <input type={type}
+             id={id}
+             placeholder={placeholder}
+             valueLink={this.linkState(id)}
+             onBlur={this.handleValidation(id)}
+             className={this.getClasses(id)} />
+    );
+
+    if (type === 'checkbox') {
+      input = (<span>{input}<span/></span>);
+    }
+
     return (
-     <label className={className} key={id}>
-       <input type={type}
-              id={id}
-              placeholder={placeholder}
-              valueLink={this.linkState(id)}
-              onBlur={this.handleValidation(id)}
-              className={this.getClasses(id)} />
+     <label className={className} key={id} htmlFor={id}>
+        {label && labelPosition==='before' ? label : false}
+        {input}
+        {label && labelPosition==='after' ? label : false}
      </label>
     );
   },
@@ -53,7 +67,7 @@ var Form = React.createClass({
     });
   },
   getIconClass: function(field) {
-    return Form.phoneLabels[field];
+    return Form.iconLabels[field];
   },
   handleReset: function(event) {
     this.clearValidations();
@@ -66,23 +80,12 @@ var Form = React.createClass({
     var self = this;
     this.validate(function(error, data) {
       console.log("inside Form, we see:", error, data);
-      self.onValidate(callback, error,data);
+      self.onValidate(callback, error, data);
     });
   },
   onValidate: function(callback, error, data) {
-    // FIXME: totally not localised yet!!
-    var feedbackText = 'Form is invalid do not submit';
-    var validText ='Form is valid send to action creator';
-    this.setState(
-      {
-        feedback: error ? feedbackText : validText
-      },
-      function postValidation() {
-        callback(error, !!error? false : JSON.parse(JSON.stringify(this.state)));
-      }
-    );
+    callback(error, !!error? false : JSON.parse(JSON.stringify(this.state)));
   }
-
 });
 
 module.exports = Form;

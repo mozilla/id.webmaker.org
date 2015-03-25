@@ -27,32 +27,33 @@
     padding-bottom: 10px;
   }
 
-.icon(@fa-icon) {
-  content: @fa-icon;
-  .fa();
-}
+  .icon(@fa-icon) {
+    content: @fa-icon;
+    .fa();
+  }
 
-.label(@fa-icon) {
-  .icon(@fa-icon);
-  color: #B5B1A6;
-  font-family: FontAwesome;
-  position: absolute;
-  top: 16px;
-  left: 5%;
-  font-size: 18px;
-}
-  .phone-label-username:before {
+  .label(@fa-icon) {
+    .icon(@fa-icon);
+    color: #B5B1A6;
+    font-family: FontAwesome;
+    position: absolute;
+    top: 16px;
+    left: 5%;
+    font-size: 18px;
+  }
+
+  .icon-label-username:before {
     .label(@fa-username);
   }
-  .phone-label-password:before {
+  .icon-label-password:before {
     .label(@fa-password);
   }
-  .phone-label-email:before {
+  .icon-label-email:before {
     .label(@fa-email);
   }
-  .phone-label-username,
-  .phone-label-password,
-  .phone-label-email {
+  .icon-label-username,
+  .icon-label-password,
+  .icon-label-email {
     position: relative;
   }
 }

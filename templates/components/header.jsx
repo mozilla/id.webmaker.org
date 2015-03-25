@@ -1,11 +1,13 @@
 var React = require('react');
+var Router = require('react-router');
+var Link = Router.Link;
 
 var Header = React.createClass({
   render: function() {
     return (
       <div className="navbar">
-        <img src="/assets/img/logo.png" alt="logo" className="logo" />
-        <div className="sign-up">Need an account? <a href="" className="underline">Sign up</a></div>
+        <img src="/assets/img/webmaker-horizontal.svg" alt="Mozilla Webmaker" className="wordmark" />
+        <div className="redirect">{this.props.redirectText} <Link to={this.props.redirectPage} className="underline">{this.props.redirectLabel}</Link></div>
       </div>
     );
   }
