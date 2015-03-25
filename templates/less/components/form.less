@@ -1,6 +1,6 @@
 .formContainer {
   width: 290px;
-  height: 250px;
+  height: 280px;
   margin: 0 auto;
   @media (min-width : 360px) and
   (max-width : 450px){
@@ -8,62 +8,118 @@
   }
   @media (min-width : 451px) {
     width: 400px;
+    height: 250px;
   }
   border-radius: 7px;
   padding-top: 25px;
   margin-bottom: 30px;
   background-color: white;
 
-  input {
-    width: 100%;
-    font-size: 16px;
-    font-weight: 200;
-    height: 55px;
-    padding-left: 12.5%;
-    margin: 0 auto;
-  }
   label {
     width: 100%;
     padding-bottom: 10px;
+    .warning {
+      position: relative;
+      background: #e7518f;
+      color: white;
+      padding: 8px 10px;
+      font-size: 12px;
+      white-space: nowrap;
+      position: absolute;
+      top: -20px;
+      right: 0;
+      border-radius: 5px;
+      line-height: 8px;
+      &:before  {
+        content: '';
+        position: absolute;
+        background: transparent;
+        border-left: 7px solid transparent;
+        border-right: 7px solid transparent;
+        border-top: 7px solid #e7518f;
+        position: absolute;
+        top: 100%;
+        right: 10%;
+      }
+    }
+    input {
+       &[disabled] {
+        background-color: transparent;
+        cursor: default !important;
+      }
+      box-shadow: none;
+      border-radius: 4px;
+      width: 100%;
+      font-size: 16px;
+      font-weight: 200;
+      height: 55px;
+      padding-left: 12.5%;
+      margin: 0 auto;
+    }
+
+    input.has-error {
+      &:focus {
+        border-color: #E95B95;
+        box-shadow: none;
+      }
+      border: 1px solid #E95B95;
+      background-color: #FEEDED;
+      box-shadow: none;
+    }
+    input.is-valid {
+      &:focus, &:active {
+        border-color: #52C29E;
+        box-shadow: none;
+      }
+    }
+
   }
 
-  .icon(@fa-icon) {
-    content: @fa-icon;
-    .fa();
+  .leftIcon() {
+    z-index: 1;
+    top: 18px;
+    left: 15px;
   }
 
-  .label(@fa-icon) {
-    .icon(@fa-icon);
-    color: #B5B1A6;
-    font-family: FontAwesome;
-    position: absolute;
-    top: 16px;
-    left: 5%;
-    font-size: 18px;
-  }
-
-  .icon-label-username:before {
-    .label(@fa-username);
-  }
-  .icon-label-password:before {
-    .label(@fa-password);
-  }
-  .icon-label-email:before {
-    .label(@fa-email);
-  }
   .icon-label-username,
   .icon-label-password,
   .icon-label-email {
     position: relative;
   }
+
+  .icon-label-username:before {
+    .label(@fa-username);
+    .leftIcon()
+  }
+  .icon-label-password:before {
+    .label(@fa-password);
+    .leftIcon()
+  }
+  .icon-label-email:before {
+    .label(@fa-email);
+    .leftIcon()
+  }
+
+  .icon-label-error:after {
+    .label(@fa-warn);
+    right: 10px;
+    top: 17px;
+    color: #e7518f;
+  }
+  .icon-label-valid:after {
+    .label(@fa-check);
+    right: 10px;
+    top: 17px;
+    color: #53C0A3;
+  }
 }
-.has-error {
-  border: 1px solid #E95B95;
-  background-color: #FEEDED;
-}
+
 .innerForm {
-  float: right;
   padding: 0px 30px;
+  text-align: center;
+  @media (min-width : 451px) {
+    text-align: right;
+  }
 }
 @media (min-width : 451px) {
   .centerDiv {
@@ -76,3 +132,4 @@
     width: 400px;
   }
 }
+

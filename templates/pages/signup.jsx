@@ -1,6 +1,8 @@
 var React = require('react');
+
 var Form = require('../components/form/form.jsx');
 var Header = require('../components/header/header.jsx');
+var IconText = require('../components/icontext.jsx');
 
 var Joi = require('joi');
 var fieldValues = [
@@ -47,8 +49,9 @@ var Signup = React.createClass({
         <h2>Free and open source – forever.</h2>
         <Form ref="userform" fields={fieldValues} validators={fieldValidators}/>
         <div className="commit">
-          <div className="agreement" />
-          <div className="eula">By signing up, I agree to Webmaker's <a href="" className="underline">Terms of Service</a> and <a href="" className="underline">Privacy Policy</a>.</div>
+          <IconText iconClass="agreement" textClass="eula">
+            By signing up, I agree to Webmaker's <a href="" className="underline">Terms of Service</a> and <a href="" className="underline">Privacy Policy</a>.
+          </IconText>
           <div><button className="btn btn-awsm" onClick={this.processSignup}>SIGN UP</button></div>
         </div>
       </div>

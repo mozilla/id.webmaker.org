@@ -74,7 +74,7 @@ describe('form', function() {
           var inputEl;
 
           it('should create an input element', function () {
-            ref = instance.refs[name];
+            ref = instance.refs[name+'Input'];
             inputEl = ref.getDOMNode();
             should(inputEl).be.ok;
           });

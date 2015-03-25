@@ -1,4 +1,6 @@
 var React = require('react');
+var Router = require('react-router');
+var Link = Router.Link;
 
 var Form = require('../components/form/form.jsx');
 var Header = require('../components/header/header.jsx');
@@ -11,14 +13,16 @@ var fieldValues = [
     'username': {
       'placeholder': 'Username',
       'type': 'text',
-      'validator': 'username'
+      'validator': 'username',
+      'errorMessage': 'Invalid username'
     }
   },
   {
     'password': {
       'placeholder': 'Password',
       'type': 'password',
-      'validator': 'password'
+      'validator': 'password',
+      'errorMessage': 'Invalid password'
     }
   }
 ];
@@ -35,11 +39,10 @@ var Login = React.createClass({
       <div>
         <Header redirectText="Need an account?" redirectLabel="Sign up" redirectPage="signup" />
 
-        <div className="formContainer centerDiv">
-          <div className="innerForm">
-            <Form ref="userform" fields={fieldValues} validators={fieldValidators} />
-            <button onClick={this.processFormData} className="btn btn-awsm">{buttonText}</button>
-          </div>
+        <div className="formContainer loginPage innerForm centerDiv">
+          <Form ref="userform" fields={fieldValues} validators={fieldValidators} />
+          <Link to="reset-password" className="need-help">Need help?</Link>
+          <button onClick={this.processFormData} className="btn btn-awsm">{buttonText}</button>
         </div>
       </div>
     );
