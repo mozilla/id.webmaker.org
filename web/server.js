@@ -52,9 +52,9 @@ module.exports = function(options) {
       method: 'GET',
       path: '/assets/{param*}',
       handler: {
-          directory: {
-            path: Path.join(__dirname, '../public')
-          }
+        directory: {
+          path: Path.join(__dirname, '../public')
+        }
       }
     },
     {

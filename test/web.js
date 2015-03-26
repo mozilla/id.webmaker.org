@@ -141,7 +141,7 @@ lab.experiment("OAuth", function() {
   lab.test("GET authorize - no session", function(done) {
     var request = {
       method: "GET",
-      url: "/login/oauth/authorize?client_id=test&scopes=user:email&state=test",
+      url: "/login/oauth/authorize?client_id=test&scopes=user&state=test",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded"
       }
@@ -162,7 +162,7 @@ lab.experiment("OAuth", function() {
   lab.test("GET authorize - invalid client_id", function(done) {
     var request = {
       method: "GET",
-      url: "/login/oauth/authorize?uid=webmaker&password=password&client_id=invalid&scopes=user:email&state=test",
+      url: "/login/oauth/authorize?uid=webmaker&password=password&client_id=invalid&scopes=user&state=test",
       credentials: {
         username: "webmaker",
         email: "webmaker@example.org"
@@ -182,7 +182,7 @@ lab.experiment("OAuth", function() {
 
   var authTokenRequest = {
     method: "GET",
-    url: "/login/oauth/authorize?client_id=test&scopes=user:email&state=test",
+    url: "/login/oauth/authorize?client_id=test&scopes=user&state=test",
     credentials: {
       username: "webmaker",
       email: "webmaker@example.com"
@@ -196,7 +196,7 @@ lab.experiment("OAuth", function() {
     ls.start(function(error) {
       var accessTokenRequest = {
         method: "GET",
-        url: "/login/oauth/access_token?client_id=test&client_secret=test&scopes=user:email",
+        url: "/login/oauth/access_token?client_id=test&client_secret=test&scopes=user",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         }
@@ -216,7 +216,7 @@ lab.experiment("OAuth", function() {
           Code.expect(redirectUri.host).to.equal("example.org");
           Code.expect(redirectUri.pathname).to.equal("/oauth_redirect");
           Code.expect(redirectUri.query.access_token).to.be.a.string();
-          Code.expect(redirectUri.query.scopes).to.equal("user:email");
+          Code.expect(redirectUri.query.scopes).to.equal("user");
           Code.expect(redirectUri.query.type).to.equal("bearer");
 
           done();
@@ -229,7 +229,7 @@ lab.experiment("OAuth", function() {
     ls.start(function(error) {
       var accessTokenRequest = {
         method: "GET",
-        url: "/login/oauth/access_token?client_id=fake&client_secret=test&scopes=user:email",
+        url: "/login/oauth/access_token?client_id=fake&client_secret=test&scopes=user",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         }
@@ -252,7 +252,7 @@ lab.experiment("OAuth", function() {
     ls.start(function(error) {
       var accessTokenRequest = {
         method: "GET",
-        url: "/login/oauth/access_token?client_id=test&client_secret=fake&scopes=user:email",
+        url: "/login/oauth/access_token?client_id=test&client_secret=fake&scopes=user",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         }
@@ -275,7 +275,7 @@ lab.experiment("OAuth", function() {
     ls.start(function(error) {
       var accessTokenRequest = {
         method: "GET",
-        url: "/login/oauth/access_token?client_id=test&client_secret=test&auth_code=fake&scopes=user:email",
+        url: "/login/oauth/access_token?client_id=test&client_secret=test&auth_code=fake&scopes=user",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         }
@@ -292,7 +292,7 @@ lab.experiment("OAuth", function() {
     ls.start(function(error) {
       var accessTokenRequest = {
         method: "GET",
-        url: "/login/oauth/access_token?client_id=test2&client_secret=test2&scopes=user:email",
+        url: "/login/oauth/access_token?client_id=test2&client_secret=test2&scopes=user",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         }

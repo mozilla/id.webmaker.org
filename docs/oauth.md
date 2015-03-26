@@ -56,7 +56,7 @@ To start the web application flow you need to redirect your users browser to Web
 
 **Example**
 
-`GET https://id.webmaker.org/login/oauth/authorize?client_id=wm_id_BTQNPABtUqqApaDrcsDa&response_type=code&state=Nvqfc67z`
+`GET https://id.webmaker.org/login/oauth/authorize?client_id=wm_id_BTQNPABtUqqApaDrcsDa&response_type=code&scope=user&state=Nvqfc67z`
 
 ### 2. Webmaker redirects back to your application
 
@@ -138,7 +138,7 @@ If the authorization code exchange is approved then you will recieve an access t
 ```
 {
   "access_token": "wm_token_rizCEigqRefeU8Na9JDmZJkzzQzgVZepHTWjiHbtQKsyotAqGZ",
-  "scope": "",
+  "scope": "user",
   "token_type": "bearer"
 }
 ```
@@ -161,7 +161,7 @@ Scopes let you specify exactly what type of access you need. Scopes limit access
     <th>Description</th>
   </tr>
   <tr>
-    <td>(no scope)</td>
+    <td>user</td>
     <td>Grants read-only access to public information.</td>
   </tr>
 </table>
