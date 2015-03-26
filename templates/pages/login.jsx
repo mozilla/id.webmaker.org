@@ -1,7 +1,9 @@
 var React = require('react');
 
+require('whatwg-fetch');
 var Form = require('../components/form/form.jsx');
 var Header = require('../components/header/header.jsx');
+
 
 var fieldValues = [
   {
@@ -47,6 +49,17 @@ var Login = React.createClass({
   },
   handleFormData: function(error, data) {
     console.log("inside App we see:", error, data);
+    fetch('/login', {
+      method: 'post',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        uid: data.username,
+        password: data.password
+      })
+    });
   }
 });
 
