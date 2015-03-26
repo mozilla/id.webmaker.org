@@ -1,5 +1,6 @@
 var Boom = require('boom');
 var Hapi = require('hapi');
+var Hoek = require('hoek');
 var OAuthDB = require('../lib/oauth-db');
 var Path = require('path');
 var url = require('url');
@@ -11,6 +12,24 @@ module.exports = function(options) {
   server.connection({
     host: options.host,
     port: options.port
+  });
+
+  server.register(require('hapi-auth-cookie'), function(err) {
+    // MAYDAY, MAYDAY, MAYDAY!
+    Hoek.assert(!err, err);
+
+    server.auth.strategy('session', 'cookie', {
+      password: options.cookieSecret,
+      cookie: 'webmaker',
+      ttl: 1000 * 60 * 60 * 24,
+      isSecure: options.secureCookies,
+      isHttpOnly: true
+    });
+
+    server.auth.default({
+      strategy: 'session',
+      mode: 'try'
+    });
   });
 
   var account = require('../lib/account')({
@@ -41,40 +60,28 @@ module.exports = function(options) {
     {
       method: 'GET',
       path: '/login/oauth/authorize',
-      handler: function(request, reply) {
-        reply('ok');
-      }
-    },
-    {
-      method: 'POST',
-      path: '/login/oauth/authorize',
       config: {
         pre: [
           {
             assign: 'user',
             method: function(request, reply) {
-              account.verifyPassword(request, function(err, user) {
-                if ( err ) {
-                  return reply(Boom.badImplementation(err));
-                }
-                if ( !user ) {
-                  return reply(Boom.unauthorized('Invalid username/email or password'));
-                }
+              if ( request.auth.isAuthenticated ) {
+                return reply(request.auth.session);
+              }
 
-                reply(user);
-              });
+              reply().takeover().redirect(url.format('/login'));
             }
           },
           {
             assign: 'client',
             method: function(request, reply) {
-              oauthDb.getClient(request.payload.client_id, reply);
+              oauthDb.getClient(request.query.client_id, reply);
             }
           },
           {
             assign: 'auth_code',
             method: function(request, reply) {
-              var scopes = request.payload.scopes;
+              var scopes = request.query.scopes;
               var expiresAt = Date.now() + 60 * 1000;
 
               oauthDb.generateAuthCode(
@@ -89,7 +96,7 @@ module.exports = function(options) {
         ]
       },
       handler: function(request, reply) {
-        var state = request.payload.state;
+        var state = request.query.state;
         var redirectObj = url.parse(request.pre.client.redirect_uri, true);
         redirectObj.search = null;
         redirectObj.query.code = request.pre.auth_code;
@@ -100,18 +107,19 @@ module.exports = function(options) {
       }
     },
     {
-      method: 'POST',
+      method: 'GET',
       path: '/login/oauth/access_token',
       config: {
+        auth: false,
         pre: [
           {
             assign: 'client',
             method: function(request, reply) {
-              oauthDb.getClient(request.payload.client_id, function(err, client) {
+              oauthDb.getClient(request.query.client_id, function(err, client) {
                 if ( err ) {
                   return reply(err);
                 }
-                if ( client.client_secret !== request.payload.client_secret ) {
+                if ( client.client_secret !== request.query.client_secret ) {
                   return reply(Boom.forbidden('Invalid Client Credentials'));
                 }
                 reply(client);
@@ -121,7 +129,7 @@ module.exports = function(options) {
           {
             assign: 'authCode',
             method: function(request, reply) {
-              oauthDb.verifyAuthCode(request.payload.auth_code, request.pre.client.client_id, reply);
+              oauthDb.verifyAuthCode(request.query.auth_code, request.pre.client.client_id, reply);
             }
           },
           {
@@ -147,6 +155,34 @@ module.exports = function(options) {
         var redirectUri = url.format(redirectObj);
 
         reply.redirect(redirectUri);
+      }
+    },
+    {
+      method: 'POST',
+      path: '/login',
+      config: {
+        pre: [
+          {
+            assign: 'user',
+            method: function(request, reply) {
+              account.verifyPassword(request, function(err, user) {
+                if ( err ) {
+                  return reply(Boom.badImplementation(err));
+                }
+                if ( !user ) {
+                  return reply(Boom.unauthorized('Invalid username/email or password'));
+                }
+
+                reply(user);
+              });
+            }
+          }
+        ]
+      },
+      handler: function(request, reply) {
+        request.auth.session.set(request.pre.user);
+
+        reply({ status: 'Logged In' });
       }
     }
   ]);
