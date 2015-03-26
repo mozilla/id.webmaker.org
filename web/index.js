@@ -5,7 +5,8 @@ var options = {
   port: process.env.PORT,
   loginAPI: process.env.LOGINAPI,
   oauth_clients: process.env.OAUTH_DB ? JSON.parse(process.env.OAUTH_DB) : [],
-  cookieSecret: process.env.COOKIE_SECRET
+  cookieSecret: process.env.COOKIE_SECRET,
+  secureCookies: process.env.SECURE_COOKIES === true
 };
 
 var server = require('./server')(options);
