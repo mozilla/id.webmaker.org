@@ -60,13 +60,6 @@ module.exports = function(options) {
     {
       method: 'GET',
       path: '/login/oauth/authorize',
-      handler: function(request, reply) {
-        reply('ok');
-      }
-    },
-    {
-      method: 'POST',
-      path: '/login/oauth/authorize',
       config: {
         pre: [
           {
@@ -82,13 +75,13 @@ module.exports = function(options) {
           {
             assign: 'client',
             method: function(request, reply) {
-              oauthDb.getClient(request.payload.client_id, reply);
+              oauthDb.getClient(request.query.client_id, reply);
             }
           },
           {
             assign: 'auth_code',
             method: function(request, reply) {
-              var scopes = request.payload.scopes;
+              var scopes = request.query.scopes;
               var expiresAt = Date.now() + 60 * 1000;
 
               oauthDb.generateAuthCode(
@@ -103,7 +96,7 @@ module.exports = function(options) {
         ]
       },
       handler: function(request, reply) {
-        var state = request.payload.state;
+        var state = request.query.state;
         var redirectObj = url.parse(request.pre.client.redirect_uri, true);
         redirectObj.search = null;
         redirectObj.query.code = request.pre.auth_code;
@@ -114,7 +107,7 @@ module.exports = function(options) {
       }
     },
     {
-      method: 'POST',
+      method: 'GET',
       path: '/login/oauth/access_token',
       config: {
         auth: false,
@@ -122,11 +115,11 @@ module.exports = function(options) {
           {
             assign: 'client',
             method: function(request, reply) {
-              oauthDb.getClient(request.payload.client_id, function(err, client) {
+              oauthDb.getClient(request.query.client_id, function(err, client) {
                 if ( err ) {
                   return reply(err);
                 }
-                if ( client.client_secret !== request.payload.client_secret ) {
+                if ( client.client_secret !== request.query.client_secret ) {
                   return reply(Boom.forbidden('Invalid Client Credentials'));
                 }
                 reply(client);
@@ -136,7 +129,7 @@ module.exports = function(options) {
           {
             assign: 'authCode',
             method: function(request, reply) {
-              oauthDb.verifyAuthCode(request.payload.auth_code, request.pre.client.client_id, reply);
+              oauthDb.verifyAuthCode(request.query.auth_code, request.pre.client.client_id, reply);
             }
           },
           {

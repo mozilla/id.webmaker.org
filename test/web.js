@@ -29,20 +29,6 @@ lab.experiment("OAuth", function() {
     loginAPI: "http://localhost:3232"
   });
 
-  lab.test("GET authorize", function(done) {
-    var request = {
-      method: "GET",
-      url: "/login/oauth/authorize"
-    };
-
-    s.inject(request, function(response) {
-      Code.expect(response.statusCode).to.equal(200);
-      Code.expect(response.result).to.equal("ok");
-
-      done();
-    });
-  });
-
   lab.test("POST login", function(done) {
     ls.start(function(error) {
       Code.expect(error).to.be.undefined();
@@ -122,18 +108,13 @@ lab.experiment("OAuth", function() {
     });
   });
 
-  lab.test("POST authorize", function(done) {
+  lab.test("GET authorize", function(done) {
     var request = {
-      method: "POST",
-      url: "/login/oauth/authorize",
+      method: "GET",
+      url: "/login/oauth/authorize?client_id=test&scopes=user:email&state=test",
       credentials: {
         username: "webmaker",
         email: "webmaker@example.org"
-      },
-      payload: {
-        client_id: "test",
-        scopes: "user:email",
-        state: "test"
       }
     };
 
@@ -153,14 +134,12 @@ lab.experiment("OAuth", function() {
     });
   });
 
-  lab.test("POST authorize - no session", function(done) {
+  lab.test("GET authorize - no session", function(done) {
     var request = {
-      method: "POST",
-      url: "/login/oauth/authorize",
-      payload: {
-        client_id: "test",
-        scopes: "user:email",
-        state: "test"
+      method: "GET",
+      url: "/login/oauth/authorize?client_id=test&scopes=user:email&state=test",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
       }
     };
 
@@ -176,18 +155,17 @@ lab.experiment("OAuth", function() {
     });
   });
 
-  lab.test("POST authorize - invalid client_id", function(done) {
+  lab.test("GET authorize - invalid client_id", function(done) {
     var request = {
-      method: "POST",
-      url: "/login/oauth/authorize",
+      method: "GET",
+      url: "/login/oauth/authorize?uid=webmaker&password=password&client_id=invalid&scopes=user:email&state=test",
       credentials: {
         username: "webmaker",
         email: "webmaker@example.org"
       },
       headers: {
         "Content-Type": "application/x-www-form-urlencoded"
-      },
-      payload: "uid=webmaker&password=password&client_id=invalid&scopes=user:email&state=test"
+      }
     };
 
     s.inject(request, function(response) {
@@ -199,34 +177,30 @@ lab.experiment("OAuth", function() {
   });
 
   var authTokenRequest = {
-    method: "POST",
-    url: "/login/oauth/authorize",
+    method: "GET",
+    url: "/login/oauth/authorize?client_id=test&scopes=user:email&state=test",
     credentials: {
       username: "webmaker",
       email: "webmaker@example.com"
     },
-    payload: {
-      client_id: "test",
-      scopes: "user:email",
-      state: "test"
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded"
     }
   };
 
-  lab.test("POST access_token", function(done) {
+  lab.test("GET access_token", function(done) {
     ls.start(function(error) {
       var accessTokenRequest = {
-        method: "POST",
-        url: "/login/oauth/access_token",
-        payload: {
-          client_id: "test",
-          client_secret: "test",
-          scopes: "user:email"
+        method: "GET",
+        url: "/login/oauth/access_token?client_id=test&client_secret=test&scopes=user:email",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
         }
       };
 
       s.inject(authTokenRequest, function(authTokResponse) {
         var redirectUri = url.parse(authTokResponse.headers.location, true);
-        accessTokenRequest.payload.auth_code = redirectUri.query.code;
+        accessTokenRequest.url += "&auth_code=" + redirectUri.query.code;
 
         s.inject(accessTokenRequest, function(response) {
           Code.expect(response.statusCode).to.equal(302);
@@ -247,21 +221,19 @@ lab.experiment("OAuth", function() {
     });
   });
 
-  lab.test("POST access_token - unknown client_id", function(done) {
+  lab.test("GET access_token - unknown client_id", function(done) {
     ls.start(function(error) {
       var accessTokenRequest = {
-        method: "POST",
-        url: "/login/oauth/access_token",
-        payload: {
-          client_id: "fake",
-          client_secret: "test",
-          scopes: "user:email"
+        method: "GET",
+        url: "/login/oauth/access_token?client_id=fake&client_secret=test&scopes=user:email",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
         }
       };
 
       s.inject(authTokenRequest, function(authTokResponse) {
         var redirectUri = url.parse(authTokResponse.headers.location, true);
-        accessTokenRequest.payload.auth_code = redirectUri.query.code;
+        accessTokenRequest.url += "&auth_code=" + redirectUri.query.code;
 
         s.inject(accessTokenRequest, function(response) {
           Code.expect(response.statusCode).to.equal(400);
@@ -272,21 +244,19 @@ lab.experiment("OAuth", function() {
     });
   });
 
-  lab.test("POST access_token - invalid client_secret", function(done) {
+  lab.test("GET access_token - invalid client_secret", function(done) {
     ls.start(function(error) {
       var accessTokenRequest = {
-        method: "POST",
-        url: "/login/oauth/access_token",
-        payload: {
-          client_id: "test",
-          client_secret: "fake",
-          scopes: "user:email"
+        method: "GET",
+        url: "/login/oauth/access_token?client_id=test&client_secret=fake&scopes=user:email",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
         }
       };
 
       s.inject(authTokenRequest, function(authTokResponse) {
         var redirectUri = url.parse(authTokResponse.headers.location, true);
-        accessTokenRequest.payload.auth_code = redirectUri.query.code;
+        accessTokenRequest.url += "&auth_code=" + redirectUri.query.code;
 
         s.inject(accessTokenRequest, function(response) {
           Code.expect(response.statusCode).to.equal(403);
@@ -297,17 +267,13 @@ lab.experiment("OAuth", function() {
     });
   });
 
-  lab.test("POST access_token - invalid auth code", function(done) {
+  lab.test("GET access_token - invalid auth code", function(done) {
     ls.start(function(error) {
       var accessTokenRequest = {
-        method: "POST",
-        url: "/login/oauth/access_token",
-        payload: {
-          client_id: "test",
-          client_secret: "test",
-          auth_code: "fake",
-          scopes: "user:email",
-          redirect_uri: "http://example.org/oauth_redirect/foo"
+        method: "GET",
+        url: "/login/oauth/access_token?client_id=test&client_secret=test&auth_code=fake&scopes=user:email",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
         }
       };
 
@@ -318,22 +284,19 @@ lab.experiment("OAuth", function() {
     });
   });
 
-  lab.test("POST access_token - invalid client id", function(done) {
+  lab.test("GET access_token - invalid client id", function(done) {
     ls.start(function(error) {
       var accessTokenRequest = {
-        method: "POST",
-        url: "/login/oauth/access_token",
-        payload: {
-          client_id: "test2",
-          client_secret: "test2",
-          scopes: "user:email",
-          redirect_uri: "http://example2.org/oauth_redirect/foo"
+        method: "GET",
+        url: "/login/oauth/access_token?client_id=test2&client_secret=test2&scopes=user:email",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
         }
       };
 
       s.inject(authTokenRequest, function(authTokResponse) {
         var redirectUri = url.parse(authTokResponse.headers.location, true);
-        accessTokenRequest.payload.auth_code = redirectUri.query.code;
+        accessTokenRequest.url += "&auth_code=" + redirectUri.query.code;
 
         s.inject(accessTokenRequest, function(response) {
           Code.expect(response.statusCode).to.equal(403);
