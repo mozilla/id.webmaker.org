@@ -43,6 +43,7 @@ lab.experiment("OAuth", function() {
 
       s.inject(request, function(response) {
         Code.expect(response.statusCode).to.equal(200);
+        Code.expect(response.headers["set-cookie"]).to.exist();
         ls.stop(done);
       });
     });
@@ -65,6 +66,7 @@ lab.experiment("OAuth", function() {
 
       s.inject(request, function(response) {
         Code.expect(response.statusCode).to.equal(200);
+        Code.expect(response.headers["set-cookie"]).to.exist();
         ls.stop(done);
       });
     });
@@ -84,6 +86,7 @@ lab.experiment("OAuth", function() {
 
       s.inject(request, function(response) {
         Code.expect(response.statusCode).to.equal(500);
+        Code.expect(response.headers["set-cookie"]).to.be.undefined();
         ls.stop(done);
       });
     });
@@ -103,6 +106,7 @@ lab.experiment("OAuth", function() {
 
       s.inject(request, function(response) {
         Code.expect(response.statusCode).to.equal(401);
+        Code.expect(response.headers["set-cookie"]).to.be.undefined();
         ls.stop(done);
       });
     });
