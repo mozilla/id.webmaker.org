@@ -6,7 +6,7 @@ Before you can use OAuth2 you'll need to register your application.
 
 ## Registering your application
 
-Webmaker requires the following information to register your application:
+You'll need to register your application before you can use it with Webmaker. In order to register, we need the following info sent via email to [jbuck](mailto:jon@mozillafoundation.org):
 
 * **Name** - The friendly name of your application e.g. "Buckley's Bees".
 * **Description** - A description of your application e.g. "Buckley's Bees sells the best honey in Ontario".
@@ -18,8 +18,6 @@ Once you've registered your application you'll recieve your application credenti
 
 * **Client ID** - A string identifying your application. This value is not secret and can be shown publicly e.g. `wm_id_BTQNPABtUqqApaDrcsDa`.
 * **Client Secret** - A string. This value is secret and must not be shared with anyone e.g. `wm_secret_iHmAWhvCwBYnuE6aZHcArBEPohanKmmWr8LcyBBPZYRkAxdmui`.
-
-You can register your application by emailing [jbuck](mailto:jon@mozillafoundation.org). Self-serve application registration is coming shortly.
 
 ## Web Application Flow
 
