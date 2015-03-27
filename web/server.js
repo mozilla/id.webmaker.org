@@ -69,7 +69,13 @@ module.exports = function(options) {
                 return reply(request.auth.session);
               }
 
-              reply().takeover().redirect(url.format('/login'));
+              var loginRedirect = url.parse('/login', true);
+              loginRedirect.query.client_id = request.query.client_id;
+              loginRedirect.query.response_type = request.query.response_type;
+              loginRedirect.query.state = request.query.state;
+              loginRedirect.query.scopes = request.query.scopes;
+
+              reply().takeover().redirect(url.format(loginRedirect));
             }
           },
           {

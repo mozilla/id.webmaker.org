@@ -141,7 +141,7 @@ lab.experiment("OAuth", function() {
   lab.test("GET authorize - no session", function(done) {
     var request = {
       method: "GET",
-      url: "/login/oauth/authorize?client_id=test&scopes=user&state=test",
+      url: "/login/oauth/authorize?client_id=test&scopes=user&state=test&response_type=code",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded"
       }
@@ -154,6 +154,10 @@ lab.experiment("OAuth", function() {
       var redirectUri = url.parse(response.headers.location, true);
 
       Code.expect(redirectUri.pathname).to.equal("/login");
+      Code.expect(redirectUri.query.client_id).to.equal("test");
+      Code.expect(redirectUri.query.scopes).to.equal("user");
+      Code.expect(redirectUri.query.state).to.equal("test");
+      Code.expect(redirectUri.query.response_type).to.equal("code");
 
       done();
     });

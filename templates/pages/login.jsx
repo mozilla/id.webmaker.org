@@ -2,6 +2,9 @@ var React = require('react');
 
 var Form = require('../components/form/form.jsx');
 var Header = require('../components/header/header.jsx');
+var Url = require('url');
+
+require('whatwg-fetch');
 
 var fieldValues = [
   {
@@ -46,7 +49,32 @@ var Login = React.createClass({
     form.processFormData(this.handleFormData);
   },
   handleFormData: function(error, data) {
-    console.log("inside App we see:", error, data);
+    if ( error ) {
+      console.error('validation error', error);
+      return;
+    }
+    var queryObj = Url.parse(window.location.href, true).query;
+    fetch('/login', {
+      method: 'post',
+      headers: {
+        'Accept': 'application/json; charset=utf-8',
+        'Content-Type': 'application/json; charset=utf-8'
+      },
+      body: JSON.stringify({
+        uid: data.username,
+        password: data.password
+      })
+    }).then(function(response) {
+      var redirectObj;
+      if ( response.status === 200 ) {
+        redirectObj = Url.parse('/login/oauth/authorize', true);
+        redirectObj.query = queryObj;
+        window.location = Url.format(redirectObj);
+      }
+      // handle errors!
+    }).catch(function(ex) {
+      console.error('Error parsing response', ex);
+    });
   }
 });
 

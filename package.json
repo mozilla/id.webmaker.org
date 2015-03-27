@@ -46,7 +46,8 @@
     "joi": "^6.0.8",
     "react": "^0.12.2",
     "react-router": "^0.12.4",
-    "react-validation-mixin": "^4.0.3"
+    "react-validation-mixin": "^4.0.3",
+    "whatwg-fetch": "^0.7.0"
   },
   "devDependencies": {
     "autoless": "^0.1.6",
