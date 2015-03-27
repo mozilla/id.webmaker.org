@@ -135,7 +135,7 @@ module.exports = function(options) {
           {
             assign: 'authCode',
             method: function(request, reply) {
-              oauthDb.verifyAuthCode(request.query.auth_code, request.pre.client.client_id, reply);
+              oauthDb.verifyAuthCode(request.query.code, request.pre.client.client_id, reply);
             }
           },
           {

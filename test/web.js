@@ -208,7 +208,7 @@ lab.experiment("OAuth", function() {
 
       s.inject(authTokenRequest, function(authTokResponse) {
         var redirectUri = url.parse(authTokResponse.headers.location, true);
-        accessTokenRequest.url += "&auth_code=" + redirectUri.query.code;
+        accessTokenRequest.url += "&code=" + redirectUri.query.code;
 
         s.inject(accessTokenRequest, function(response) {
           Code.expect(response.statusCode).to.equal(302);
@@ -241,7 +241,7 @@ lab.experiment("OAuth", function() {
 
       s.inject(authTokenRequest, function(authTokResponse) {
         var redirectUri = url.parse(authTokResponse.headers.location, true);
-        accessTokenRequest.url += "&auth_code=" + redirectUri.query.code;
+        accessTokenRequest.url += "&code=" + redirectUri.query.code;
 
         s.inject(accessTokenRequest, function(response) {
           Code.expect(response.statusCode).to.equal(400);
@@ -264,7 +264,7 @@ lab.experiment("OAuth", function() {
 
       s.inject(authTokenRequest, function(authTokResponse) {
         var redirectUri = url.parse(authTokResponse.headers.location, true);
-        accessTokenRequest.url += "&auth_code=" + redirectUri.query.code;
+        accessTokenRequest.url += "&code=" + redirectUri.query.code;
 
         s.inject(accessTokenRequest, function(response) {
           Code.expect(response.statusCode).to.equal(403);
@@ -279,7 +279,7 @@ lab.experiment("OAuth", function() {
     ls.start(function(error) {
       var accessTokenRequest = {
         method: "GET",
-        url: "/login/oauth/access_token?client_id=test&client_secret=test&auth_code=fake&scopes=user",
+        url: "/login/oauth/access_token?client_id=test&client_secret=test&code=fake&scopes=user",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         }
@@ -304,7 +304,7 @@ lab.experiment("OAuth", function() {
 
       s.inject(authTokenRequest, function(authTokResponse) {
         var redirectUri = url.parse(authTokResponse.headers.location, true);
-        accessTokenRequest.url += "&auth_code=" + redirectUri.query.code;
+        accessTokenRequest.url += "&code=" + redirectUri.query.code;
 
         s.inject(accessTokenRequest, function(response) {
           Code.expect(response.statusCode).to.equal(403);
