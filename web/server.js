@@ -1,6 +1,7 @@
 var Boom = require('boom');
 var Hapi = require('hapi');
 var Hoek = require('hoek');
+var Joi = require('joi');
 var OAuthDB = require('../lib/oauth-db');
 var Path = require('path');
 var url = require('url');
@@ -116,6 +117,17 @@ module.exports = function(options) {
       method: 'GET',
       path: '/login/oauth/access_token',
       config: {
+        validate: {
+          query: {
+            code: Joi.string().required(),
+            client_id: Joi.string().required(),
+            client_secret: Joi.string().required(),
+            grant_type: Joi.any().valid('authorization_code').required()
+          },
+          failAction: function(request, reply, source, error) {
+            reply(Boom.badRequest('invalid ' + source + ': ' + error.data.details[0].path));
+          }
+        },
         auth: false,
         pre: [
           {
@@ -135,7 +147,7 @@ module.exports = function(options) {
           {
             assign: 'authCode',
             method: function(request, reply) {
-              oauthDb.verifyAuthCode(request.query.auth_code, request.pre.client.client_id, reply);
+              oauthDb.verifyAuthCode(request.query.code, request.pre.client.client_id, reply);
             }
           },
           {
