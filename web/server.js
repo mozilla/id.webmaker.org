@@ -123,6 +123,9 @@ module.exports = function(options) {
             client_id: Joi.string().required(),
             client_secret: Joi.string().required(),
             grant_type: Joi.any().valid('authorization_code').required()
+          },
+          failAction: function(request, reply, source, error) {
+            reply(Boom.badRequest('invalid ' + source + ': ' + error.data.details[0].path));
           }
         },
         auth: false,

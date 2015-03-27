@@ -330,6 +330,8 @@ lab.experiment("OAuth", function() {
 
         s.inject(accessTokenRequest, function(response) {
           Code.expect(response.statusCode).to.equal(400);
+          Code.expect(response.result).to.exist();
+          Code.expect(response.result.message).to.equal("invalid query: grant_type");
           done();
         });
       });
@@ -340,7 +342,7 @@ lab.experiment("OAuth", function() {
     ls.start(function(error) {
       var accessTokenRequest = {
         method: "GET",
-        url: "/login/oauth/access_token?client_secret=test&grant_type=client_credentials",
+        url: "/login/oauth/access_token?client_secret=test&grant_type=authorization_code",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         }
@@ -352,6 +354,7 @@ lab.experiment("OAuth", function() {
 
         s.inject(accessTokenRequest, function(response) {
           Code.expect(response.statusCode).to.equal(400);
+          Code.expect(response.result.message).to.equal("invalid query: client_id");
           done();
         });
       });
@@ -374,6 +377,30 @@ lab.experiment("OAuth", function() {
 
         s.inject(accessTokenRequest, function(response) {
           Code.expect(response.statusCode).to.equal(400);
+          Code.expect(response.result.message).to.equal("invalid query: client_secret");
+          done();
+        });
+      });
+    });
+  });
+
+  lab.test("GET access_token - missing grant_type", function(done) {
+    ls.start(function(error) {
+      var accessTokenRequest = {
+        method: "GET",
+        url: "/login/oauth/access_token?client_id=test&client_secret=test",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        }
+      };
+
+      s.inject(authTokenRequest, function(authTokResponse) {
+        var redirectUri = url.parse(authTokResponse.headers.location, true);
+        accessTokenRequest.url += "&code=" + redirectUri.query.code;
+
+        s.inject(accessTokenRequest, function(response) {
+          Code.expect(response.statusCode).to.equal(400);
+          Code.expect(response.result.message).to.equal("invalid query: grant_type");
           done();
         });
       });
