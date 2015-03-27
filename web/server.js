@@ -1,6 +1,7 @@
 var Boom = require('boom');
 var Hapi = require('hapi');
 var Hoek = require('hoek');
+var Joi = require('joi');
 var OAuthDB = require('../lib/oauth-db');
 var Path = require('path');
 var url = require('url');
@@ -116,6 +117,14 @@ module.exports = function(options) {
       method: 'GET',
       path: '/login/oauth/access_token',
       config: {
+        validate: {
+          query: {
+            code: Joi.string(),
+            client_id: Joi.string(),
+            client_secret: Joi.string(),
+            grant_type: Joi.string()
+          }
+        },
         auth: false,
         pre: [
           {

@@ -200,7 +200,7 @@ lab.experiment("OAuth", function() {
     ls.start(function(error) {
       var accessTokenRequest = {
         method: "GET",
-        url: "/login/oauth/access_token?client_id=test&client_secret=test&scopes=user",
+        url: "/login/oauth/access_token?client_id=test&client_secret=test",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         }
@@ -233,7 +233,7 @@ lab.experiment("OAuth", function() {
     ls.start(function(error) {
       var accessTokenRequest = {
         method: "GET",
-        url: "/login/oauth/access_token?client_id=fake&client_secret=test&scopes=user",
+        url: "/login/oauth/access_token?client_id=fake&client_secret=test",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         }
@@ -256,7 +256,7 @@ lab.experiment("OAuth", function() {
     ls.start(function(error) {
       var accessTokenRequest = {
         method: "GET",
-        url: "/login/oauth/access_token?client_id=test&client_secret=fake&scopes=user",
+        url: "/login/oauth/access_token?client_id=test&client_secret=fake",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         }
@@ -279,7 +279,7 @@ lab.experiment("OAuth", function() {
     ls.start(function(error) {
       var accessTokenRequest = {
         method: "GET",
-        url: "/login/oauth/access_token?client_id=test&client_secret=test&code=fake&scopes=user",
+        url: "/login/oauth/access_token?client_id=test&client_secret=test&code=fake",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         }
@@ -296,7 +296,7 @@ lab.experiment("OAuth", function() {
     ls.start(function(error) {
       var accessTokenRequest = {
         method: "GET",
-        url: "/login/oauth/access_token?client_id=test2&client_secret=test2&scopes=user",
+        url: "/login/oauth/access_token?client_id=test2&client_secret=test2",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         }
