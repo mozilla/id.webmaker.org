@@ -28,7 +28,7 @@ var fieldsValidators = validators.getValidatorSet(fields);
 var ResetPassword = React.createClass({
   render: function() {
     return (
-      <div className="formContainer resetPassword innerForm centerDiv">
+      <div className="resetPassword innerForm centerDiv">
         <Form ref="userform" fields={fields} validators={fieldsValidators} defaultUsername="ali"/>
         <button onClick={this.processFormData} className="btn btn-awsm">Save</button>
       </div>

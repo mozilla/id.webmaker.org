@@ -1,0 +1,113 @@
+.loginNoPass {
+  height: 180px;
+  padding-top: 25px;
+  background-color: #FFFFFF;
+  width: 300px;
+  margin: 0 auto;
+  @media (min-width : 451px) {
+    margin: auto;
+    width: 350px;
+  }
+}
+
+.migrateKeyContainer {
+  width: 350px;
+  margin: 0px auto;
+  @media (min-width : 451px) {
+    width: 400px;
+  }
+  .migrateKey {
+    height: 180px;
+    padding-top: 25px;
+    background-color: #FFFFFF;
+    margin-top: 30px;
+  }
+  .emailSentIcon{
+    &:before  {
+      left: 25px;
+    }
+  }
+}
+
+.setPassMigration {
+  height: 180px;
+  padding-top: 25px;
+  background-color: #FFFFFF;
+}
+
+.arrow_box {
+  position: relative;
+  box-shadow: 0 1px 0 0 #DADADA;
+  border-radius: 5px;
+}
+.arrow_box:after,
+.arrow_box:before {
+  top: 100%;
+  left: 50%;
+  border: solid transparent;
+  content: " ";
+  height: 0;
+  width: 0;
+  position: absolute;
+  pointer-events: none;
+}
+
+.arrow_box:after {
+  border-top-color: #F9FDFF;
+  border-width: 10px;
+}
+
+.successBanner {
+  height: 175px;
+  background-color: #53C0A3;
+  padding: 25px 15px;
+  color: #FAFAFA;
+  width: 350px;
+  margin: 0 auto;
+  @media (min-width : 451px) {
+    margin: auto;
+    width: 400px;
+  }
+  .icon {
+    top: 28px;
+    position: relative;
+  }
+  .successBannerIcon {
+    &:before {
+      top: 20px;
+      position: relative;
+      left: 20px;
+      font-size: 26px;
+      color: #FAFAFA;
+    }
+    float: left;
+    display: inline-block;
+    vertical-align: bottom;
+    border: 2px solid #FAFAFA;
+    margin-right: 1rem;
+    width: 7rem;
+    height: 7rem;
+    border-radius: 2.5em;
+  }
+  .text {
+    float: left;
+    display: inline-block;
+    width: 240px;
+    padding-left: 10px;
+    p {
+      font-size: 15px;
+    }
+    .continueLink {
+      color: #FAFAFA;
+      text-decoration: underline;
+      font-weight: 500;
+    }
+    .successBannerHeader {
+      margin: 0;
+      font-size: 22px;
+      line-height: 30px;
+      font-weight: 500;
+    }
+  }
+}
+

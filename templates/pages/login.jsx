@@ -39,7 +39,7 @@ var Login = React.createClass({
       <div>
         <Header redirectText="Need an account?" redirectLabel="Sign up" redirectPage="signup" />
 
-        <div className="formContainer loginPage innerForm centerDiv">
+        <div className="loginPage innerForm centerDiv">
           <Form ref="userform" fields={fieldValues} validators={fieldValidators} />
           <Link to="reset-password" className="need-help">Need help?</Link>
           <button onClick={this.processFormData} className="btn btn-awsm">{buttonText}</button>
