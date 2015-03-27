@@ -49,6 +49,10 @@ var Login = React.createClass({
     form.processFormData(this.handleFormData);
   },
   handleFormData: function(error, data) {
+    if ( error ) {
+      console.error('validation error', error);
+      return;
+    }
     var queryObj = Url.parse(window.location.href, true).query;
     fetch('/login', {
       method: 'post',
@@ -65,11 +69,9 @@ var Login = React.createClass({
       if ( response.status === 200 ) {
         redirectObj = Url.parse('/login/oauth/authorize', true);
         redirectObj.query = queryObj;
-        return Url.format(redirectObj);
+        window.location = Url.format(redirectObj);
       }
       // handle errors!
-    }).then(function(redirectURI) {
-      window.location = redirectURI;
     }).catch(function(ex) {
       console.error('Error parsing response', ex);
     });
