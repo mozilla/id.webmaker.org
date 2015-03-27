@@ -119,10 +119,10 @@ module.exports = function(options) {
       config: {
         validate: {
           query: {
-            code: Joi.string(),
-            client_id: Joi.string(),
-            client_secret: Joi.string(),
-            grant_type: Joi.string()
+            code: Joi.string().required(),
+            client_id: Joi.string().required(),
+            client_secret: Joi.string().required(),
+            grant_type: Joi.any().valid('authorization_code').required()
           }
         },
         auth: false,
