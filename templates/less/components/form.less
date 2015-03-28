@@ -1,20 +1,4 @@
-.formContainer {
-  width: 290px;
-  height: 280px;
-  margin: 0 auto;
-  @media (min-width : 360px) and
-  (max-width : 450px){
-    width: 320px;
-  }
-  @media (min-width : 451px) {
-    width: 400px;
-    height: 250px;
-  }
-  border-radius: 7px;
-  padding-top: 25px;
-  margin-bottom: 30px;
-  background-color: white;
-
+div[role=form] {
   label {
     width: 100%;
     padding-bottom: 10px;
@@ -47,6 +31,19 @@
         background-color: transparent;
         cursor: default !important;
       }
+      display: block;
+      width: 100%;
+      height: 34px;
+      padding: 6px 12px;
+      font-size: 14px;
+      line-height: 1.42857;
+      color: #555;
+      background-color: #FFF;
+      background-image: none;
+      border: 1px solid #CCC;
+      border-radius: 4px;
+      box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset;
+      transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
       box-shadow: none;
       border-radius: 4px;
       width: 100%;
@@ -58,13 +55,13 @@
     }
 
     input.has-error {
+      border: 1px solid #E95B95;
+      background-color: #FEEDED;
+      box-shadow: none;
       &:focus {
         border-color: #E95B95;
         box-shadow: none;
       }
-      border: 1px solid #E95B95;
-      background-color: #FEEDED;
-      box-shadow: none;
     }
     input.is-valid {
       &:focus, &:active {
@@ -114,13 +111,6 @@
   }
 }
 
-.innerForm {
-  padding: 0px 30px;
-  text-align: center;
-  @media (min-width : 451px) {
-    text-align: right;
-  }
-}
 @media (min-width : 451px) {
   .centerDiv {
     position: absolute;

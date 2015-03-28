@@ -4,7 +4,8 @@ var fieldValidators = {
   username:       Joi.string().alphanum().min(1).required().label('Username'),
   password:       Joi.string().min(8).required().label('Password'),
   verifyPassword: Joi.any().valid(Joi.ref('password')).required().label('Password Confirmation'),
-  email:          Joi.string().email().required().label('Email')
+  email:          Joi.string().email().required().label('Email'),
+  key:            Joi.string().alphanum().min(1).required().label('Key')
 };
 
 module.exports = {

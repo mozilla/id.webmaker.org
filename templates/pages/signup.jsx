@@ -47,7 +47,9 @@ var Signup = React.createClass({
         <Header wordmark redirectText="Already have an account?" redirectLabel="Log in" redirectPage="login" />
         <h1>Build the web. Learn new skills.</h1>
         <h2>Free and open source – forever.</h2>
-        <Form ref="userform" fields={fieldValues} validators={fieldValidators}/>
+        <div className="innerForm">
+          <Form ref="userform" fields={fieldValues} validators={fieldValidators}/>
+        </div>
         <div className="commit">
           <IconText iconClass="agreement" textClass="eula">
             By signing up, I agree to Webmaker's <a href="" className="underline">Terms of Service</a> and <a href="" className="underline">Privacy Policy</a>.

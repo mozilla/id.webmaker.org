@@ -12,7 +12,8 @@ var Form = React.createClass({
         'password': 'icon-label-password',
         'email':    'icon-label-email',
         'error':    'icon-label-error',
-        'valid':    'icon-label-valid'
+        'valid':    'icon-label-valid',
+        'key':      'icon-label-password'
       }
   },
   mixins: [
@@ -31,7 +32,8 @@ var Form = React.createClass({
       password: '',
       email: '',
       checked: false,
-      dirty: {}
+      dirty: {},
+      key: ''
     };
   },
   dirty: function(id) {
@@ -83,7 +85,6 @@ var Form = React.createClass({
   getInputClasses: function(field) {
     var isValid = this.isValid(field);
     return React.addons.classSet({
-      'form-control': true,
       'has-error': !isValid,
       'is-valid': isValid
     });
@@ -92,6 +93,7 @@ var Form = React.createClass({
     var classes = {};
     var isValid = this.isValid(field);
     var ref = this.refs[field + 'Input'];
+    classes['inputBox'] = field === 'feedback';
     classes[this.getIconClass(field)] = true;
     classes[this.errorClass] = !isValid;
     classes[this.validClass] = (this.state.dirty[field] && isValid) || this.passChecked

@@ -15,12 +15,12 @@ var fields = [
 
 var fieldsValidators = validators.getValidatorSet(fields);
 
-var RequestResetPassword = React.createClass({
+var LoginNoPassword = React.createClass({
   render: function() {
     return (
-      <div className="requestPassword innerForm centerDiv">
+      <div className="loginNoPass innerForm centerDiv">
         <Form ref="userform" fields={fields} validators={fieldsValidators} />
-        <button onClick={this.processFormData} className="btn btn-awsm">Set a new password</button>
+        <button onClick={this.processFormData} className="btn btn-awsm">Log in</button>
       </div>
     );
   },
@@ -30,4 +30,4 @@ var RequestResetPassword = React.createClass({
   }
 });
 
-module.exports = RequestResetPassword;
+module.exports = LoginNoPassword;
