@@ -1,8 +1,16 @@
 language: node_js
 node_js:
-  - "0.12"
-  - "iojs"
+- '0.12'
+- iojs
 sudo: false
 cache:
   directories:
-    - node_modules
+  - node_modules
+deploy:
+  provider: heroku
+  api_key:
+    secure: EHR0LkLGbGQ3mu11uLw16Bugdipjd236Yniw45ibbpdi2XQq0uBz3pX5ufSbh3Sa/yeJNJ1li2u8+yTGHdWBbuTuHTyMkuSqbs8bq1O4viwcCFcpB3tE16hChuvd7S6MFYXhYdjFlPH32tBepaNw+2VNE3eGa016UV2KUEsG+ac=
+  app: id-webmaker-org-staging
+  on:
+    repo: mozilla/id.webmaker.org
+    branch: develop
