@@ -14,3 +14,4 @@ deploy:
   on:
     repo: mozilla/id.webmaker.org
     branch: develop
+    node: '0.12'
