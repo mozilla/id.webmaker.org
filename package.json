@@ -13,7 +13,7 @@
 
     "jscs": "jscs lib test web *.js",
     "jshint": "jshint lib test web *.js",
-    "js-beautify": "js-beautify lib test web *.js -r",
+    "jsbeautify": "js-beautify lib test web *.js -r",
     "lint": "npm run jshint && npm run jscs",
 
     "postinstall": "npm run build",
