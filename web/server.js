@@ -2,8 +2,8 @@ var Boom = require('boom');
 var Hapi = require('hapi');
 var Hoek = require('hoek');
 var Joi = require('joi');
-var OAuthDB = require('../lib/oauth-db');
 var Path = require('path');
+var OAuthDB = require('../lib/oauth-db');
 var url = require('url');
 
 module.exports = function(options) {
@@ -185,10 +185,10 @@ module.exports = function(options) {
             method: function(request, reply) {
               account.verifyPassword(request, function(err, user) {
                 if ( err ) {
+                  if ( err.isBoom ) {
+                    return reply(err);
+                  }
                   return reply(Boom.badImplementation(err));
-                }
-                if ( !user ) {
-                  return reply(Boom.unauthorized('Invalid username/email or password'));
                 }
 
                 reply(user);
@@ -201,6 +201,38 @@ module.exports = function(options) {
         request.auth.session.set(request.pre.user);
 
         reply({ status: 'Logged In' });
+      }
+    },
+    {
+      method: 'POST',
+      path: '/reset-request',
+      handler: function(request, reply) {
+        account.verifyPassword(request, function(err, json) {
+          if ( err ) {
+            if ( err.isBoom ) {
+              return reply(err);
+            }
+            return reply(Boom.badImplementation(err));
+          }
+
+          reply(json);
+        });
+      }
+    },
+    {
+      method: 'POST',
+      path: '/reset-password',
+      handler: function(request, reply) {
+        account.verifyPassword(request, function(err, json) {
+          if ( err ) {
+            if ( err.isBoom ) {
+              return reply(err);
+            }
+            return reply(Boom.badImplementation(err));
+          }
+
+          reply(json);
+        });
       }
     }
   ]);
