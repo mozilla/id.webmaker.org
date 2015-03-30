@@ -199,15 +199,14 @@ module.exports = function(options) {
       },
       handler: function(request, reply) {
         request.auth.session.set(request.pre.user);
-
         reply({ status: 'Logged In' });
       }
     },
     {
       method: 'POST',
-      path: '/reset-request',
+      path: '/request-reset',
       handler: function(request, reply) {
-        account.verifyPassword(request, function(err, json) {
+        account.requestReset(request, function(err, json) {
           if ( err ) {
             if ( err.isBoom ) {
               return reply(err);
@@ -223,7 +222,7 @@ module.exports = function(options) {
       method: 'POST',
       path: '/reset-password',
       handler: function(request, reply) {
-        account.verifyPassword(request, function(err, json) {
+        account.resetPassword(request, function(err, json) {
           if ( err ) {
             if ( err.isBoom ) {
               return reply(err);
@@ -232,6 +231,23 @@ module.exports = function(options) {
           }
 
           reply(json);
+        });
+      }
+    },
+    {
+      method: 'POST',
+      path: '/create-user',
+      handler: function(request, reply) {
+        account.createUser(request, function(err, json) {
+          if ( err ) {
+            if ( err.isBoom ) {
+              return reply(err);
+            }
+            return reply(Boom.badImplementation(err));
+          }
+          request.auth.session.set(json.user);
+
+          reply(json.user);
         });
       }
     }
