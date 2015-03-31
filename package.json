@@ -76,7 +76,8 @@
     "mofo-style": "latest",
     "ncp": "^2.0.0",
     "parallelshell": "^1.1.1",
-    "phantomjs": "^1.9.16"
+    "phantomjs": "^1.9.16",
+    "react-router-viewports": "0.0.4"
   },
   "engines": {
     "npm": "^2.5.1",
