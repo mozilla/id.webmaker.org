@@ -41,16 +41,20 @@ export PORT=1234
 export LOGINAPI=https://user:password@login.webmaker.org
 export COOKIE_SECRET=topSecretPasswordForEncryptingCookies
 export SECURE_COOKIES=true
+export GA_TRACKING_ID='UA-000000-01'
+export GA_DEBUG='on'
 ```
 
 You can configure the following environment variables:
 
-```
-HOST - host for this server. defaults to 0.0.0.0
-PORT - port of this server, defaults to 0 (a random port above 1024)
-LOGINAPI - fully qualified login.wm.org URL e.g. https://user:password@login.webmaker.org
-OAUTH_DB - JSON array of oauth clients e.g.
-  [{"client_id":"test","secret":"test","redirect_uri":"http://localhost:3000/account"}]
-COOKIE_SECRET - A String value used to encrypt session cookies
-SECURE_COOKIES - set to `true` to indicate that the user agent should transmit the cookie only over a secure channel
+|Variable|About|
+|--------|-----|
+| HOST | host for this server. defaults to 0.0.0.0 |
+| PORT | port of this server, defaults to 0 (a random port above 1024) |
+| LOGINAPI | fully qualified login.wm.org URL e.g. https://user:password@login.webmaker.org |
+| OAUTH_DB | JSON array of oauth clients e.g. [{"client_id":"test", "secret":"test", "redirect_uri":"http://localhost:3000/account"}] |
+| COOKIE_SECRET | A String value used to encrypt session cookies |
+| SECURE_COOKIES | set to `true` to indicate that the user agent should transmit the cookie only over a secure channel |
+| GA_TRACKING_ID | The tracking ID is a string like UA-000000-01 [more](https://support.google.com/analytics/answer/1032385?hl=en) |
+| GA_DEBUG | if set to 'on' will enable debug logging to the console in `react-ga` |
 ```
