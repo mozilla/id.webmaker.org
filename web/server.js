@@ -3,8 +3,8 @@ var Hapi = require('hapi');
 var Hoek = require('hoek');
 var Joi = require('joi');
 var Path = require('path');
-var OAuthDB = require('../lib/oauth-db');
 var url = require('url');
+var OAuthDB = require('../lib/oauth-db');
 
 module.exports = function(options) {
   var server = new Hapi.Server({
