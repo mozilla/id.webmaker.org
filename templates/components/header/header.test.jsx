@@ -7,7 +7,13 @@ var Header = require('./header.jsx');
 var testProps = {
   redirectText: 'Already have an account?',
   redirectPage: 'login',
-  redirectLabel: 'login'
+  redirectLabel: 'login',
+  redirectQuery: {
+    client_id: 'test',
+    state: 'random',
+    scopes: 'user',
+    response_type: 'code'
+  }
 };
 
 
@@ -32,6 +38,13 @@ describe('header', function() {
   it('should create a link to the redirect page', function () {
     should(instance.refs.link.props.to).be.equal(testProps.redirectPage);
     should(el.querySelector('a')).be.ok;
+  });
+
+  it('should contain the correct query parameters', function () {
+    should(instance.refs.link.props.query.client_id).be.equal(testProps.redirectQuery.client_id);
+    should(instance.refs.link.props.query.state).be.equal(testProps.redirectQuery.state);
+    should(instance.refs.link.props.query.scopes).be.equal(testProps.redirectQuery.scopes);
+    should(instance.refs.link.props.query.response_type).be.equal(testProps.redirectQuery.response_type);
   });
 
 });

@@ -52,10 +52,12 @@ var Signup = React.createClass({
     document.body.className = "";
   },
   render: function() {
+    var queryObj = Url.parse(window.location.href, true).query;
     return (
       <div className="signup-page">
-        <Header className="desktopHeader" redirectText="Already have an account?" redirectLabel="Log in" redirectPage="login" />
-        <Header className="mobileHeader" redirectLabel="Log in" redirectPage="login" mobile />
+        <Header className="desktopHeader" redirectText="Already have an account?" redirectLabel="Log in" redirectPage="login" redirectQuery={queryObj} />
+        <Header className="mobileHeader" redirectLabel="Log in" redirectPage="login" redirectQuery={queryObj} mobile />
+
         <h1>Build the web. Learn new skills.</h1>
         <h2>Free and open source – forever.</h2>
         <div className="innerForm">
@@ -63,7 +65,7 @@ var Signup = React.createClass({
         </div>
         <div className="commit">
           <IconText iconClass="agreement" textClass="eula">
-            By signing up, I agree to Webmaker&laquo;s <a href="" className="underline">Terms of Service</a> and <a href="" className="underline">Privacy Policy</a>.
+            By signing up, I agree to Webmaker&lsquo;s <a href="" className="underline">Terms of Service</a> and <a href="" className="underline">Privacy Policy</a>.
           </IconText>
           <div><button className="btn btn-awsm" onClick={this.processSignup}>SIGN UP</button></div>
         </div>
