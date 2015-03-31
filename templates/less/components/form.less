@@ -1,7 +1,8 @@
 div[role=form] {
   label {
     width: 100%;
-    padding-bottom: 10px;
+    padding-bottom: 9px;
+    margin-bottom: 0;
     .warning {
       position: relative;
       background: #e7518f;
@@ -15,6 +16,9 @@ div[role=form] {
       border-radius: 5px;
       line-height: 8px;
       &:before  {
+        .hideLabel {
+          background: black;
+        }
         content: '';
         position: absolute;
         background: transparent;
@@ -34,7 +38,7 @@ div[role=form] {
       display: block;
       width: 100%;
       height: 34px;
-      padding: 6px 12px;
+      padding: 6px 12px 0 17px;
       font-size: 14px;
       line-height: 1.42857;
       color: #555;
@@ -50,10 +54,8 @@ div[role=form] {
       font-size: 16px;
       font-weight: 200;
       height: 55px;
-      padding-left: 12.5%;
       margin: 0 auto;
     }
-
     input.has-error {
       border: 1px solid #E95B95;
       background-color: #FEEDED;
@@ -71,17 +73,32 @@ div[role=form] {
     }
 
   }
-
   .leftIcon() {
     z-index: 1;
-    top: 18px;
+    top: 20px;
     left: 15px;
   }
 
-  .icon-label-username,
-  .icon-label-password,
-  .icon-label-email {
+  input.icon-label-username,
+  input.icon-label-password,
+  input.icon-label-email {
+    padding-left: 40px;
+  }
+
+  label.icon-label-username,
+  label.icon-label-password,
+  label.icon-label-email {
     position: relative;
+  }
+
+  input.hideLabel {
+    padding-left: 17px;
+  }
+
+  label.hideLabel {
+    &:before {
+      visibility: hidden;
+    }
   }
 
   .icon-label-username:before {
@@ -103,11 +120,13 @@ div[role=form] {
     top: 17px;
     color: #e7518f;
   }
-  .icon-label-valid:after {
-    .label(@fa-check);
-    right: 10px;
-    top: 17px;
-    color: #53C0A3;
+  .icon-label-valid {
+    &:after {
+      .label(@fa-check);
+      right: 10px;
+      top: 17px;
+      color: #53C0A3;
+    }
   }
 }
 

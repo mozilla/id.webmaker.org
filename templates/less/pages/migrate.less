@@ -1,31 +1,25 @@
 .loginNoPass {
-  height: 180px;
-  padding-top: 25px;
+  height: 175px;
+  padding: 25px;
   background-color: #FFFFFF;
-  width: 300px;
+  max-width: 350px;
+  width: 100%
   margin: 0 auto;
   @media (min-width : 451px) {
     margin: auto;
-    width: 350px;
   }
 }
 
 .migrateKeyContainer {
-  width: 350px;
-  margin: 0px auto;
-  @media (min-width : 451px) {
-    width: 400px;
-  }
+  max-width: 400px;
+  width: 100%;
+  margin: auto;
+  height: 505px;
   .migrateKey {
-    height: 180px;
-    padding-top: 25px;
+    height: 170px;
+    padding: 25px;
     background-color: #FFFFFF;
     margin-top: 30px;
-  }
-  .emailSentIcon{
-    &:before  {
-      left: 25px;
-    }
   }
 }
 
@@ -58,27 +52,25 @@
 }
 
 .successBanner {
-  height: 175px;
+  display: block;
   background-color: #53C0A3;
-  padding: 25px 15px;
   color: #FAFAFA;
-  width: 350px;
-  margin: 0 auto;
+  padding: 0 15px;
+  color: #FAFAFA;
+  width: 100%;
+  max-width: 400px;
+  height: 200px;
   @media (min-width : 451px) {
-    margin: auto;
-    width: 400px;
-  }
-  .icon {
-    top: 28px;
-    position: relative;
+    height: 180px;
   }
   .successBannerIcon {
     &:before {
-      top: 20px;
+      top: 17px;
+      left: 19px;
       position: relative;
-      left: 20px;
-      font-size: 26px;
       color: #FAFAFA;
+      .icon(@fa-check);
+      font-size: 28px;
     }
     float: left;
     display: inline-block;
@@ -88,26 +80,30 @@
     width: 7rem;
     height: 7rem;
     border-radius: 2.5em;
+    position: relative;
+    top: 55px;
   }
   .text {
-    float: left;
     display: inline-block;
-    width: 240px;
-    padding-left: 10px;
+    width: 100%;
+    max-width: 200px;
+    padding: 20px;
+    @media (min-width : 451px) {
+      max-width: 275px;
+    }
     p {
       font-size: 15px;
     }
-    .continueLink {
+    a {
       color: #FAFAFA;
       text-decoration: underline;
       font-weight: 500;
     }
     .successBannerHeader {
       margin: 0;
-      font-size: 22px;
+      font-size: 20px;
       line-height: 30px;
-      font-weight: 500;
+      font-weight: lighter;
     }
   }
 }
-

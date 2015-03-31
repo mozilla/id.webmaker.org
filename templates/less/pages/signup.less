@@ -1,7 +1,11 @@
+.signup-bg {
+  background-image: url('/assets/img/background.jpg');
+  background-size: 100% 100%;
+}
 .signup-page {
 
   .btn.btn-awsm {
-    max-width: 165px;
+    max-width: 170px;
   }
   .inputBox {
     text-align: left;
@@ -16,11 +20,6 @@
   @border: 1.7px solid rgba(255,255,255,0.7);
   @contentWidth: 47rem;
 
-  width: 100vw;
-  height: 100vh;
-  background: url(img/background.jpg);
-  background-size: 100% 100%;
-
   h1, h2 {
     color: @white;
     text-shadow: none;
@@ -34,16 +33,16 @@
 
   div[role=form] {
     background: @white;
-    padding: 3rem;
+    padding: 4rem 3.5rem;
     margin: auto;
-    width: @contentWidth;
+    max-width: @contentWidth;
+    width: 100%;
     border-radius: 0.5rem;
 
     label {
       display: block;
       input {
         height: @dim;
-        font-weight: normal;
         font-size: 2rem;
       }
       span {
@@ -72,7 +71,8 @@
 
   .commit {
 
-    width: @contentWidth;
+    max-width: @contentWidth;
+    width: 100%;
     margin: auto;
     height: @dim;
     color: @white;
@@ -80,6 +80,11 @@
 
     div {
       display: inline-block;
+      vertical-align: middle;
+      padding: 10px;
+      @media (min-width : 451px) {
+        padding: 0;
+      }
 
       &.eula {
         max-width: calc(@contentWidth * 0.45);

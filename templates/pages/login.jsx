@@ -37,12 +37,13 @@ var Login = React.createClass({
     var buttonText = "Log In";
     return (
       <div>
-        <Header redirectText="Need an account?" redirectLabel="Sign up" redirectPage="signup" />
+      <Header className="desktopHeader"/>
+      <Header className="mobileHeader" redirectLabel="Signup" redirectPage="signup" mobile />
 
         <div className="loginPage innerForm centerDiv">
           <Form ref="userform" fields={fieldValues} validators={fieldValidators} />
-          <Link to="reset-password" className="need-help">Need help?</Link>
           <button onClick={this.processFormData} className="btn btn-awsm">{buttonText}</button>
+          <Link to="reset-password" className="need-help">Need help?</Link>
         </div>
       </div>
     );

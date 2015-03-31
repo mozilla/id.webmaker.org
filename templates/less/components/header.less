@@ -7,6 +7,22 @@
   position: relative;
 }
 
+.desktopHeader {
+  visibility: hidden;
+  display: none;
+}
+@media (min-width : 451px) {
+
+  .mobileHeader {
+    visibility: hidden;
+  }
+  .desktopHeader {
+    visibility: visible;
+    display: block;
+  }
+}
+
+
 .logo, .wordmark {
   height: 30px;
   margin-top: 10px;
