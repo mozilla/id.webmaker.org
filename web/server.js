@@ -34,7 +34,8 @@ module.exports = function(options) {
   });
 
   var account = require('../lib/account')({
-    loginAPI: options.loginAPI
+    loginAPI: options.loginAPI,
+    uri: options.uri
   });
 
   var oauthDb = new OAuthDB(options.oauth_clients);
@@ -205,6 +206,9 @@ module.exports = function(options) {
     {
       method: 'POST',
       path: '/request-reset',
+      config:{
+        auth: false
+      },
       handler: function(request, reply) {
         account.requestReset(request, function(err, json) {
           if ( err ) {
@@ -221,6 +225,9 @@ module.exports = function(options) {
     {
       method: 'POST',
       path: '/reset-password',
+      config:{
+        auth: false
+      },
       handler: function(request, reply) {
         account.resetPassword(request, function(err, json) {
           if ( err ) {
@@ -237,6 +244,9 @@ module.exports = function(options) {
     {
       method: 'POST',
       path: '/create-user',
+      config:{
+        auth: false
+      },
       handler: function(request, reply) {
         account.createUser(request, function(err, json) {
           if ( err ) {
@@ -245,8 +255,10 @@ module.exports = function(options) {
             }
             return reply(Boom.badImplementation(err));
           }
+          if ( json.error ) {
+            return reply(Boom.badImplementation(json.error));
+          }
           request.auth.session.set(json.user);
-
           reply(json.user);
         });
       }
