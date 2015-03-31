@@ -1,6 +1,5 @@
 .DS_Store
 node_modules/
-app.bundle.*
+*.bundle.*
 styles.css*
-tests.bundle.*
 public/tests/mocha*
