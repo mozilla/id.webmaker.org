@@ -57,6 +57,7 @@
     "react": "^0.12.2",
     "react-router": "^0.12.4",
     "react-router-stub": "0.0.5",
+    "react-router-viewports": "0.0.4",
     "react-validation-mixin": "^4.0.3",
     "should": "^5.2.0",
     "webpack": "^1.7.3",
@@ -76,8 +77,7 @@
     "mofo-style": "latest",
     "ncp": "^2.0.0",
     "parallelshell": "^1.1.1",
-    "phantomjs": "^1.9.16",
-    "react-router-viewports": "0.0.4"
+    "phantomjs": "^1.9.16"
   },
   "engines": {
     "npm": "^2.5.1",
