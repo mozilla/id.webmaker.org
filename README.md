@@ -60,3 +60,6 @@ You can configure the following environment variables:
 | GA_TRACKING_ID | The tracking ID is a string like UA-000000-01 [more](https://support.google.com/analytics/answer/1032385?hl=en) |
 | GA_DEBUG | if set to 'on' will enable debug logging to the console in `react-ga` |
 
+## Using OAuth2
+
+For information on creating an OAuth2 application that relies on this server, see [`docs/oauth.md`](https://github.com/mozilla/id.webmaker.org/blob/develop/docs/oauth.md).
