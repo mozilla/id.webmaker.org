@@ -41,7 +41,9 @@ module.exports = {
   },
   plugins: [
     new webpack.DefinePlugin(importEnvVars([
-      // TODO: Define any variable we want to expose to the client here.
+      // Any variables we want to expose to the client:
+      'GA_TRACKING_ID',
+      'GA_DEBUG'
     ]))
   ]
 };

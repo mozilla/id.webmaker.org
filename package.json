@@ -6,22 +6,17 @@
   "scripts": {
     "start": "parallelshell \"node web/index.js\" \"npm run watch:css\" \"npm run watch:js\"",
     "test": "npm run test:server && npm run test:browser && npm run lint",
-
     "build": "npm run build:css && npm run build:js",
     "build:css": "npm run watch:css -- --no-watch",
     "build:js": "webpack --config webpack.config.js --progress --profile --colors",
-
     "jscs": "jscs lib test web *.js",
     "jshint": "jshint lib test web *.js",
     "jsbeautify": "js-beautify lib test web *.js -r",
     "lint": "npm run jshint && npm run jscs",
-
     "postinstall": "npm run build",
-
     "pretest:browser": "ncp node_modules/mocha/mocha.js public/tests/mocha.js && ncp node_modules/mocha/mocha.css public/tests/mocha.css",
     "test:browser": "npm run build && mocha-phantomjs -s loadImages=false public/tests/index.html",
     "test:server": "lab -t 95",
-
     "watch:js": "npm run build:js -- --watch",
     "watch:css": "autoless --source-map templates/less public"
   },
@@ -55,6 +50,7 @@
     "joi": "^6.0.8",
     "jsx-loader": "^0.12.2",
     "react": "^0.12.2",
+    "react-ga": "^1.0.8",
     "react-router": "^0.12.4",
     "react-router-stub": "0.0.5",
     "react-router-viewports": "0.0.4",
