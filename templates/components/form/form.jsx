@@ -67,7 +67,9 @@ var Form = React.createClass({
     }
 
     var errorTooltip = (
-      <span className="warning">{value.errorMessage}</span>
+      <span className="warning">{value.customError ? value.customError :
+        (id == 'password' ? 'Invalid password' : this.getValidationMessages(id)[0])}
+      </span>
     );
     return (
      <label ref={id+'Label'} className={this.getLabelClasses(id)} key={id} htmlFor={id}>

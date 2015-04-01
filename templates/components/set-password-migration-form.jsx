@@ -7,7 +7,7 @@ var fields = [
   {
     'password': {
       'placeholder': 'Enter your new password',
-      'type': 'text',
+      'type': 'password',
       'validator': 'username',
       'errorMessage': 'Invalid username'
     }

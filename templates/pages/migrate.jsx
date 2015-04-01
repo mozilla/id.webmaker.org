@@ -12,7 +12,7 @@ var UserMigration = React.createClass({
       login: false,
       setKey: false,
       setPass: false,
-      success: true
+      success: false
     };
   },
   render: function() {
