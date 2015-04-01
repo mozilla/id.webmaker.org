@@ -12,7 +12,7 @@ var UserMigration = React.createClass({
       login: false,
       setKey: false,
       setPass: false,
-      success: false
+      success: true
     };
   },
   render: function() {
@@ -22,18 +22,19 @@ var UserMigration = React.createClass({
     } else if(this.state.setPass) {
       content = (<SetPasswordMigrationForm submitForm={this.handleResetPassword} />);
     } else if(this.state.success) {
-      content = (<IconText
-          iconClass="successBannerIcon icon fa fa-check"
-          className="successBanner centerDiv"
+      content = (<div className="successBanner centerDiv"><IconText
+          iconClass="successBannerIcon icon"
+          className=""
           headerClass="successBannerHeader"
           header="Success!">
             <p>Thanks for setting your Webmaker password. From now on, use it to log in to your account.</p>
             <a className="continueLink" href="https://webmaker.org">Continue</a>
-        </IconText>)
+        </IconText></div>)
     }
     return (
       <div>
-        <Header redirectText="Need an account?" redirectLabel="Sign up" redirectPage="signup" />
+        <Header className="desktopHeader"/>
+        <Header className="mobileHeader" redirectLabel="Signup" redirectPage="signup" mobile />
         {content}
       </div>
     );

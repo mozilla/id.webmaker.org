@@ -4,27 +4,29 @@ var Form = require('../components/form/form.jsx');
 var Header = require('../components/header/header.jsx');
 var IconText = require('../components/icontext.jsx');
 
-var Joi = require('joi');
 var fieldValues = [
   {
     'username': {
       'placeholder': 'Username',
       'type': 'text',
-      'validator': 'username'
+      'validator': 'username',
+      'label': false
     }
   },
   {
     'email': {
       'placeholder': 'Email',
       'type': 'email',
-      'validator': 'email'
+      'validator': 'email',
+      'label': false
     }
   },
   {
     'password': {
       'placeholder': 'Password',
       'type': 'password',
-      'validator': 'password'
+      'validator': 'password',
+      'label': false
     }
   },
   {
@@ -40,11 +42,17 @@ var validators = require('../lib/validatorset');
 var fieldValidators = validators.getValidatorSet(fieldValues);
 
 var Signup = React.createClass({
-
+  componentDidMount: function() {
+    document.body.className = "signup-bg";
+  },
+  componentWillUnmount: function() {
+    document.body.className = "";
+  },
   render: function() {
     return (
       <div className="signup-page">
-        <Header wordmark redirectText="Already have an account?" redirectLabel="Log in" redirectPage="login" />
+        <Header className="desktopHeader" redirectText="Already have an account?" redirectLabel="Log in" redirectPage="login" />
+        <Header className="mobileHeader" redirectLabel="Log in" redirectPage="login" mobile />
         <h1>Build the web. Learn new skills.</h1>
         <h2>Free and open source – forever.</h2>
         <div className="innerForm">

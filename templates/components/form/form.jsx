@@ -48,7 +48,7 @@ var Form = React.createClass({
     var id = Object.keys(this.props.fields[i])[0];
     var value = this.props.fields[i][id];
     this.passChecked = value.checked;
-
+    this.beforeLabel = value.label === undefined ? true : value.label;
     var input = (
       <input type={value.type}
              id={id}
@@ -84,10 +84,12 @@ var Form = React.createClass({
   },
   getInputClasses: function(field) {
     var isValid = this.isValid(field);
-    return React.addons.classSet({
-      'has-error': !isValid,
-      'is-valid': isValid
-    });
+    var classes = {};
+    classes['has-error'] = !isValid;
+    classes['is-valid'] = isValid;
+    classes['hideLabel'] = !this.beforeLabel;
+    classes[this.getIconClass(field)] = true;
+    return React.addons.classSet(classes);
   },
   getLabelClasses: function(field) {
     var classes = {};
@@ -95,6 +97,7 @@ var Form = React.createClass({
     var ref = this.refs[field + 'Input'];
     classes['inputBox'] = field === 'feedback';
     classes[this.getIconClass(field)] = true;
+    classes['hideLabel'] = !this.beforeLabel;
     classes[this.errorClass] = !isValid;
     classes[this.validClass] = (this.state.dirty[field] && isValid) || this.passChecked
     return React.addons.classSet(classes);

@@ -19,7 +19,7 @@ var fieldsValidators = validators.getValidatorSet(fields);
 var SetPasswordMigration = React.createClass({
   render: function() {
     return (
-      <div className="migrateKeyContainer">
+      <div className="migrateKeyContainer centerDiv">
         <IconText
           iconClass="emailSentIcon fa fa-lock"
           className="emailSent arrow_box"

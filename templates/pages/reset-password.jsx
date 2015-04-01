@@ -17,7 +17,8 @@ var ResetPassword = React.createClass({
   render: function() {
     return (
       <div>
-        <Header redirectText="Need an account?" redirectLabel="Sign up" redirectPage="signup" />
+        <Header className="desktopHeader"/>
+        <Header className="mobileHeader" redirectLabel="Signup" redirectPage="signup" mobile />
 
         <div className="resetPasswordPage">
             {!this.state.submitForm && !this.state.email ?
