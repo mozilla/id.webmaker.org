@@ -2,9 +2,9 @@ var Boom = require('boom');
 var Hapi = require('hapi');
 var Hoek = require('hoek');
 var Joi = require('joi');
-var OAuthDB = require('../lib/oauth-db');
 var Path = require('path');
 var url = require('url');
+var OAuthDB = require('../lib/oauth-db');
 
 module.exports = function(options) {
   var server = new Hapi.Server({
@@ -34,7 +34,8 @@ module.exports = function(options) {
   });
 
   var account = require('../lib/account')({
-    loginAPI: options.loginAPI
+    loginAPI: options.loginAPI,
+    uri: options.uri
   });
 
   var oauthDb = new OAuthDB(options.oauth_clients);
@@ -185,10 +186,10 @@ module.exports = function(options) {
             method: function(request, reply) {
               account.verifyPassword(request, function(err, user) {
                 if ( err ) {
+                  if ( err.isBoom ) {
+                    return reply(err);
+                  }
                   return reply(Boom.badImplementation(err));
-                }
-                if ( !user ) {
-                  return reply(Boom.unauthorized('Invalid username/email or password'));
                 }
 
                 reply(user);
@@ -199,8 +200,67 @@ module.exports = function(options) {
       },
       handler: function(request, reply) {
         request.auth.session.set(request.pre.user);
-
         reply({ status: 'Logged In' });
+      }
+    },
+    {
+      method: 'POST',
+      path: '/request-reset',
+      config:{
+        auth: false
+      },
+      handler: function(request, reply) {
+        account.requestReset(request, function(err, json) {
+          if ( err ) {
+            if ( err.isBoom ) {
+              return reply(err);
+            }
+            return reply(Boom.badImplementation(err));
+          }
+
+          reply(json);
+        });
+      }
+    },
+    {
+      method: 'POST',
+      path: '/reset-password',
+      config:{
+        auth: false
+      },
+      handler: function(request, reply) {
+        account.resetPassword(request, function(err, json) {
+          if ( err ) {
+            if ( err.isBoom ) {
+              return reply(err);
+            }
+            return reply(Boom.badImplementation(err));
+          }
+
+          reply(json);
+        });
+      }
+    },
+    {
+      method: 'POST',
+      path: '/create-user',
+      config:{
+        auth: false
+      },
+      handler: function(request, reply) {
+        account.createUser(request, function(err, json) {
+          if ( err ) {
+            if ( err.isBoom ) {
+              return reply(err);
+            }
+            return reply(Boom.badImplementation(err));
+          }
+          if ( json.error ) {
+            return reply(Boom.badImplementation(json.error));
+          }
+          request.auth.session.set(json.user);
+          reply(json.user);
+        });
       }
     }
   ]);

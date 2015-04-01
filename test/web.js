@@ -29,6 +29,207 @@ lab.experiment("OAuth", function() {
     loginAPI: "http://localhost:3232"
   });
 
+  lab.test("POST Create User", function(done) {
+    ls.start(function(error) {
+      Code.expect(error).to.be.undefined();
+      var request = {
+        method: "POST",
+        url: "/create-user",
+        payload: {
+          email: "webmaker@example.com",
+          username: "webmaker",
+          password: "password"
+        }
+      };
+
+      s.inject(request, function(response) {
+        Code.expect(response.statusCode).to.equal(200);
+        Code.expect(response.headers["set-cookie"]).to.exist();
+        Code.expect(response.result.email).to.equal("webmaker@example.com");
+        Code.expect(response.result.username).to.equal("webmaker");
+        ls.stop(done);
+      });
+    });
+  });
+
+  lab.test("POST Create User (invalid response)", function(done) {
+    ls.start(function(error) {
+      Code.expect(error).to.be.undefined();
+      var request = {
+        method: "POST",
+        url: "/create-user",
+        payload: {
+          email: "webmaker@example.com",
+          username: "invalidResponse",
+          password: "password"
+        }
+      };
+
+      s.inject(request, function(response) {
+        Code.expect(response.statusCode).to.equal(500);
+        ls.stop(done);
+      });
+    });
+  });
+
+  lab.test("POST Create User (login API failure)", function(done) {
+    ls.start(function(error) {
+      Code.expect(error).to.be.undefined();
+      var request = {
+        method: "POST",
+        url: "/create-user",
+        payload: {
+          email: "webmaker@example.com",
+          username: "notgonnawork",
+          password: "password"
+        }
+      };
+
+      s.inject(request, function(response) {
+        Code.expect(response.statusCode).to.equal(500);
+        ls.stop(done);
+      });
+    });
+  });
+
+  lab.test("POST Request Reset", function(done) {
+    ls.start(function(error) {
+      Code.expect(error).to.be.undefined();
+      var request = {
+        method: "POST",
+        url: "/request-reset",
+        payload: {
+          uid: "webmaker"
+        }
+      };
+
+      s.inject(request, function(response) {
+        Code.expect(response.statusCode).to.equal(200);
+        Code.expect(response.result.status).to.equal("created");
+        ls.stop(done);
+      });
+    });
+  });
+
+  lab.test("POST Request Reset (failure)", function(done) {
+    ls.start(function(error) {
+      Code.expect(error).to.be.undefined();
+      var request = {
+        method: "POST",
+        url: "/request-reset",
+        payload: {
+          uid: "fail"
+        }
+      };
+
+      s.inject(request, function(response) {
+        Code.expect(response.statusCode).to.equal(500);
+        ls.stop(done);
+      });
+    });
+  });
+
+  lab.test("POST Request Reset (invalid response)", function(done) {
+    ls.start(function(error) {
+      Code.expect(error).to.be.undefined();
+      var request = {
+        method: "POST",
+        url: "/request-reset",
+        payload: {
+          uid: "invalidResponse"
+        }
+      };
+
+      s.inject(request, function(response) {
+        Code.expect(response.statusCode).to.equal(500);
+        ls.stop(done);
+      });
+    });
+  });
+
+  lab.test("POST Reset Password", function(done) {
+    ls.start(function(error) {
+      Code.expect(error).to.be.undefined();
+      var request = {
+        method: "POST",
+        url: "/reset-password",
+        payload: {
+          uid: "webmaker",
+          resetCode: "resetCode",
+          password: "UnguessablePassword"
+        }
+      };
+
+      s.inject(request, function(response) {
+        Code.expect(response.statusCode).to.equal(200);
+        Code.expect(response.result.status).to.equal("success");
+        ls.stop(done);
+      });
+    });
+  });
+
+  lab.test("POST Reset Password (bad code)", function(done) {
+    ls.start(function(error) {
+      Code.expect(error).to.be.undefined();
+      var request = {
+        method: "POST",
+        url: "/reset-password",
+        payload: {
+          uid: "webmaker",
+          resetCode: "invalid",
+          password: "UnguessablePassword"
+        }
+      };
+
+      s.inject(request, function(response) {
+        Code.expect(response.statusCode).to.equal(401);
+        Code.expect(response.result.error).to.equal("Unauthorized");
+        ls.stop(done);
+      });
+    });
+  });
+
+  lab.test("POST Reset Password (bad request)", function(done) {
+    ls.start(function(error) {
+      Code.expect(error).to.be.undefined();
+      var request = {
+        method: "POST",
+        url: "/reset-password",
+        payload: {
+          uid: "badRequest",
+          resetCode: "resetCode",
+          password: "UnguessablePassword"
+        }
+      };
+
+      s.inject(request, function(response) {
+        Code.expect(response.statusCode).to.equal(400);
+        Code.expect(response.result.error).to.equal("Bad Request");
+        ls.stop(done);
+      });
+    });
+  });
+
+  lab.test("POST Reset Password (invalid response)", function(done) {
+    ls.start(function(error) {
+      Code.expect(error).to.be.undefined();
+      var request = {
+        method: "POST",
+        url: "/reset-password",
+        payload: {
+          uid: "invalidResponse",
+          resetCode: "resetCode",
+          password: "UnguessablePassword"
+        }
+      };
+
+      s.inject(request, function(response) {
+        Code.expect(response.statusCode).to.equal(500);
+        ls.stop(done);
+      });
+    });
+  });
+
   lab.test("POST login", function(done) {
     ls.start(function(error) {
       Code.expect(error).to.be.undefined();

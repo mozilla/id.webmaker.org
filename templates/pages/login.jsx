@@ -35,15 +35,17 @@ var Login = React.createClass({
   render: function() {
     // FIXME: totally not localized yet!
     var buttonText = "Log In";
+    var queryObj = Url.parse(window.location.href, true).query;
+
     return (
       <div>
-      <Header className="desktopHeader"/>
-      <Header className="mobileHeader" redirectLabel="Signup" redirectPage="signup" mobile />
+        <Header className="desktopHeader" redirectQuery={queryObj} />
+        <Header className="mobileHeader" redirectLabel="Signup" redirectPage="signup" redirectQuery={queryObj} mobile />
 
         <div className="loginPage innerForm centerDiv">
           <Form ref="userform" fields={fieldValues} validators={fieldValidators} />
           <button onClick={this.processFormData} className="btn btn-awsm">{buttonText}</button>
-          <Link to="reset-password" className="need-help">Need help?</Link>
+          <Link to="reset-password" query={queryObj} className="need-help">Need help?</Link>
         </div>
       </div>
     );

@@ -4,6 +4,9 @@ var Form = require('../components/form/form.jsx');
 var Header = require('../components/header/header.jsx');
 var IconText = require('../components/icontext.jsx');
 
+var Url = require('url');
+require('whatwg-fetch');
+
 var fieldValues = [
   {
     'username': {
@@ -49,10 +52,12 @@ var Signup = React.createClass({
     document.body.className = "";
   },
   render: function() {
+    var queryObj = Url.parse(window.location.href, true).query;
     return (
       <div className="signup-page">
-        <Header className="desktopHeader" redirectText="Already have an account?" redirectLabel="Log in" redirectPage="login" />
-        <Header className="mobileHeader" redirectLabel="Log in" redirectPage="login" mobile />
+        <Header className="desktopHeader" redirectText="Already have an account?" redirectLabel="Log in" redirectPage="login" redirectQuery={queryObj} />
+        <Header className="mobileHeader" redirectLabel="Log in" redirectPage="login" redirectQuery={queryObj} mobile />
+
         <h1>Build the web. Learn new skills.</h1>
         <h2>Free and open source – forever.</h2>
         <div className="innerForm">
@@ -60,7 +65,7 @@ var Signup = React.createClass({
         </div>
         <div className="commit">
           <IconText iconClass="agreement" textClass="eula">
-            By signing up, I agree to Webmaker's <a href="" className="underline">Terms of Service</a> and <a href="" className="underline">Privacy Policy</a>.
+            By signing up, I agree to Webmaker&lsquo;s <a href="" className="underline">Terms of Service</a> and <a href="" className="underline">Privacy Policy</a>.
           </IconText>
           <div><button className="btn btn-awsm" onClick={this.processSignup}>SIGN UP</button></div>
         </div>
@@ -73,7 +78,35 @@ var Signup = React.createClass({
   },
 
   handleFormData: function(error, data) {
-    console.log("inside App we see:", error, data);
+    if ( error ) {
+      console.error("validation error", error);
+      return;
+    }
+
+    var queryObj = Url.parse(window.location.href, true).query;
+    fetch("/create-user", {
+      method: "post",
+      headers: {
+        "Accept": "application/json; charset=utf-8",
+        "Content-Type": "application/json; charset=utf-8"
+      },
+      body: JSON.stringify({
+        email: data.email,
+        username: data.username,
+        password: data.password,
+        feedback: data.feedback
+      })
+    }).then(function(response) {
+      var redirectObj;
+      if ( response.status === 200 ) {
+        redirectObj = Url.parse("/login/oauth/authorize", true);
+        redirectObj.query = queryObj;
+        window.location = Url.format(redirectObj);
+      }
+    }).catch(function(ex) {
+      console.error("Error parsing response", ex);
+    });
+
   }
 
 });
