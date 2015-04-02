@@ -33,8 +33,8 @@ var UserMigration = React.createClass({
     }
     return (
       <div>
-        <Header className="desktopHeader"/>
-        <Header className="mobileHeader" redirectLabel="Signup" redirectPage="signup" mobile />
+        <Header origin="Migration" className="desktopHeader"/>
+        <Header origin="Migration" className="mobileHeader" redirectLabel="Signup" redirectPage="signup" mobile />
         {content}
       </div>
     );

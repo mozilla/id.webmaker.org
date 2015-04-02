@@ -21,6 +21,7 @@ var ResetPassword = React.createClass({
     };
   },
   render: function() {
+    var emailText = 'We&rsquo;ve emailed you instructions for creating a new password.';
     var linkQuery = {};
     linkQuery.client_id = this.state.queryObj.client_id;
     linkQuery.state = this.state.queryObj.state;
@@ -28,8 +29,8 @@ var ResetPassword = React.createClass({
     linkQuery.response_type = this.state.queryObj.response_type;
     return (
       <div>
-        <Header className="desktopHeader" redirectQuery={linkQuery} />
-        <Header className="mobileHeader" redirectLabel="Signup" redirectPage="signup" redirectQuery={linkQuery} mobile />
+        <Header origin="Reset Password" className="desktopHeader" redirectQuery={linkQuery} />
+        <Header origin="Reset Password" className="mobileHeader" redirectLabel="Signup" redirectPage="signup" redirectQuery={linkQuery} mobile />
 
         <div className="resetPasswordPage">
             {!this.state.submitForm && !this.state.email ?
@@ -42,7 +43,7 @@ var ResetPassword = React.createClass({
                 className="emailSent centerDiv"
                 headerClass="emailSentHeader"
                 header="Check your email">
-                  <p>We&rsquo;ve emailed you instructions for creating a new password.</p>
+                  <p>{emailText}</p>
               </IconText> : false}
             {this.state.email ?
               <ResetView username={this.state.queryObj.uid} submitForm={this.handleRequestPassword}/> : false
