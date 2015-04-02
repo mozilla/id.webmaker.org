@@ -8,6 +8,7 @@ var Router = require('react-router');
 
 
 var Url = require('url');
+var ga = require('react-ga');
 require('whatwg-fetch');
 
 // This wraps every view
@@ -21,7 +22,7 @@ var ResetPassword = React.createClass({
     };
   },
   render: function() {
-    var emailText = 'We&rsquo;ve emailed you instructions for creating a new password.';
+    var emailText = "We've emailed you instructions for creating a new password.";
     var linkQuery = {};
     linkQuery.client_id = this.state.queryObj.client_id;
     linkQuery.state = this.state.queryObj.state;
@@ -54,6 +55,7 @@ var ResetPassword = React.createClass({
   },
   handleRequestPassword: function(error, data) {
     if ( error ) {
+      ga.event({category: 'Reset Password', action: 'Error form validation on request password page'});
       console.error("validation error", error);
       return;
     }
@@ -79,17 +81,22 @@ var ResetPassword = React.createClass({
         redirectObj.query.state = queryObj.state;
         redirectObj.query.response_type = queryObj.response_type;
         redirectObj.query.scopes = queryObj.scopes;
+        ga.event({category: 'Reset Password', action: 'Successfully request new password'});
+        alert('yo')
         window.location = Url.format(redirectObj);
         return;
       }
       // handle errors!
     }.bind(this)).catch(function(ex) {
+      ga.event({category: 'Reset Password', action: 'Error parsing response from the server'});
       console.error('Error parsing response', ex);
     });
   },
   handleResetPassword: function(error, data) {
     if ( error ) {
+      ga.event({category: 'Reset Password', action: 'Error form validation on reset password page'});
       console.error("validation error", error);
+      console.log({category: 'Reset Password', action: 'Error form validation on reset password page'})
       return;
     }
 
@@ -108,13 +115,20 @@ var ResetPassword = React.createClass({
         this.setState({
           submitForm: true
         });
+        ga.event({category: 'Reset Password', action: 'Successfully request password reset'});
+        console.log({category: 'Reset Password', action: 'Successfully request password reset'})
       } else if ( response.status === 400 ) {
+        ga.event({category: 'Reset Password', action: 'Bad request for request password reset'});
+        console.log({category: 'Reset Password', action: 'Bad request for request password reset'})
         console.error("Bad Request", response.json());
       } else if ( response.status === 401 ) {
+        ga.event({category: 'Reset Password', action: 'Unauthorized for request password reset'});
+        console.log({category: 'Reset Password', action: 'Bad request for request password reset'})
         console.error("Unauthorized", response.json());
       }
 
     }.bind(this)).catch(function(ex) {
+      ga.event({category: 'Reset Password', action: 'Error parsing response from the server'});
       console.error('Error parsing response', ex);
     });
   }

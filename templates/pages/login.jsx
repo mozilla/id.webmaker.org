@@ -62,6 +62,7 @@ var Login = React.createClass({
     if ( error ) {
       ga.event({category: 'Login', action: 'Error during form validation'})
       console.error('validation error', error);
+      console.log({category: 'Login', action: 'Error during form validation'})
       return;
     }
     var queryObj = Url.parse(window.location.href, true).query;
@@ -81,6 +82,7 @@ var Login = React.createClass({
         redirectObj = Url.parse('/login/oauth/authorize', true);
         redirectObj.query = queryObj;
         ga.event({category: 'Login', action: 'Logged in successfully'})
+        alert({category: 'Login', action: 'Logged in successfully'})
         window.location = Url.format(redirectObj);
       }
       // handle errors!

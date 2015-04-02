@@ -5,7 +5,8 @@ var ga = require('react-ga');
 var Form = React.createClass({
   propTypes: {
     fields: React.PropTypes.array.isRequired,
-    validators: React.PropTypes.object.isRequired
+    validators: React.PropTypes.object.isRequired,
+    origin: React.PropTypes.string.isRequired
   },
   statics: {
       'iconLabels': {

@@ -5,6 +5,7 @@ var Header = require('../components/header/header.jsx');
 var IconText = require('../components/icontext.jsx');
 
 var Url = require('url');
+var ga = require('react-ga');
 require('whatwg-fetch');
 
 var fieldValues = [
@@ -61,7 +62,7 @@ var Signup = React.createClass({
         <h1>Build the web. Learn new skills.</h1>
         <h2>Free and open source – forever.</h2>
         <div className="innerForm">
-          <Form ref="userform" fields={fieldValues} validators={fieldValidators}/>
+          <Form ref="userform" fields={fieldValues} validators={fieldValidators} origin="Signup" />
         </div>
         <div className="commit">
           <IconText iconClass="agreement" textClass="eula">
@@ -79,6 +80,7 @@ var Signup = React.createClass({
 
   handleFormData: function(error, data) {
     if ( error ) {
+      ga.event({category: 'Signup', action: 'Error during form validation'});
       console.error("validation error", error);
       return;
     }
@@ -101,9 +103,12 @@ var Signup = React.createClass({
       if ( response.status === 200 ) {
         redirectObj = Url.parse("/login/oauth/authorize", true);
         redirectObj.query = queryObj;
+        ga.event({category: 'Signup', action: 'Successfully created an account'});
+        alert('done')
         window.location = Url.format(redirectObj);
       }
     }).catch(function(ex) {
+      ga.event({category: 'Signup', action: 'Error parsing response from the server'});
       console.error("Error parsing response", ex);
     });
 

@@ -1,11 +1,7 @@
 var Joi = require('joi');
 
 var fieldValidators = {
-  usernameEmail:    Joi.alternatives().try(
-                    Joi.string().alphanum().min(1).required(),
-                    Joi.string().email().required())
-                  .label('Username or email'),
-  username:            Joi.string().alphanum().min(1).required().label('Username'),
+  username:       Joi.string().alphanum().min(1).required().label('Username'),
   password:       Joi.string().regex(/^\S{8,16}$/).label('Password'),
   verifyPassword: Joi.any().valid(Joi.ref('password')).required().label('Password Confirmation'),
   email:          Joi.string().email().required().label('Email'),
