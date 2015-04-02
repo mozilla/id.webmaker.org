@@ -9,10 +9,10 @@ var IconText = require('../components/icontext.jsx');
 var UserMigration = React.createClass({
   getInitialState: function() {
     return {
-      login: false,
+      login: true,
       setKey: false,
       setPass: false,
-      success: true
+      success: false
     };
   },
   render: function() {
