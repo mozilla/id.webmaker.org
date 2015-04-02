@@ -261,6 +261,17 @@ module.exports = function(options) {
           reply(json.user);
         });
       }
+    },
+    {
+      method: 'POST',
+      path: '/logout',
+      config: {
+        auth: false
+      },
+      handler: function(request, reply) {
+        request.auth.session.clear();
+        reply({ status: 'Logged out' });
+      }
     }
   ]);
 
