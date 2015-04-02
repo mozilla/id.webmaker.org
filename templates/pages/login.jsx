@@ -11,7 +11,7 @@ require('whatwg-fetch');
 var fieldValues = [
   {
     'username': {
-      'placeholder': 'Username',
+      'placeholder': 'Username or email',
       'type': 'text',
       'validator': 'username',
       'errorMessage': 'Invalid username'

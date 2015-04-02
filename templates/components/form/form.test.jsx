@@ -6,7 +6,7 @@ var Form = require('./form.jsx');
 var fieldValues = [
   {
     'username': {
-      'placeholder': 'Username',
+      'placeholder': 'Username or email',
       'type': 'text',
       'validator': 'username'
     }
