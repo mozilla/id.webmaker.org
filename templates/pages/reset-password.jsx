@@ -82,7 +82,6 @@ var ResetPassword = React.createClass({
         redirectObj.query.response_type = queryObj.response_type;
         redirectObj.query.scopes = queryObj.scopes;
         ga.event({category: 'Reset Password', action: 'Successfully request new password'});
-        alert('yo')
         window.location = Url.format(redirectObj);
         return;
       }
@@ -96,7 +95,6 @@ var ResetPassword = React.createClass({
     if ( error ) {
       ga.event({category: 'Reset Password', action: 'Error form validation on reset password page'});
       console.error("validation error", error);
-      console.log({category: 'Reset Password', action: 'Error form validation on reset password page'})
       return;
     }
 
@@ -116,14 +114,14 @@ var ResetPassword = React.createClass({
           submitForm: true
         });
         ga.event({category: 'Reset Password', action: 'Successfully request password reset'});
-        console.log({category: 'Reset Password', action: 'Successfully request password reset'})
+
       } else if ( response.status === 400 ) {
         ga.event({category: 'Reset Password', action: 'Bad request for request password reset'});
-        console.log({category: 'Reset Password', action: 'Bad request for request password reset'})
+
         console.error("Bad Request", response.json());
       } else if ( response.status === 401 ) {
         ga.event({category: 'Reset Password', action: 'Unauthorized for request password reset'});
-        console.log({category: 'Reset Password', action: 'Bad request for request password reset'})
+
         console.error("Unauthorized", response.json());
       }
 

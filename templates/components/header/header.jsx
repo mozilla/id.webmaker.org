@@ -23,7 +23,6 @@ var Header = React.createClass({
     );
   },
   handleGA: function(name, origin) {
-    console.log({category: origin, action: 'Clicked on ' + name + ' link.'})
     ga.event({category: origin, action: 'Clicked on ' + name + ' link.'});
   }
 });

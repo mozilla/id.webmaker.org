@@ -41,7 +41,6 @@ var Form = React.createClass({
   dirty: function(id, origin) {
     return function(err, valid) {
       if(err) {
-        console.log({category: origin, action: 'Error on ' + id + ' field.'})
         ga.event({category: origin, action: 'Error on ' + id + ' field.'})
       }
       var dirty = this.state.dirty;

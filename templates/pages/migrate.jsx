@@ -50,7 +50,6 @@ var UserMigration = React.createClass({
       setKey: true
     });
     ga.event({category: 'Migration', action: 'Request password'});
-    console.log({category: 'Migration', action: 'Request password'})
   },
   handleSetKey: function(error, data) {
     if(error) {
@@ -62,7 +61,6 @@ var UserMigration = React.createClass({
       setPass: true
     });
     ga.event({category: 'Migration', action: 'Paste token from email'});
-    console.log({category: 'Migration', action: 'Paste token from email'})
   },
   handleResetPassword: function(error, data) {
     if(error) {
@@ -74,7 +72,6 @@ var UserMigration = React.createClass({
       success: true
     });
     ga.event({category: 'Migration', action: 'Set new password'});
-    console.log({category: 'Migration', action: 'Set new password'});
   }
 });
 

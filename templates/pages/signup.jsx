@@ -104,7 +104,6 @@ var Signup = React.createClass({
         redirectObj = Url.parse("/login/oauth/authorize", true);
         redirectObj.query = queryObj;
         ga.event({category: 'Signup', action: 'Successfully created an account'});
-        alert('done')
         window.location = Url.format(redirectObj);
       }
     }).catch(function(ex) {

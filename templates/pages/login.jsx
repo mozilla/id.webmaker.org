@@ -55,14 +55,12 @@ var Login = React.createClass({
     form.processFormData(this.handleFormData);
   },
   handleGA: function(name) {
-    console.log({category: 'Login', action: 'Clicked on ' + name + ' link.'})
     ga.event({category: 'Login', action: 'Clicked on ' + name + ' link.'});
   },
   handleFormData: function(error, data) {
     if ( error ) {
       ga.event({category: 'Login', action: 'Error during form validation'})
       console.error('validation error', error);
-      console.log({category: 'Login', action: 'Error during form validation'})
       return;
     }
     var queryObj = Url.parse(window.location.href, true).query;
@@ -82,7 +80,6 @@ var Login = React.createClass({
         redirectObj = Url.parse('/login/oauth/authorize', true);
         redirectObj.query = queryObj;
         ga.event({category: 'Login', action: 'Logged in successfully'})
-        alert({category: 'Login', action: 'Logged in successfully'})
         window.location = Url.format(redirectObj);
       }
       // handle errors!
