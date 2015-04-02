@@ -115,11 +115,11 @@ module.exports = function(options) {
       }
     },
     {
-      method: 'GET',
+      method: 'POST',
       path: '/login/oauth/access_token',
       config: {
         validate: {
-          query: {
+          payload: {
             code: Joi.string().required(),
             client_id: Joi.string().required(),
             client_secret: Joi.string().required(),
@@ -134,11 +134,11 @@ module.exports = function(options) {
           {
             assign: 'client',
             method: function(request, reply) {
-              oauthDb.getClient(request.query.client_id, function(err, client) {
+              oauthDb.getClient(request.payload.client_id, function(err, client) {
                 if ( err ) {
                   return reply(err);
                 }
-                if ( client.client_secret !== request.query.client_secret ) {
+                if ( client.client_secret !== request.payload.client_secret ) {
                   return reply(Boom.forbidden('Invalid Client Credentials'));
                 }
                 reply(client);
@@ -148,7 +148,7 @@ module.exports = function(options) {
           {
             assign: 'authCode',
             method: function(request, reply) {
-              oauthDb.verifyAuthCode(request.query.code, request.pre.client.client_id, reply);
+              oauthDb.verifyAuthCode(request.payload.code, request.pre.client.client_id, reply);
             }
           },
           {
@@ -166,14 +166,13 @@ module.exports = function(options) {
         ]
       },
       handler: function(request, reply) {
-        var redirectObj = url.parse(request.pre.client.redirect_uri, true);
-        redirectObj.search = null;
-        redirectObj.query.access_token = request.pre.accessToken.access_token;
-        redirectObj.query.scopes = request.pre.accessToken.scopes;
-        redirectObj.query.type = 'bearer';
-        var redirectUri = url.format(redirectObj);
+        var responseObj = {
+          access_token: request.pre.accessToken.access_token,
+          scopes: request.pre.accessToken.scopes,
+          token_type: 'bearer'
+        };
 
-        reply.redirect(redirectUri);
+        reply(responseObj);
       }
     },
     {

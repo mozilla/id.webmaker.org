@@ -397,11 +397,12 @@ lab.experiment("OAuth", function() {
     }
   };
 
-  lab.test("GET access_token", function(done) {
+  lab.test("POST access_token", function(done) {
     ls.start(function(error) {
       var accessTokenRequest = {
-        method: "GET",
-        url: "/login/oauth/access_token?client_id=test&client_secret=test&grant_type=authorization_code",
+        method: "POST",
+        url: "/login/oauth/access_token",
+        payload: "client_id=test&client_secret=test&grant_type=authorization_code",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         }
@@ -409,32 +410,25 @@ lab.experiment("OAuth", function() {
 
       s.inject(authTokenRequest, function(authTokResponse) {
         var redirectUri = url.parse(authTokResponse.headers.location, true);
-        accessTokenRequest.url += "&code=" + redirectUri.query.code;
+        accessTokenRequest.payload += "&code=" + redirectUri.query.code;
 
         s.inject(accessTokenRequest, function(response) {
-          Code.expect(response.statusCode).to.equal(302);
-          Code.expect(response.headers.location).to.exist();
-
-          var redirectUri = url.parse(response.headers.location, true);
-
-          Code.expect(redirectUri.protocol).to.equal("http:");
-          Code.expect(redirectUri.host).to.equal("example.org");
-          Code.expect(redirectUri.pathname).to.equal("/oauth_redirect");
-          Code.expect(redirectUri.query.access_token).to.be.a.string();
-          Code.expect(redirectUri.query.scopes).to.equal("user");
-          Code.expect(redirectUri.query.type).to.equal("bearer");
-
+          Code.expect(response.statusCode).to.equal(200);
+          Code.expect(response.result.access_token).to.be.a.string();
+          Code.expect(response.result.scopes).to.equal("user");
+          Code.expect(response.result.token_type).to.equal("bearer");
           done();
         });
       });
     });
   });
 
-  lab.test("GET access_token - unknown client_id", function(done) {
+  lab.test("POST access_token - unknown client_id", function(done) {
     ls.start(function(error) {
       var accessTokenRequest = {
-        method: "GET",
-        url: "/login/oauth/access_token?client_id=fake&client_secret=test&grant_type=authorization_code",
+        method: "POST",
+        url: "/login/oauth/access_token",
+        payload: "client_id=fake&client_secret=test&grant_type=authorization_code",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         }
@@ -442,7 +436,7 @@ lab.experiment("OAuth", function() {
 
       s.inject(authTokenRequest, function(authTokResponse) {
         var redirectUri = url.parse(authTokResponse.headers.location, true);
-        accessTokenRequest.url += "&code=" + redirectUri.query.code;
+        accessTokenRequest.payload += "&code=" + redirectUri.query.code;
 
         s.inject(accessTokenRequest, function(response) {
           Code.expect(response.statusCode).to.equal(400);
@@ -453,11 +447,12 @@ lab.experiment("OAuth", function() {
     });
   });
 
-  lab.test("GET access_token - invalid client_secret", function(done) {
+  lab.test("POST access_token - invalid client_secret", function(done) {
     ls.start(function(error) {
       var accessTokenRequest = {
-        method: "GET",
-        url: "/login/oauth/access_token?client_id=test&client_secret=fake&grant_type=authorization_code",
+        method: "POST",
+        url: "/login/oauth/access_token",
+        payload: "client_id=test&client_secret=fake&grant_type=authorization_code",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         }
@@ -465,7 +460,7 @@ lab.experiment("OAuth", function() {
 
       s.inject(authTokenRequest, function(authTokResponse) {
         var redirectUri = url.parse(authTokResponse.headers.location, true);
-        accessTokenRequest.url += "&code=" + redirectUri.query.code;
+        accessTokenRequest.payload += "&code=" + redirectUri.query.code;
 
         s.inject(accessTokenRequest, function(response) {
           Code.expect(response.statusCode).to.equal(403);
@@ -476,11 +471,12 @@ lab.experiment("OAuth", function() {
     });
   });
 
-  lab.test("GET access_token - invalid auth code", function(done) {
+  lab.test("POST access_token - invalid auth code", function(done) {
     ls.start(function(error) {
       var accessTokenRequest = {
-        method: "GET",
-        url: "/login/oauth/access_token?client_id=test&client_secret=test&code=fake&grant_type=authorization_code",
+        method: "POST",
+        url: "/login/oauth/access_token",
+        payload: "client_id=test&client_secret=test&code=fake&grant_type=authorization_code",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         }
@@ -493,11 +489,12 @@ lab.experiment("OAuth", function() {
     });
   });
 
-  lab.test("GET access_token - invalid client id", function(done) {
+  lab.test("POST access_token - invalid client id", function(done) {
     ls.start(function(error) {
       var accessTokenRequest = {
-        method: "GET",
-        url: "/login/oauth/access_token?client_id=test2&client_secret=test2&grant_type=authorization_code",
+        method: "POST",
+        url: "/login/oauth/access_token",
+        payload: "client_id=test2&client_secret=test2&grant_type=authorization_code",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         }
@@ -505,7 +502,7 @@ lab.experiment("OAuth", function() {
 
       s.inject(authTokenRequest, function(authTokResponse) {
         var redirectUri = url.parse(authTokResponse.headers.location, true);
-        accessTokenRequest.url += "&code=" + redirectUri.query.code;
+        accessTokenRequest.payload += "&code=" + redirectUri.query.code;
 
         s.inject(accessTokenRequest, function(response) {
           Code.expect(response.statusCode).to.equal(403);
@@ -515,11 +512,12 @@ lab.experiment("OAuth", function() {
     });
   });
 
-  lab.test("GET access_token - invalid grant_type", function(done) {
+  lab.test("POST access_token - invalid grant_type", function(done) {
     ls.start(function(error) {
       var accessTokenRequest = {
-        method: "GET",
-        url: "/login/oauth/access_token?client_id=test&client_secret=test&grant_type=client_credentials",
+        method: "POST",
+        url: "/login/oauth/access_token",
+        payload: "client_id=test&client_secret=test&grant_type=client_credentials",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         }
@@ -527,23 +525,24 @@ lab.experiment("OAuth", function() {
 
       s.inject(authTokenRequest, function(authTokResponse) {
         var redirectUri = url.parse(authTokResponse.headers.location, true);
-        accessTokenRequest.url += "&code=" + redirectUri.query.code;
+        accessTokenRequest.payload += "&code=" + redirectUri.query.code;
 
         s.inject(accessTokenRequest, function(response) {
           Code.expect(response.statusCode).to.equal(400);
           Code.expect(response.result).to.exist();
-          Code.expect(response.result.message).to.equal("invalid query: grant_type");
+          Code.expect(response.result.message).to.equal("invalid payload: grant_type");
           done();
         });
       });
     });
   });
 
-  lab.test("GET access_token - missing client_id", function(done) {
+  lab.test("POST access_token - missing client_id", function(done) {
     ls.start(function(error) {
       var accessTokenRequest = {
-        method: "GET",
-        url: "/login/oauth/access_token?client_secret=test&grant_type=authorization_code",
+        method: "POST",
+        url: "/login/oauth/access_token",
+        payload: "client_secret=test&grant_type=authorization_code",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         }
@@ -551,22 +550,23 @@ lab.experiment("OAuth", function() {
 
       s.inject(authTokenRequest, function(authTokResponse) {
         var redirectUri = url.parse(authTokResponse.headers.location, true);
-        accessTokenRequest.url += "&code=" + redirectUri.query.code;
+        accessTokenRequest.payload += "&code=" + redirectUri.query.code;
 
         s.inject(accessTokenRequest, function(response) {
           Code.expect(response.statusCode).to.equal(400);
-          Code.expect(response.result.message).to.equal("invalid query: client_id");
+          Code.expect(response.result.message).to.equal("invalid payload: client_id");
           done();
         });
       });
     });
   });
 
-  lab.test("GET access_token - missing client_secret", function(done) {
+  lab.test("POST access_token - missing client_secret", function(done) {
     ls.start(function(error) {
       var accessTokenRequest = {
-        method: "GET",
-        url: "/login/oauth/access_token?client_id=test&grant_type=client_credentials",
+        method: "POST",
+        url: "/login/oauth/access_token",
+        payload: "client_id=test&grant_type=client_credentials",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         }
@@ -574,22 +574,23 @@ lab.experiment("OAuth", function() {
 
       s.inject(authTokenRequest, function(authTokResponse) {
         var redirectUri = url.parse(authTokResponse.headers.location, true);
-        accessTokenRequest.url += "&code=" + redirectUri.query.code;
+        accessTokenRequest.payload += "&code=" + redirectUri.query.code;
 
         s.inject(accessTokenRequest, function(response) {
           Code.expect(response.statusCode).to.equal(400);
-          Code.expect(response.result.message).to.equal("invalid query: client_secret");
+          Code.expect(response.result.message).to.equal("invalid payload: client_secret");
           done();
         });
       });
     });
   });
 
-  lab.test("GET access_token - missing grant_type", function(done) {
+  lab.test("POST access_token - missing grant_type", function(done) {
     ls.start(function(error) {
       var accessTokenRequest = {
-        method: "GET",
-        url: "/login/oauth/access_token?client_id=test&client_secret=test",
+        method: "POST",
+        url: "/login/oauth/access_token",
+        payload: "client_id=test&client_secret=test",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         }
@@ -597,11 +598,11 @@ lab.experiment("OAuth", function() {
 
       s.inject(authTokenRequest, function(authTokResponse) {
         var redirectUri = url.parse(authTokResponse.headers.location, true);
-        accessTokenRequest.url += "&code=" + redirectUri.query.code;
+        accessTokenRequest.payload += "&code=" + redirectUri.query.code;
 
         s.inject(accessTokenRequest, function(response) {
           Code.expect(response.statusCode).to.equal(400);
-          Code.expect(response.result.message).to.equal("invalid query: grant_type");
+          Code.expect(response.result.message).to.equal("invalid payload: grant_type");
           done();
         });
       });
