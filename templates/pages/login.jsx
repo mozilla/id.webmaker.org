@@ -33,6 +33,10 @@ var fieldValidators = validators.getValidatorSet(fieldValues);
 
 // This wraps every view
 var Login = React.createClass({
+  mixins: [
+    Router.Navigation,
+    Router.State
+  ],
   componentDidMount: function() {
     document.title = "Webmaker Login - Login";
   },
@@ -47,12 +51,42 @@ var Login = React.createClass({
         <Header origin="Login" className="mobileHeader" redirectLabel="Signup" redirectPage="signup" redirectQuery={queryObj} mobile />
 
         <div className="loginPage innerForm centerDiv">
-          <Form ref="userform" fields={fieldValues} validators={fieldValidators} origin="Login" />
+          <Form ref="userform" fields={fieldValues} validators={fieldValidators} origin="Login" onInputBlur={this.handleBlur} />
           <button onClick={this.processFormData} className="btn btn-awsm">{buttonText}</button>
           <Link onClick={this.handleGA.bind(this, 'Forgot your password')} to="reset-password" query={queryObj} className="need-help">Forgot your password?</Link>
         </div>
       </div>
     );
+  },
+  handleBlur: function(fieldName, value) {
+    if ( fieldName === 'username' && value ) {
+      this.checkUsername(value);
+    }
+  },
+  checkUsername: function(username) {
+    fetch('/check-username', {
+      method: 'post',
+      headers: {
+        'Accept': 'application/json; charset=utf-8',
+        'Content-Type': 'application/json; charset=utf-8'
+      },
+      body: JSON.stringify({
+        uid: username
+      })
+    }).then((response) => {
+      return response.json();
+    }).then((json) => {
+      var query;
+      if ( !json.exists ) {
+        // some UI cue?
+      } else if ( !json.usePasswordLogin ) {
+        query = this.getQuery();
+        query.username = username;
+        this.transitionTo('/migrate', '', query );
+      }
+    }).catch((ex) => {
+      console.error("Request failed");
+    });
   },
   processFormData: function() {
     var form = this.refs.userform;

@@ -46,6 +46,9 @@ var Form = React.createClass({
       var dirty = this.state.dirty;
       dirty[id] = true;
       this.setState({dirty: dirty});
+      if ( this.props.onInputBlur ) {
+        this.props.onInputBlur(id, this.state.username);
+      }
     }.bind(this);
   },
   buildFormElement: function(key, i) {

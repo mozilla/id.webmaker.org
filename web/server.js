@@ -373,6 +373,106 @@ module.exports = function(options) {
 
         reply(responseObj);
       }
+    },
+    {
+      method: 'POST',
+      path: '/request-migration-email',
+      config: {
+        auth: false
+      },
+      handler: function(request, reply) {
+        account.requestMigrateEmail(request, function(err, json) {
+          if ( err ) {
+            if ( err.isBoom ) {
+              return reply(err);
+            }
+            return reply(Boom.badImplementation(err));
+          }
+          if ( json.error ) {
+            return reply(Boom.badImplementation(json.error));
+          }
+          request.auth.session.set({
+            username: request.payload.username,
+            isMigrating: true
+          });
+          reply({ status: 'migration email sent' });
+        });
+      }
+    },
+    {
+      method: 'POST',
+      path: '/migrate-user',
+      config: {
+        pre: [
+          {
+            assign: 'username',
+            method: function(request, reply) {
+              if ( !request.auth.isAuthenticated ) {
+                return reply(Boom.unauthorized('unauthorized'));
+              }
+
+              if ( !request.auth.credentials.isMigrating ) {
+                return reply(Boom.unauthorized('Your account has already been migrated'));
+              }
+
+              reply(request.auth.credentials.username);
+            }
+          }
+        ]
+      },
+      handler: function(request, reply) {
+        account.verifyToken(request, function(err, json) {
+          if ( err ) {
+            if ( err.isBoom ) {
+              return reply(err);
+            }
+            return reply(Boom.badImplementation(err));
+          }
+          if ( json.error ) {
+            return reply(Boom.badImplementation(json.error));
+          }
+
+          account.setPassword(request, function(err, json) {
+            if ( err ) {
+              if ( err.isBoom ) {
+                return reply(err);
+              }
+              return reply(Boom.badImplementation(err));
+            }
+            if ( json.error ) {
+              return reply(Boom.badImplementation(json.error));
+            }
+
+            request.auth.session.set(json.user);
+            reply({ status: 'Logged in' });
+          });
+        });
+      }
+    },
+    {
+      method: 'POST',
+      path: '/check-username',
+      config: {
+        auth: false
+      },
+      handler: function(request, reply) {
+        account.checkUsername(request, function(err, json) {
+          if ( err ) {
+            if ( err.isBoom ) {
+              if ( err.output.statusCode === 404 ) {
+                return reply({ exists: false });
+              }
+              return reply(err);
+            }
+            return reply(Boom.badImplementation(err));
+          }
+          if ( json.error ) {
+            return reply(Boom.badImplementation(json.error));
+          }
+
+          reply(json);
+        });
+      }
     }
   ]);
 

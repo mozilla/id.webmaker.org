@@ -38,6 +38,7 @@
   "homepage": "https://github.com/mozilla/id.webmaker.org",
   "dependencies": {
     "autoless": "^0.1.6",
+    "babel-loader": "^5.0.0",
     "boom": "^2.6.1",
     "bootstrap": "^3.3.4",
     "es5-shim": "^4.1.0",

@@ -18,8 +18,8 @@ var LoginNoPassword = React.createClass({
   render: function() {
     return (
       <div className="loginNoPass innerForm centerDiv">
-        <Form origin="Migration" ref="userform" fields={fields} validators={fieldsValidators} />
-        <button onClick={this.processFormData} className="btn btn-awsm">Log in</button>
+        <Form origin="Migration" ref="userform" fields={fields} validators={fieldsValidators} defaultUsername={this.props.username} />
+        <button onClick={this.processFormData} className="btn btn-awsm">Set Password</button>
       </div>
     );
   },
