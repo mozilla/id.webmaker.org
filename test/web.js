@@ -291,9 +291,9 @@ lab.experiment("OAuth", function() {
       var request = {
         method: "POST",
         url: "/login",
-        payload: {
+        credentials: {
           uid: "webmaker",
-          password: "notThePassword"
+          email: "webmaker@exzample.com"
         }
       };
 
