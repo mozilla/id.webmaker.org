@@ -45,7 +45,7 @@ var Login = React.createClass({
         <div className="loginPage innerForm centerDiv">
           <Form ref="userform" fields={fieldValues} validators={fieldValidators} />
           <button onClick={this.processFormData} className="btn btn-awsm">{buttonText}</button>
-          <Link to="reset-password" query={queryObj} className="need-help">Forgot password?</Link>
+          <Link to="reset-password" query={queryObj} className="need-help">Forgot your password?</Link>
         </div>
       </div>
     );
