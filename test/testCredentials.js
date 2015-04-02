@@ -31,7 +31,7 @@ module.exports = {
       access_token: 'testAccessToken',
       client_id: 'test',
       user_id: 'test',
-      scopes: 'user',
+      scopes: 'user email',
       expires_at: Date.now() + 60 * 1000
     }, {
       access_token: 'expiredAccessToken',

@@ -5,6 +5,7 @@ var Joi = require('joi');
 var Path = require('path');
 var url = require('url');
 var OAuthDB = require('../lib/oauth-db');
+var Scopes = require('../lib/scopes');
 
 module.exports = function(options) {
   var server = new Hapi.Server({
@@ -243,7 +244,7 @@ module.exports = function(options) {
     {
       method: 'POST',
       path: '/create-user',
-      config:{
+      config: {
         auth: false
       },
       handler: function(request, reply) {
@@ -290,6 +291,75 @@ module.exports = function(options) {
         var redirectObj = url.parse(request.pre.redirectUri, true);
         redirectObj.query.logout = true;
         reply.redirect(url.format(redirectObj));
+      }
+    },
+    {
+      method: 'GET',
+      path: '/user',
+      config: {
+        auth: false,
+        pre: [
+          {
+            assign: 'requestToken',
+            method: function(request, reply) {
+              var tokenHeader = request.headers.authorization || '';
+              tokenHeader = tokenHeader.split(' ');
+
+              if ( tokenHeader[0] !== 'token' || !tokenHeader[1] ) {
+                return reply(Boom.unauthorized('Missing or invalid authorization header'));
+              }
+
+              reply(tokenHeader[1]);
+            }
+          },
+          {
+            assign: 'token',
+            method: function(request, reply) {
+              oauthDb.lookupAccessToken(request.pre.requestToken, function(err, token) {
+                if ( err ) {
+                  return reply(err);
+                }
+
+                if ( token.expires_at <= Date.now() ) {
+                  return reply(Boom.unauthorized('Expired token'));
+                }
+
+                var tokenScopes = token.scopes.split(' ');
+
+                if ( tokenScopes.indexOf('user') === -1 && tokenScopes.indexOf('email') === -1 ) {
+                  reply(Boom.unauthorized('The token does not have the required scopes'));
+                }
+
+                reply(token);
+              });
+            }
+          },
+          {
+            assign: 'user',
+            method: function(request, reply) {
+              account.getUser(request.pre.token.user_id, function(err, json) {
+                if ( err ) {
+                  if ( err.isBoom ) {
+                    return reply(err);
+                  }
+                  return reply(Boom.badImplementation(err));
+                }
+                if ( json.error ) {
+                  return reply(Boom.badImplementation(json.error));
+                }
+                reply(json.user);
+              });
+            }
+          }
+        ]
+      },
+      handler: function(request, reply) {
+        var responseObj = Scopes.filterUserForScopes(
+          request.pre.user,
+          request.pre.token.scopes.split(' ')
+        );
+
+        reply(responseObj);
       }
     }
   ]);

@@ -98,6 +98,24 @@ module.exports = function() {
 
         reply(Boom.badImplementation('login API failure'));
       }
+    },
+    {
+      method: 'GET',
+      path: '/user/username/{username}',
+      handler: function(request, reply) {
+        var username = request.params.username;
+        if ( username === 'test') {
+          return reply({
+            user: {
+              username: 'test',
+              email: 'test@example.com'
+            }
+          })
+          .type('application/json');
+        }
+
+        reply(Boom.badImplementation('login API failure'));
+      }
     }
   ]);
 

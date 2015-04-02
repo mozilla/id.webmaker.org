@@ -616,4 +616,91 @@ lab.experiment("OAuth", function() {
       });
     });
   });
+
+  lab.test("GET /user", function(done) {
+    ls.start(function(error) {
+      var accessTokenRequest = {
+        method: "GET",
+        url: "/user",
+        headers: {
+          "authorization": "token testAccessToken"
+        }
+      };
+
+      s.inject(accessTokenRequest, function(response) {
+        Code.expect(response.statusCode).to.equal(200);
+        Code.expect(response.result.username).to.equal("test");
+        Code.expect(response.result.email).to.equal("test@example.com");
+        done();
+      });
+    });
+  });
+
+  lab.test("GET /user invalid auth", function(done) {
+    ls.start(function(error) {
+      var accessTokenRequest = {
+        method: "GET",
+        url: "/user",
+        headers: {
+          "authorization": "basic nonsenseauthheader"
+        }
+      };
+
+      s.inject(accessTokenRequest, function(response) {
+        Code.expect(response.statusCode).to.equal(401);
+        done();
+      });
+    });
+  });
+
+  lab.test("GET /user invalid auth", function(done) {
+    ls.start(function(error) {
+      var accessTokenRequest = {
+        method: "GET",
+        url: "/user",
+        headers: {
+          "authorization": "token"
+        }
+      };
+
+      s.inject(accessTokenRequest, function(response) {
+        Code.expect(response.statusCode).to.equal(401);
+        done();
+      });
+    });
+  });
+
+  lab.test("GET /user invalid auth", function(done) {
+    ls.start(function(error) {
+      var accessTokenRequest = {
+        method: "GET",
+        url: "/user",
+        headers: {
+          "authorization": "token fakeToken"
+        }
+      };
+
+      s.inject(accessTokenRequest, function(response) {
+        Code.expect(response.statusCode).to.equal(401);
+        done();
+      });
+    });
+  });
+
+  lab.test("GET /user invalid auth", function(done) {
+    ls.start(function(error) {
+      var accessTokenRequest = {
+        method: "GET",
+        url: "/user",
+        headers: {
+          "authorization": "token expiredAccessToken"
+        }
+      };
+
+      s.inject(accessTokenRequest, function(response) {
+        Code.expect(response.statusCode).to.equal(401);
+        done();
+      });
+    });
+  });
 });
