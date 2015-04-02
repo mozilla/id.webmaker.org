@@ -5,6 +5,7 @@ var LoginNoPasswordForm = require('../components/login-no-pass-form.jsx');
 var MigrateKeyForm = require('../components/migrate-key-form.jsx');
 var SetPasswordMigrationForm = require('../components/set-password-migration-form.jsx');
 var IconText = require('../components/icontext.jsx');
+var ga = require('react-ga');
 
 var UserMigration = React.createClass({
   getInitialState: function() {
@@ -12,7 +13,7 @@ var UserMigration = React.createClass({
       login: false,
       setKey: false,
       setPass: false,
-      success: true
+      success: false
     };
   },
   render: function() {
@@ -33,38 +34,44 @@ var UserMigration = React.createClass({
     }
     return (
       <div>
-        <Header className="desktopHeader"/>
-        <Header className="mobileHeader" redirectLabel="Signup" redirectPage="signup" mobile />
+        <Header origin="Migration" className="desktopHeader"/>
+        <Header origin="Migration" className="mobileHeader" redirectLabel="Signup" redirectPage="signup" mobile />
         {content}
       </div>
     );
   },
   handleLogin: function(error, data) {
-    console.log("inside App we see:", error, data);
-    if(!error) {
-      this.setState({
-        login: false,
-        setKey: true
-      });
+    if(error) {
+      console.log("inside App we see:", error, data);
+      return;
     }
+    this.setState({
+      login: false,
+      setKey: true
+    });
+    ga.event({category: 'Migration', action: 'Request password'});
   },
   handleSetKey: function(error, data) {
-    console.log("inside App we see:", error, data);
-    if(!error) {
-      this.setState({
-        setKey: false,
-        setPass: true
-      });
+    if(error) {
+      console.log("inside App we see:", error, data);
+      return;
     }
+    this.setState({
+      setKey: false,
+      setPass: true
+    });
+    ga.event({category: 'Migration', action: 'Paste token from email'});
   },
   handleResetPassword: function(error, data) {
-    console.log("inside App we see:", error, data);
-    if(!error) {
-      this.setState({
-        setPass: false,
-        success: true
-      });
+    if(error) {
+      console.log("inside App we see:", error, data);
+      return;
     }
+    this.setState({
+      setPass: false,
+      success: true
+    });
+    ga.event({category: 'Migration', action: 'Set new password'});
   }
 });
 

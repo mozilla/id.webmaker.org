@@ -19,7 +19,7 @@ var RequestResetPassword = React.createClass({
   render: function() {
     return (
       <div className="requestPassword innerForm centerDiv">
-        <Form ref="userform" fields={fields} validators={fieldsValidators} />
+        <Form origin="Reset Password" ref="userform" fields={fields} validators={fieldsValidators} />
         <button onClick={this.processFormData} className="btn btn-awsm">Set a new password</button>
       </div>
     );
