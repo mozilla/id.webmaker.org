@@ -4,7 +4,7 @@
   "description": "OAuth 2.0 identity provider for Webmaker https://id.webmaker.org",
   "main": "index.js",
   "scripts": {
-    "start": "parallelshell \"npm run watch:css\" \"npm run watch:js\" \"node web/index.js\"",
+    "start": "parallelshell \"node web/index.js\" \"npm run watch:css\" \"npm run watch:js\"",
     "test": "npm run test:server && npm run test:browser && npm run lint",
     "build": "npm run build:css && npm run build:js",
     "build:css": "npm run watch:css -- --no-watch",

@@ -8,6 +8,7 @@ var Router = require('react-router');
 
 
 var Url = require('url');
+var ga = require('react-ga');
 require('whatwg-fetch');
 
 // This wraps every view
@@ -21,6 +22,7 @@ var ResetPassword = React.createClass({
     };
   },
   render: function() {
+    var emailText = "We've emailed you instructions for creating a new password.";
     var linkQuery = {};
     linkQuery.client_id = this.state.queryObj.client_id;
     linkQuery.state = this.state.queryObj.state;
@@ -28,8 +30,8 @@ var ResetPassword = React.createClass({
     linkQuery.response_type = this.state.queryObj.response_type;
     return (
       <div>
-        <Header className="desktopHeader" redirectQuery={linkQuery} />
-        <Header className="mobileHeader" redirectLabel="Signup" redirectPage="signup" redirectQuery={linkQuery} mobile />
+        <Header origin="Reset Password" className="desktopHeader" redirectQuery={linkQuery} />
+        <Header origin="Reset Password" className="mobileHeader" redirectLabel="Signup" redirectPage="signup" redirectQuery={linkQuery} mobile />
 
         <div className="resetPasswordPage">
             {!this.state.submitForm && !this.state.email ?
@@ -42,7 +44,7 @@ var ResetPassword = React.createClass({
                 className="emailSent centerDiv"
                 headerClass="emailSentHeader"
                 header="Check your email">
-                  <p>We&rsquo;ve emailed you instructions for creating a new password.</p>
+                  <p>{emailText}</p>
               </IconText> : false}
             {this.state.email ?
               <ResetView username={this.state.queryObj.uid} submitForm={this.handleRequestPassword}/> : false
@@ -53,6 +55,7 @@ var ResetPassword = React.createClass({
   },
   handleRequestPassword: function(error, data) {
     if ( error ) {
+      ga.event({category: 'Reset Password', action: 'Error during form validation'});
       console.error("validation error", error);
       return;
     }
@@ -78,16 +81,19 @@ var ResetPassword = React.createClass({
         redirectObj.query.state = queryObj.state;
         redirectObj.query.response_type = queryObj.response_type;
         redirectObj.query.scopes = queryObj.scopes;
+        ga.event({category: 'Reset Password', action: 'Successfully request new password'});
         window.location = Url.format(redirectObj);
         return;
       }
       // handle errors!
     }.bind(this)).catch(function(ex) {
+      ga.event({category: 'Reset Password', action: 'Error parsing response from the server'});
       console.error('Error parsing response', ex);
     });
   },
   handleResetPassword: function(error, data) {
     if ( error ) {
+      ga.event({category: 'Reset Password', action: 'Error', label: 'Error during form validation'});
       console.error("validation error", error);
       return;
     }
@@ -107,13 +113,19 @@ var ResetPassword = React.createClass({
         this.setState({
           submitForm: true
         });
+        ga.event({category: 'Reset Password', action: 'Successfully request password reset'});
+
       } else if ( response.status === 400 ) {
+        ga.event({category: 'Reset Password', action: 'Error', label: 'Bad request for request password reset'});
+
         console.error("Bad Request", response.json());
       } else if ( response.status === 401 ) {
+        ga.event({category: 'Reset Password', action: 'Error', label: 'Unauthorized for request password reset'});
         console.error("Unauthorized", response.json());
       }
 
     }.bind(this)).catch(function(ex) {
+      ga.event({category: 'Reset Password', action: 'Error', label: 'Error parsing response from the server'});
       console.error('Error parsing response', ex);
     });
   }

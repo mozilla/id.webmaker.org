@@ -5,6 +5,7 @@ var LoginNoPasswordForm = require('../components/login-no-pass-form.jsx');
 var MigrateKeyForm = require('../components/migrate-key-form.jsx');
 var SetPasswordMigrationForm = require('../components/set-password-migration-form.jsx');
 var IconText = require('../components/icontext.jsx');
+var ga = require('react-ga');
 
 var UserMigration = React.createClass({
   getInitialState: function() {
@@ -33,14 +34,15 @@ var UserMigration = React.createClass({
     }
     return (
       <div>
-        <Header className="desktopHeader"/>
-        <Header className="mobileHeader" redirectLabel="Signup" redirectPage="signup" mobile />
+        <Header origin="Migration" className="desktopHeader"/>
+        <Header origin="Migration" className="mobileHeader" redirectLabel="Signup" redirectPage="signup" mobile />
         {content}
       </div>
     );
   },
   handleLogin: function(error, data) {
     if(error) {
+      ga.event({category: 'Migration', action: 'Error', label: 'Error Handling Reset Password'});
       console.error("inside App we see:", error, data);
       return;
     }
@@ -48,6 +50,7 @@ var UserMigration = React.createClass({
       login: false,
       setKey: true
     });
+    ga.event({category: 'Migration', action: 'Request password'});
   },
   handleSetKey: function(error, data) {
     if(error) {
@@ -58,9 +61,11 @@ var UserMigration = React.createClass({
       setKey: false,
       setPass: true
     });
+    ga.event({category: 'Migration', action: 'Paste token from email'});
   },
   handleResetPassword: function(error, data) {
     if(error) {
+      ga.event({category: 'Migration', action: 'Error', label: 'Error Handling Set Key'});
       console.error("inside App we see:", error, data);
       return;
     }
@@ -68,6 +73,7 @@ var UserMigration = React.createClass({
       setPass: false,
       success: true
     });
+    ga.event({category: 'Migration', action: 'Set new password'});
   }
 });
 
