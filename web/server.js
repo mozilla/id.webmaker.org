@@ -38,7 +38,7 @@ module.exports = function(options) {
     uri: options.uri
   });
 
-  var oauthDb = new OAuthDB(options.oauth_clients);
+  var oauthDb = new OAuthDB(options.oauth_clients, options.authCodes, options.accessTokens);
 
   server.route([
     {

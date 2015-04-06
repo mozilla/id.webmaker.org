@@ -5,6 +5,8 @@ var options = {
   port: process.env.PORT,
   loginAPI: process.env.LOGINAPI,
   oauth_clients: process.env.OAUTH_DB ? JSON.parse(process.env.OAUTH_DB) : [],
+  authCodes: process.env.AUTH_CODES ? JSON.parse(process.env.AUTH_CODES) : {},
+  accessTokens: process.env.ACCESS_TOKENS ? JSON.parse(process.env.ACCESS_TOKENS) : [],
   cookieSecret: process.env.COOKIE_SECRET,
   secureCookies: process.env.SECURE_COOKIES === 'true',
   uri: process.env.URI
