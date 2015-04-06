@@ -305,25 +305,6 @@ lab.experiment("OAuth", function() {
     });
   });
 
-  lab.test("POST logout", function(done) {
-    var request = {
-      method: "POST",
-      url: "/logout",
-      payload: {
-        uid: "webmaker",
-        password: "notThePassword"
-      }
-    };
-
-    s.inject(request, function(response) {
-      Code.expect(response.statusCode).to.equal(200);
-      Code.expect(response.headers["set-cookie"][0]).to.equal(
-        "webmaker=; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Secure; HttpOnly; Path=/"
-      );
-      ls.stop(done);
-    });
-  });
-
   lab.test("GET authorize", function(done) {
     var request = {
       method: "GET",
@@ -347,6 +328,34 @@ lab.experiment("OAuth", function() {
       Code.expect(redirectUri.query.state).to.equal("test");
 
       done();
+    });
+  });
+
+  lab.test("POST logout - no client_id", function(done) {
+    var request = {
+      method: "POST",
+      url: "/logout",
+      payload: {
+        uid: "webmaker",
+        password: "notThePassword"
+      }
+    };
+
+    s.inject(request, function(response) {
+      Code.expect(response.statusCode).to.equal(302);
+      Code.expect(response.headers["set-cookie"][0]).to.equal(
+        "webmaker=; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Secure; HttpOnly; Path=/"
+      );
+
+      Code.expect(response.headers.location).to.exist();
+
+      var redirectUri = url.parse(response.headers.location, true);
+
+      Code.expect(redirectUri.protocol).to.equal("https:");
+      Code.expect(redirectUri.host).to.equal("webmaker.org");
+      Code.expect(redirectUri.query.logout).to.equal("true");
+
+      ls.stop(done);
     });
   });
 

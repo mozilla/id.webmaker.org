@@ -266,11 +266,30 @@ module.exports = function(options) {
       method: 'POST',
       path: '/logout',
       config: {
-        auth: false
+        auth: false,
+        pre: [
+          {
+            assign: 'redirectUri',
+            method: function(request, reply) {
+              if ( !request.query.client_id ) {
+                return reply('https://webmaker.org/?logout=true');
+              }
+              oauthDb.getClient(request.query.client_id, function(err, client) {
+                if ( err ) {
+                  return reply(err);
+                }
+                reply(client.redirect_uri);
+              });
+            }
+          }
+        ]
       },
       handler: function(request, reply) {
         request.auth.session.clear();
-        reply({ status: 'Logged out' });
+
+        var redirectObj = url.parse(request.pre.redirectUri, true);
+        redirectObj.query.logout = true;
+        reply.redirect(url.format(redirectObj));
       }
     }
   ]);
