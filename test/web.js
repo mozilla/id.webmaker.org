@@ -291,9 +291,9 @@ lab.experiment("OAuth", function() {
       var request = {
         method: "POST",
         url: "/login",
-        credentials: {
+        payload: {
           uid: "webmaker",
-          email: "webmaker@exzample.com"
+          password: "fake"
         }
       };
 
@@ -302,32 +302,6 @@ lab.experiment("OAuth", function() {
         Code.expect(response.headers["set-cookie"]).to.be.undefined();
         ls.stop(done);
       });
-    });
-  });
-
-  lab.test("GET authorize", function(done) {
-    var request = {
-      method: "GET",
-      url: "/login/oauth/authorize?client_id=test&scopes=user:email&state=test",
-      credentials: {
-        username: "webmaker",
-        email: "webmaker@example.org"
-      }
-    };
-
-    s.inject(request, function(response) {
-      Code.expect(response.statusCode).to.equal(302);
-      Code.expect(response.headers.location).to.exist();
-
-      var redirectUri = url.parse(response.headers.location, true);
-
-      Code.expect(redirectUri.protocol).to.equal("http:");
-      Code.expect(redirectUri.host).to.equal("example.org");
-      Code.expect(redirectUri.pathname).to.equal("/oauth_redirect");
-      Code.expect(redirectUri.query.code).to.be.a.string();
-      Code.expect(redirectUri.query.state).to.equal("test");
-
-      done();
     });
   });
 
@@ -386,7 +360,7 @@ lab.experiment("OAuth", function() {
     });
   });
 
-lab.test("GET logout - invalid client_id", function(done) {
+  lab.test("GET logout - invalid client_id", function(done) {
     var request = {
       method: "GET",
       url: "/logout?client_id=fake",
@@ -398,6 +372,32 @@ lab.test("GET logout - invalid client_id", function(done) {
     s.inject(request, function(response) {
       Code.expect(response.statusCode).to.equal(400);
       ls.stop(done);
+    });
+  });
+
+  lab.test("GET authorize", function(done) {
+    var request = {
+      method: "GET",
+      url: "/login/oauth/authorize?client_id=test&scopes=user:email&state=test",
+      credentials: {
+        username: "webmaker",
+        email: "webmaker@example.org"
+      }
+    };
+
+    s.inject(request, function(response) {
+      Code.expect(response.statusCode).to.equal(302);
+      Code.expect(response.headers.location).to.exist();
+
+      var redirectUri = url.parse(response.headers.location, true);
+
+      Code.expect(redirectUri.protocol).to.equal("http:");
+      Code.expect(redirectUri.host).to.equal("example.org");
+      Code.expect(redirectUri.pathname).to.equal("/oauth_redirect");
+      Code.expect(redirectUri.query.code).to.be.a.string();
+      Code.expect(redirectUri.query.state).to.equal("test");
+
+      done();
     });
   });
 
