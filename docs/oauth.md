@@ -151,6 +151,34 @@ To access the API using your access token, set the `Authorization` header for ea
 Authorization: token wm_token_rizCEigqRefeU8Na9JDmZJkzzQzgVZepHTWjiHbtQKsyotAqGZ
 ```
 
+### Logout
+
+To log out of id.webmaker.org, use the /logout route
+
+`GET https://id.webmaker.org/logout`
+
+**Parameters**
+
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>client_id</td>
+    <td>The client ID of the application to redirect back to after clearing the session cookie</td>
+  </tr>
+</table>
+
+**Example**
+
+`GET https://id.webmaker.org/logout?client_id=wm_id_BTQNPABtUqqApaDrcsDa`
+
+**Response**
+
+After a successfully clearing the session, you'll be redirected to the redirect_uri of the supplied client_id, with a `logout=true` in the search portion of the redirect URL
+
+e.g `https://example.org/oauth_redirect?logout=true`
 ## Scopes
 
 Scopes let you specify exactly what type of access you need. Scopes limit access for OAuth tokens.
