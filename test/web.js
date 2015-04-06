@@ -377,18 +377,6 @@ lab.experiment("OAuth", function() {
     });
   });
 
-  var authTokenRequest = {
-    method: "GET",
-    url: "/login/oauth/authorize?client_id=test&scopes=user&state=test",
-    credentials: {
-      username: "webmaker",
-      email: "webmaker@example.com"
-    },
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded"
-    }
-  };
-
   lab.test("POST access_token", function(done) {
     ls.start(function(error) {
       var accessTokenRequest = {

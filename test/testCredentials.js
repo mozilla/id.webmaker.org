@@ -5,9 +5,9 @@ module.exports = {
       client_secret: 'test',
       redirect_uri: 'http://example.org/oauth_redirect'
     }, {
-      client_id: "test2",
-      client_secret: "test2",
-      redirect_uri: "http://example2.org/oauth_redirect"
+      client_id: 'test2',
+      client_secret: 'test2',
+      redirect_uri: 'http://example2.org/oauth_redirect'
     }
   ],
 
