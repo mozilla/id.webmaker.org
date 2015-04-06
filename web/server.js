@@ -263,7 +263,7 @@ module.exports = function(options) {
       }
     },
     {
-      method: 'POST',
+      method: 'GET',
       path: '/logout',
       config: {
         auth: false,

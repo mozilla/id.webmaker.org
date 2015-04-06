@@ -331,13 +331,40 @@ lab.experiment("OAuth", function() {
     });
   });
 
-  lab.test("POST logout - no client_id", function(done) {
+  lab.test("GET logout", function(done) {
     var request = {
-      method: "POST",
+      method: "GET",
+      url: "/logout?client_id=test",
+      credentials: {
+        uid: "webmaker"
+      }
+    };
+
+    s.inject(request, function(response) {
+      Code.expect(response.statusCode).to.equal(302);
+      Code.expect(response.headers["set-cookie"][0]).to.equal(
+        "webmaker=; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Secure; HttpOnly; Path=/"
+      );
+
+      Code.expect(response.headers.location).to.exist();
+
+      var redirectUri = url.parse(response.headers.location, true);
+
+      Code.expect(redirectUri.protocol).to.equal("http:");
+      Code.expect(redirectUri.host).to.equal("example.org");
+      Code.expect(redirectUri.pathname).to.equal("/oauth_redirect");
+      Code.expect(redirectUri.query.logout).to.equal("true");
+
+      ls.stop(done);
+    });
+  });
+
+  lab.test("GET logout - no client_id", function(done) {
+    var request = {
+      method: "GET",
       url: "/logout",
-      payload: {
-        uid: "webmaker",
-        password: "notThePassword"
+      credentials: {
+        uid: "webmaker"
       }
     };
 
@@ -355,6 +382,21 @@ lab.experiment("OAuth", function() {
       Code.expect(redirectUri.host).to.equal("webmaker.org");
       Code.expect(redirectUri.query.logout).to.equal("true");
 
+      ls.stop(done);
+    });
+  });
+
+lab.test("GET logout - invalid client_id", function(done) {
+    var request = {
+      method: "GET",
+      url: "/logout?client_id=fake",
+      credentials: {
+        uid: "webmaker"
+      }
+    };
+
+    s.inject(request, function(response) {
+      Code.expect(response.statusCode).to.equal(400);
       ls.stop(done);
     });
   });
