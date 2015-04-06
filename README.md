@@ -53,7 +53,9 @@ You can configure the following environment variables:
 | HOST | host for this server. defaults to 0.0.0.0 |
 | PORT | port of this server, defaults to 0 (a random port above 1024) |
 | LOGINAPI | fully qualified login.wm.org URL e.g. https://user:password@login.webmaker.org |
-| OAUTH_DB | JSON array of oauth clients e.g. [{"client_id":"test", "client_secret":"test", "redirect_uri":"http://localhost:3000/account"}] |
+| OAUTH_DB | JSON array of oauth clients e.g. ```[{"client_id":"test", "client_secret":"test", "redirect_uri":"http://localhost:3000/account"}]``` |
+| AUTH_CODES | JSON Object containing oauth auth codes for testing purposes e.g. ```{"authcode": {"client_id": "test", "user_id": "test", "scopes":"user", "expiresAt": 1428342423255``` }} |
+| ACCESS_TOKENS | JSON array of testing access tokens e.g. ```{access_token: 'testAccessToken', client_id: 'test', user_id: 'test', scopes: 'user', expires_at: 1428342423255 }``` |
 | COOKIE_SECRET | A String value used to encrypt session cookies |
 | SECURE_COOKIES | set to `true` to indicate that the user agent should transmit the cookie only over a secure channel |
 | URI | The URI where the server is reachable at, used for reset email links |

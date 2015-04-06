@@ -4,6 +4,7 @@ var lab = exports.lab = Lab.script();
 
 var loginServer = require("./mock-login/server");
 var server = require("../web/server");
+var testCreds = require("./testCredentials");
 var url = require("url");
 
 lab.experiment("OAuth", function() {
@@ -11,18 +12,9 @@ lab.experiment("OAuth", function() {
     debug: false,
     loginAPI: "http://localhost:3232",
     cookieSecret: "test",
-    oauth_clients: [
-      {
-        client_id: "test",
-        client_secret: "test",
-        redirect_uri: "http://example.org/oauth_redirect"
-      },
-      {
-        client_id: "test2",
-        client_secret: "test2",
-        redirect_uri: "http://example2.org/oauth_redirect"
-      }
-    ]
+    oauth_clients: testCreds.clients,
+    authCodes: testCreds.authCodes,
+    accessTokens: testCreds.accessTokens
   });
 
   var ls = loginServer({
@@ -385,40 +377,23 @@ lab.experiment("OAuth", function() {
     });
   });
 
-  var authTokenRequest = {
-    method: "GET",
-    url: "/login/oauth/authorize?client_id=test&scopes=user&state=test",
-    credentials: {
-      username: "webmaker",
-      email: "webmaker@example.com"
-    },
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded"
-    }
-  };
-
   lab.test("POST access_token", function(done) {
     ls.start(function(error) {
       var accessTokenRequest = {
         method: "POST",
         url: "/login/oauth/access_token",
-        payload: "client_id=test&client_secret=test&grant_type=authorization_code",
+        payload: "client_id=test&client_secret=test&grant_type=authorization_code&code=test",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         }
       };
 
-      s.inject(authTokenRequest, function(authTokResponse) {
-        var redirectUri = url.parse(authTokResponse.headers.location, true);
-        accessTokenRequest.payload += "&code=" + redirectUri.query.code;
-
-        s.inject(accessTokenRequest, function(response) {
-          Code.expect(response.statusCode).to.equal(200);
-          Code.expect(response.result.access_token).to.be.a.string();
-          Code.expect(response.result.scopes).to.equal("user");
-          Code.expect(response.result.token_type).to.equal("bearer");
-          done();
-        });
+      s.inject(accessTokenRequest, function(response) {
+        Code.expect(response.statusCode).to.equal(200);
+        Code.expect(response.result.access_token).to.be.a.string();
+        Code.expect(response.result.scopes).to.equal("user");
+        Code.expect(response.result.token_type).to.equal("bearer");
+        done();
       });
     });
   });
@@ -428,21 +403,15 @@ lab.experiment("OAuth", function() {
       var accessTokenRequest = {
         method: "POST",
         url: "/login/oauth/access_token",
-        payload: "client_id=fake&client_secret=test&grant_type=authorization_code",
+        payload: "client_id=fake&client_secret=test&grant_type=authorization_code&code=test",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         }
       };
 
-      s.inject(authTokenRequest, function(authTokResponse) {
-        var redirectUri = url.parse(authTokResponse.headers.location, true);
-        accessTokenRequest.payload += "&code=" + redirectUri.query.code;
-
-        s.inject(accessTokenRequest, function(response) {
-          Code.expect(response.statusCode).to.equal(400);
-
-          done();
-        });
+      s.inject(accessTokenRequest, function(response) {
+        Code.expect(response.statusCode).to.equal(400);
+        done();
       });
     });
   });
@@ -452,21 +421,15 @@ lab.experiment("OAuth", function() {
       var accessTokenRequest = {
         method: "POST",
         url: "/login/oauth/access_token",
-        payload: "client_id=test&client_secret=fake&grant_type=authorization_code",
+        payload: "client_id=test&client_secret=fake&grant_type=authorization_code&code=test",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         }
       };
 
-      s.inject(authTokenRequest, function(authTokResponse) {
-        var redirectUri = url.parse(authTokResponse.headers.location, true);
-        accessTokenRequest.payload += "&code=" + redirectUri.query.code;
-
-        s.inject(accessTokenRequest, function(response) {
-          Code.expect(response.statusCode).to.equal(403);
-
-          done();
-        });
+      s.inject(accessTokenRequest, function(response) {
+        Code.expect(response.statusCode).to.equal(403);
+        done();
       });
     });
   });
@@ -494,20 +457,15 @@ lab.experiment("OAuth", function() {
       var accessTokenRequest = {
         method: "POST",
         url: "/login/oauth/access_token",
-        payload: "client_id=test2&client_secret=test2&grant_type=authorization_code",
+        payload: "client_id=test2&client_secret=test2&grant_type=authorization_code&code=test2",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         }
       };
 
-      s.inject(authTokenRequest, function(authTokResponse) {
-        var redirectUri = url.parse(authTokResponse.headers.location, true);
-        accessTokenRequest.payload += "&code=" + redirectUri.query.code;
-
-        s.inject(accessTokenRequest, function(response) {
-          Code.expect(response.statusCode).to.equal(403);
-          done();
-        });
+      s.inject(accessTokenRequest, function(response) {
+        Code.expect(response.statusCode).to.equal(403);
+        done();
       });
     });
   });
@@ -517,22 +475,17 @@ lab.experiment("OAuth", function() {
       var accessTokenRequest = {
         method: "POST",
         url: "/login/oauth/access_token",
-        payload: "client_id=test&client_secret=test&grant_type=client_credentials",
+        payload: "client_id=test&client_secret=test&grant_type=client_credentials&code=test",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         }
       };
 
-      s.inject(authTokenRequest, function(authTokResponse) {
-        var redirectUri = url.parse(authTokResponse.headers.location, true);
-        accessTokenRequest.payload += "&code=" + redirectUri.query.code;
-
-        s.inject(accessTokenRequest, function(response) {
-          Code.expect(response.statusCode).to.equal(400);
-          Code.expect(response.result).to.exist();
-          Code.expect(response.result.message).to.equal("invalid payload: grant_type");
-          done();
-        });
+      s.inject(accessTokenRequest, function(response) {
+        Code.expect(response.statusCode).to.equal(400);
+        Code.expect(response.result).to.exist();
+        Code.expect(response.result.message).to.equal("invalid payload: grant_type");
+        done();
       });
     });
   });
@@ -542,21 +495,16 @@ lab.experiment("OAuth", function() {
       var accessTokenRequest = {
         method: "POST",
         url: "/login/oauth/access_token",
-        payload: "client_secret=test&grant_type=authorization_code",
+        payload: "client_secret=test&grant_type=authorization_code&code=test",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         }
       };
 
-      s.inject(authTokenRequest, function(authTokResponse) {
-        var redirectUri = url.parse(authTokResponse.headers.location, true);
-        accessTokenRequest.payload += "&code=" + redirectUri.query.code;
-
-        s.inject(accessTokenRequest, function(response) {
-          Code.expect(response.statusCode).to.equal(400);
-          Code.expect(response.result.message).to.equal("invalid payload: client_id");
-          done();
-        });
+      s.inject(accessTokenRequest, function(response) {
+        Code.expect(response.statusCode).to.equal(400);
+        Code.expect(response.result.message).to.equal("invalid payload: client_id");
+        done();
       });
     });
   });
@@ -566,21 +514,16 @@ lab.experiment("OAuth", function() {
       var accessTokenRequest = {
         method: "POST",
         url: "/login/oauth/access_token",
-        payload: "client_id=test&grant_type=client_credentials",
+        payload: "client_id=test&grant_type=client_credentials&code=test",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         }
       };
 
-      s.inject(authTokenRequest, function(authTokResponse) {
-        var redirectUri = url.parse(authTokResponse.headers.location, true);
-        accessTokenRequest.payload += "&code=" + redirectUri.query.code;
-
-        s.inject(accessTokenRequest, function(response) {
-          Code.expect(response.statusCode).to.equal(400);
-          Code.expect(response.result.message).to.equal("invalid payload: client_secret");
-          done();
-        });
+      s.inject(accessTokenRequest, function(response) {
+        Code.expect(response.statusCode).to.equal(400);
+        Code.expect(response.result.message).to.equal("invalid payload: client_secret");
+        done();
       });
     });
   });
@@ -590,21 +533,16 @@ lab.experiment("OAuth", function() {
       var accessTokenRequest = {
         method: "POST",
         url: "/login/oauth/access_token",
-        payload: "client_id=test&client_secret=test",
+        payload: "client_id=test&client_secret=test&code=test",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         }
       };
 
-      s.inject(authTokenRequest, function(authTokResponse) {
-        var redirectUri = url.parse(authTokResponse.headers.location, true);
-        accessTokenRequest.payload += "&code=" + redirectUri.query.code;
-
-        s.inject(accessTokenRequest, function(response) {
-          Code.expect(response.statusCode).to.equal(400);
-          Code.expect(response.result.message).to.equal("invalid payload: grant_type");
-          done();
-        });
+      s.inject(accessTokenRequest, function(response) {
+        Code.expect(response.statusCode).to.equal(400);
+        Code.expect(response.result.message).to.equal("invalid payload: grant_type");
+        done();
       });
     });
   });
