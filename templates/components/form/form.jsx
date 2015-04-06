@@ -49,6 +49,8 @@ var Form = React.createClass({
     var value = this.props.fields[i][id];
     this.passChecked = value.checked;
     this.beforeLabel = value.label === undefined ? true : value.label;
+    var invalidPasswordMessage = 'Invalid password';
+
     var input = (
       <input type={value.type}
              id={id}
@@ -66,9 +68,11 @@ var Form = React.createClass({
       input = (<span>{input}<span/></span>);
     }
 
-    var errorTooltip = (
-      <span className="warning">{value.errorMessage}</span>
-    );
+    var errorTooltip = value.customError;
+    if (!errorTooltip) {
+      errorTooltip = (id === 'password' ? invalidPasswordMessage : this.getValidationMessages(id)[0]);
+    }
+    errorTooltip = <span className="warning">{errorTooltip}</span>;
     return (
      <label ref={id+'Label'} className={this.getLabelClasses(id)} key={id} htmlFor={id}>
         {!this.isValid(id) ? errorTooltip : false}

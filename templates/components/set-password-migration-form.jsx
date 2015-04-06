@@ -7,9 +7,8 @@ var fields = [
   {
     'password': {
       'placeholder': 'Enter your new password',
-      'type': 'text',
-      'validator': 'username',
-      'errorMessage': 'Invalid username'
+      'type': 'password',
+      'validator': 'username'
     }
   }
 ];

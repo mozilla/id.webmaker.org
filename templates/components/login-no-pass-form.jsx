@@ -7,8 +7,7 @@ var fields = [
     'username': {
       'placeholder': 'Username',
       'type': 'text',
-      'validator': 'username',
-      'errorMessage': 'Invalid username'
+      'validator': 'username'
     }
   }
 ];

@@ -8,7 +8,6 @@ var fields = [
       'placeholder': 'Username',
       'type': 'text',
       'validator': 'username',
-      'errorMessage': 'Invalid username',
       'disabled': true,
       'checked': true
     }

@@ -9,7 +9,7 @@ var IconText = require('../components/icontext.jsx');
 var UserMigration = React.createClass({
   getInitialState: function() {
     return {
-      login: true,
+      login: false,
       setKey: false,
       setPass: false,
       success: false
@@ -40,31 +40,34 @@ var UserMigration = React.createClass({
     );
   },
   handleLogin: function(error, data) {
-    console.log("inside App we see:", error, data);
-    if(!error) {
-      this.setState({
-        login: false,
-        setKey: true
-      });
+    if(error) {
+      console.error("inside App we see:", error, data);
+      return;
     }
+    this.setState({
+      login: false,
+      setKey: true
+    });
   },
   handleSetKey: function(error, data) {
-    console.log("inside App we see:", error, data);
-    if(!error) {
-      this.setState({
-        setKey: false,
-        setPass: true
-      });
+    if(error) {
+      console.error("inside App we see:", error, data);
+      return;
     }
+    this.setState({
+      setKey: false,
+      setPass: true
+    });
   },
   handleResetPassword: function(error, data) {
-    console.log("inside App we see:", error, data);
-    if(!error) {
-      this.setState({
-        setPass: false,
-        success: true
-      });
+    if(error) {
+      console.error("inside App we see:", error, data);
+      return;
     }
+    this.setState({
+      setPass: false,
+      success: true
+    });
   }
 });
 
