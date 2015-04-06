@@ -272,7 +272,7 @@ module.exports = function(options) {
             assign: 'redirectUri',
             method: function(request, reply) {
               if ( !request.query.client_id ) {
-                return reply('https://webmaker.org/?logout=true');
+                return reply('https://webmaker.org');
               }
               oauthDb.getClient(request.query.client_id, function(err, client) {
                 if ( err ) {
