@@ -43,7 +43,9 @@ module.exports = {
     new webpack.DefinePlugin(importEnvVars([
       // Any variables we want to expose to the client:
       'GA_TRACKING_ID',
-      'GA_DEBUG'
+      'GA_DEBUG',
+      'OPTIMIZELY_ID',
+      'OPTIMIZELY_ACTIVE'
     ]))
   ]
 };

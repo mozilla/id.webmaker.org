@@ -44,6 +44,8 @@ export SECURE_COOKIES=true
 export URI=https://id.webmaker.org
 export GA_TRACKING_ID='UA-000000-01'
 export GA_DEBUG='on'
+export OPTIMIZELY_ID='206878104'
+export OPTIMIZELY_ACTIVE='yes'
 ```
 
 You can configure the following environment variables:
@@ -61,6 +63,8 @@ You can configure the following environment variables:
 | URI | The URI where the server is reachable at, used for reset email links |
 | GA_TRACKING_ID | The tracking ID is a string like UA-000000-01 [more](https://support.google.com/analytics/answer/1032385?hl=en) |
 | GA_DEBUG | if set to 'on' will enable debug logging to the console in `react-ga` |
+| OPTIMIZELY_ID | Optimizely Project ID (not a secret) e.g. '206878104' |
+| OPTIMIZELY_ACTIVE | If set to 'yes' (String) the project will include Optimizely snippet in the page load |
 
 ## Using OAuth2
 
