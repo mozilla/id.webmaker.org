@@ -150,6 +150,25 @@ To access the API using your access token, set the `Authorization` header for ea
 ```
 Authorization: token wm_token_rizCEigqRefeU8Na9JDmZJkzzQzgVZepHTWjiHbtQKsyotAqGZ
 ```
+### Get User Data
+
+Retrieve information about the user using an access token. Requires "user" and "email" scopes on the access token
+
+```
+GET http://id.webmaker.org/user
+Authorization: token wkcuSD213409XCvdssd3RZX8324rtBThnzW
+```
+
+**Response**
+
+```
+{
+  username: "user",
+  id: 1,
+  email: "user@example.org",
+  avatar: "https://secure.gravatar.com/avatar/5410ec660422c8ea12d4a28ef794a23a"
+}
+```
 
 ### Logout
 
