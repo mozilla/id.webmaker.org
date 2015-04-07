@@ -1,3 +1,7 @@
+var Habitat = require('habitat');
+Habitat.load();
+var habitat = new Habitat();
+
 var Hoek = require('hoek');
 
 var options = {
