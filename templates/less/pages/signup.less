@@ -68,6 +68,17 @@
 
     label {
       display: block;
+      ::-webkit-input-placeholder {
+         line-height: 2.5;
+      }
+
+      ::-moz-placeholder {  /* Firefox 19+ */
+         line-height: 2.5;
+      }
+
+      :-ms-input-placeholder {
+         line-height: 2.5;
+      }
       input {
         height: 5.5rem;
         font-size: 2rem;
