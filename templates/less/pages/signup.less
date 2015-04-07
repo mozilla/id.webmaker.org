@@ -6,14 +6,19 @@
 
   .signup-button {
     float: inherit;
+    width: 90%;
+    max-width: 100%;
+    .btn.btn-awsm {
+      max-width: 100%;
+      width: 100%;
+    }
     @media (min-width : 451px) {
       float: right;
+      max-width: 170px;
     }
   }
 
-  .btn.btn-awsm {
-    max-width: 170px;
-  }
+
   .inputBox {
     text-align: left;
   }
@@ -115,10 +120,6 @@
 
       a {
         color: rgba(255,255,255,0.8);
-      }
-
-      button {
-        width: calc(@dim*3);
       }
     }
   }
