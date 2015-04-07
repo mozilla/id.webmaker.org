@@ -1,6 +1,4 @@
-var Habitat = require('habitat');
-Habitat.load();
-var habitat = new Habitat();
+require('habitat').load();
 
 var Hoek = require('hoek');
 

@@ -3,3 +3,4 @@ node_modules/
 *.bundle.*
 styles.css*
 public/tests/mocha*
+.env
