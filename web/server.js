@@ -69,7 +69,7 @@ module.exports = function(options) {
             assign: 'user',
             method: function(request, reply) {
               if ( request.auth.isAuthenticated ) {
-                return reply(request.auth.session);
+                return reply(request.auth.credentials);
               }
 
               var loginRedirect = url.parse('/login', true);
@@ -184,7 +184,7 @@ module.exports = function(options) {
           {
             assign: 'user',
             method: function(request, reply) {
-              account.verifyPassword(request, function(err, user) {
+              account.verifyPassword(request, function(err, json) {
                 if ( err ) {
                   if ( err.isBoom ) {
                     return reply(err);
@@ -192,7 +192,7 @@ module.exports = function(options) {
                   return reply(Boom.badImplementation(err));
                 }
 
-                reply(user);
+                reply(json.user);
               });
             }
           }
