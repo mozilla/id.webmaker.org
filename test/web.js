@@ -636,7 +636,7 @@ lab.experiment("OAuth", function() {
     });
   });
 
-  lab.test("GET /user invalid auth", function(done) {
+  lab.test("GET /user returns 401 with malformed Authorization header", function(done) {
     ls.start(function(error) {
       var accessTokenRequest = {
         method: "GET",
@@ -653,7 +653,7 @@ lab.experiment("OAuth", function() {
     });
   });
 
-  lab.test("GET /user invalid auth", function(done) {
+  lab.test("GET /user returns 401 with malformed Authorization header", function(done) {
     ls.start(function(error) {
       var accessTokenRequest = {
         method: "GET",
@@ -670,7 +670,7 @@ lab.experiment("OAuth", function() {
     });
   });
 
-  lab.test("GET /user invalid auth", function(done) {
+  lab.test("GET /user returns 401 with invalid access token", function(done) {
     ls.start(function(error) {
       var accessTokenRequest = {
         method: "GET",
@@ -687,7 +687,7 @@ lab.experiment("OAuth", function() {
     });
   });
 
-  lab.test("GET /user invalid auth", function(done) {
+  lab.test("GET /user returns 401 with expired access token", function(done) {
     ls.start(function(error) {
       var accessTokenRequest = {
         method: "GET",
