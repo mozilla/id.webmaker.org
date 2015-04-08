@@ -1,10 +1,12 @@
 var React = require('react/addons');
 var ValidationMixin = require('react-validation-mixin');
+var ga = require('react-ga');
 
 var Form = React.createClass({
   propTypes: {
     fields: React.PropTypes.array.isRequired,
-    validators: React.PropTypes.object.isRequired
+    validators: React.PropTypes.object.isRequired,
+    origin: React.PropTypes.string.isRequired
   },
   statics: {
       'iconLabels': {
@@ -36,8 +38,11 @@ var Form = React.createClass({
       key: ''
     };
   },
-  dirty: function(id) {
+  dirty: function(id, origin) {
     return function(err, valid) {
+      if(err) {
+        ga.event({category: origin, action: 'Validation Error', label: 'Error on ' + id + ' field.'});
+      }
       var dirty = this.state.dirty;
       dirty[id] = true;
       this.setState({dirty: dirty});
@@ -57,7 +62,7 @@ var Form = React.createClass({
              ref={id+'Input'}
              placeholder={value.placeholder}
              valueLink={this.linkState(id)}
-             onBlur={this.handleValidation(id, this.dirty(id))}
+             onBlur={this.handleValidation(id, this.dirty(id, this.props.origin))}
              className={this.getInputClasses(id)}
              disabled={value.disabled ? "disabled" : false}
              autoFocus={value.focus ? true : false}

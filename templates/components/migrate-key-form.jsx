@@ -18,6 +18,7 @@ var fieldsValidators = validators.getValidatorSet(fields);
 
 var MigrateKey = React.createClass({
   render: function() {
+    var emailText = "We've emailed your login key to the address you provided.";
     return (
       <div className="migrateKeyContainer centerDiv">
         <IconText
@@ -25,10 +26,10 @@ var MigrateKey = React.createClass({
           className="emailSent arrow_box"
           header="Check your email"
           headerClass="emailSentHeader">
-            <p>We've emailed your login key to the address you provided.</p>
+            <p>{emailText}</p>
         </IconText>
         <div className="migrateKey innerForm">
-          <Form ref="userform" fields={fields} validators={fieldsValidators} />
+          <Form origin="Migration" ref="userform" fields={fields} validators={fieldsValidators} />
           <button onClick={this.processFormData} className="btn btn-awsm">Login</button>
         </div>
       </div>
