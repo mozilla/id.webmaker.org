@@ -36,7 +36,8 @@ var fieldValues = [
     'feedback': {
       'label': 'Tell me about Mozilla news & events',
       'labelPosition': 'after',
-      'type': 'checkbox'
+      'type': 'checkbox',
+      'className': 'checkBox'
     }
   }
 ];

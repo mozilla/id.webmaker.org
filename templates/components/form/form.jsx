@@ -65,7 +65,7 @@ var Form = React.createClass({
     );
 
     if (value.type === 'checkbox') {
-      input = (<span>{input}<span/></span>);
+      input = (<span className={value.className}>{input}<span/></span>);
     }
 
     var errorTooltip = value.customError;
