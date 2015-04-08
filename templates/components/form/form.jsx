@@ -83,7 +83,7 @@ var Form = React.createClass({
     }
     errorTooltip = <span className="warning">{errorTooltip}</span>;
     return (
-     <label tabIndex={value.tabIndex} ref={id+'Label'} className={this.getLabelClasses(id)} key={id} htmlFor={id}>
+     <label ref={id+'Label'} className={this.getLabelClasses(id)} key={id} htmlFor={id}>
         {!this.isValid(id) ? errorTooltip : false}
         {value.label && value.labelPosition==='before' ? value.label : false}
         {input}
