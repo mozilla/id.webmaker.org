@@ -28,7 +28,19 @@ div[role=form] {
           position: absolute;
       }
     }
+    ::-webkit-input-placeholder {
+       line-height: 3.58em;
+    }
+
+    ::-moz-placeholder {  /* Firefox 19+ */
+       line-height: 3.58em;
+    }
+
+    :-ms-input-placeholder {
+       line-height: 3.58em;
+    }
     input {
+
        &[disabled] {
         background-color: transparent;
         cursor: default !important;
@@ -38,7 +50,6 @@ div[role=form] {
       height: 34px;
       padding: 0 12px 0 17px;
       font-size: 14px;
-      line-height: 1.2;
       color: #555;
       background-color: #FFF;
       background-image: none;
@@ -75,7 +86,7 @@ div[role=form] {
   }
   .leftIcon() {
     z-index: 1;
-    top: 18px;
+    top: 19px;
     left: 15px;
   }
 
@@ -83,6 +94,7 @@ div[role=form] {
   input.icon-label-password,
   input.icon-label-email {
     padding-left: 40px;
+    line-height: 3.58em;
   }
 
   label.icon-label-username,
@@ -117,14 +129,14 @@ div[role=form] {
   .icon-label-error:after {
     .label(@fa-warn);
     right: 10px;
-    top: 17px;
+    top: 19px;
     color: #e7518f;
   }
   .icon-label-valid {
     &:after {
       .label(@fa-check);
       right: 10px;
-      top: 17px;
+      top: 19px;
       color: #53C0A3;
     }
   }
@@ -141,4 +153,3 @@ div[role=form] {
     width: 400px;
   }
 }
-
