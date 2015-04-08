@@ -256,7 +256,7 @@ module.exports = function(options) {
             return reply(Boom.badImplementation(err));
           }
           if ( json.error ) {
-            return reply(Boom.badImplementation(json.error));
+            return reply(Boom.badImplementation(json.error, json.login_error));
           }
           request.auth.session.set(json.user);
           reply(json.user);
