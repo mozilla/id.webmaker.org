@@ -44,6 +44,13 @@ module.exports = function(options) {
   server.route([
     {
       method: 'GET',
+      path: '/',
+      handler: function(request, reply) {
+        reply.redirect('/signup');
+      }
+    },
+    {
+      method: 'GET',
       path: '/{params*}',
       handler: {
         file: {
