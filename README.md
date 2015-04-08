@@ -6,12 +6,19 @@ OAuth 2.0 identity provider for Webmaker
 
 ## To run
 
-Make sure you configure all necessary environment variables (see below) before running.
-
 ```
 npm install
 npm start
 ```
+
+Make sure you configure all necessary environment variables (see below) before running. If you simply want the defaults set up for local development, you can use:
+
+```
+$> cp sample.env .env
+```
+
+Once, after cloning the repo but before running the code.
+
 
 ## Tests
 
