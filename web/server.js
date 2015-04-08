@@ -417,36 +417,48 @@ module.exports = function(options) {
 
               reply(request.auth.credentials.username);
             }
+          },
+          {
+            assign: 'isValidToken',
+            method: function(request, reply) {
+              account.verifyToken(request, function(err, json) {
+                if ( err ) {
+                  if ( err.isBoom ) {
+                    return reply(err);
+                  }
+                  return reply(Boom.badImplementation(err));
+                }
+                if ( json.error ) {
+                  return reply(Boom.badImplementation(json.error));
+                }
+
+                reply(true);
+              });
+            }
+          },
+          {
+            assign: 'user',
+            method: function(request, reply) {
+              account.setPassword(request, function(err, json) {
+                if ( err ) {
+                  if ( err.isBoom ) {
+                    return reply(err);
+                  }
+                  return reply(Boom.badImplementation(err));
+                }
+                if ( json.error ) {
+                  return reply(Boom.badImplementation(json.error));
+                }
+
+                reply(json.user);
+              });
+            }
           }
         ]
       },
       handler: function(request, reply) {
-        account.verifyToken(request, function(err, json) {
-          if ( err ) {
-            if ( err.isBoom ) {
-              return reply(err);
-            }
-            return reply(Boom.badImplementation(err));
-          }
-          if ( json.error ) {
-            return reply(Boom.badImplementation(json.error));
-          }
-
-          account.setPassword(request, function(err, json) {
-            if ( err ) {
-              if ( err.isBoom ) {
-                return reply(err);
-              }
-              return reply(Boom.badImplementation(err));
-            }
-            if ( json.error ) {
-              return reply(Boom.badImplementation(json.error));
-            }
-
-            request.auth.session.set(json.user);
-            reply({ status: 'Logged in' });
-          });
-        });
+        request.auth.session.set(request.pre.user);
+        reply({ status: 'Logged in' });
       }
     },
     {
