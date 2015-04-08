@@ -52,6 +52,7 @@ var fieldValidators = validators.getValidatorSet(fieldValues);
 
 var Signup = React.createClass({
   componentDidMount: function() {
+    document.title = "Webmaker Login - Sign Up";
     document.body.className = "signup-bg";
   },
   componentWillUnmount: function() {

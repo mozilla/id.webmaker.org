@@ -33,6 +33,9 @@ var fieldValidators = validators.getValidatorSet(fieldValues);
 
 // This wraps every view
 var Login = React.createClass({
+  componentDidMount: function() {
+    document.title = "Webmaker Login - Login";
+  },
   render: function() {
     // FIXME: totally not localized yet!
     var buttonText = "Log In";

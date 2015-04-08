@@ -13,6 +13,9 @@ require('whatwg-fetch');
 
 // This wraps every view
 var ResetPassword = React.createClass({
+  componentDidMount: function() {
+    document.title = "Webmaker Login - Set a New Password";
+  },
   getInitialState: function() {
     var queryObj = Url.parse(window.location.href, true).query;
     return {

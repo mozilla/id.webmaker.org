@@ -8,6 +8,9 @@ var IconText = require('../components/icontext.jsx');
 var ga = require('react-ga');
 
 var UserMigration = React.createClass({
+  componentDidMount: function() {
+    document.title = "Webmaker Login - Set a Password";
+  },
   getInitialState: function() {
     return {
       login: false,
