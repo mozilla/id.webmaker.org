@@ -4,6 +4,7 @@ var Route = Router.Route;
 var Link = Router.Link;
 var NotFoundRoute = Router.NotFoundRoute;
 var ga = require('react-ga');
+var Optimizely = require('../components/optimizely.jsx');
 
 var gaTrackingID = process.env.GA_TRACKING_ID || 'UA-49796218-21';
 var gaDebug = process.env.GA_DEBUG || 'off';
@@ -26,6 +27,7 @@ module.exports = {
       options.debug = true;
     }
     ga.initialize(gaTrackingID, options);
+    Optimizely.initialize();
     Router.run(routes, location, function(Handler, state) {
       ga.pageview(state.pathname);
       React.render(<Handler/>, el);
