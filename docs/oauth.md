@@ -45,6 +45,10 @@ To start the web application flow you need to redirect your users browser to Web
     <td>The response_type must be set to "code".</td>
   </tr>
   <tr>
+    <td>action</td>
+    <td>Optional. If provided, should be <code>signup</code> or <code>signin</code>. Send to improve the user experience, based on whether the user clicked on a Sign In or Sign Up button. <code>signin</code> is the default.</td>
+  </tr>
+  <tr>
     <td>scopes</td>
     <td>A space separated list of scopes.</td>
   </tr>
