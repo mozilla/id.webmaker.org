@@ -83,7 +83,11 @@
       top: 999999px;
       overflow: hidden;
       width: 0;
-
+      &:focus + span {
+        border-color: #52C29E;
+        box-shadow: none;
+        outline: none;
+      }
       & + span {
         display:inline-block;
         width: 2.5rem;

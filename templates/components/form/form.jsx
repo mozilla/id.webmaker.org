@@ -64,8 +64,8 @@ var Form = React.createClass({
              placeholder={value.placeholder}
              valueLink={this.linkState(id)}
              role={value.type === 'checkbox' ? 'checkbox' : false}
-             area-checked={value.type === 'checkbox' ? 'false' : false}
-             onclick={value.type === 'checkbox' ? this.toggleCheckBox : false}
+             aria-checked={value.type === 'checkbox' ? 'false' : null}
+             onClick={value.type === 'checkbox' ? this.toggleCheckBox : null}
              onBlur={this.handleValidation(id, this.dirty(id, this.props.origin))}
              className={this.getInputClasses(id)}
              disabled={value.disabled ? "disabled" : false}
@@ -112,19 +112,19 @@ var Form = React.createClass({
     classes[this.getIconClass(field)] = true;
     classes['hideLabel'] = !this.beforeLabel;
     classes[this.errorClass] = !isValid;
-    classes[this.validClass] = (this.state.dirty[field] && isValid) || this.passChecked
+    classes[this.validClass] = (field !== 'feedback' && (this.state.dirty[field] && isValid) || this.passChecked)
     return React.addons.classSet(classes);
   },
   getIconClass: function(field) {
     return Form.iconLabels[field];
   },
-  toggleCheckBox: function(t) {
-    if(t.getAttribute("aria-checked")=="false") {
-      t.setAttribute("aria-checked","true");
+  toggleCheckBox: function(e) {
+    if(e.target.getAttribute('aria-checked') === 'false') {
+      e.target.setAttribute('aria-checked','true');
     } else {
-      t.setAttribute("aria-checked","false");
+      e.target.setAttribute('aria-checked','false');
     }
-    t.focus();
+    e.target.focus();
   },
   handleReset: function(event) {
     this.clearValidations();
