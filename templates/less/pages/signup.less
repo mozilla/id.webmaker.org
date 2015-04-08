@@ -78,7 +78,11 @@
     }
 
     #feedback {
-      display: none;
+      z-index: 99999;
+      position: absolute;
+      top: 999999px;
+      overflow: hidden;
+      width: 0;
 
       & + span {
         display:inline-block;

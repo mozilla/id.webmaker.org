@@ -60,8 +60,12 @@ var Form = React.createClass({
       <input type={value.type}
              id={id}
              ref={id+'Input'}
+             tabIndex={value.tabIndex}
              placeholder={value.placeholder}
              valueLink={this.linkState(id)}
+             role={value.type === 'checkbox' ? 'checkbox' : false}
+             area-checked={value.type === 'checkbox' ? 'false' : false}
+             onclick={value.type === 'checkbox' ? this.toggleCheckBox : false}
              onBlur={this.handleValidation(id, this.dirty(id, this.props.origin))}
              className={this.getInputClasses(id)}
              disabled={value.disabled ? "disabled" : false}
@@ -79,7 +83,7 @@ var Form = React.createClass({
     }
     errorTooltip = <span className="warning">{errorTooltip}</span>;
     return (
-     <label ref={id+'Label'} className={this.getLabelClasses(id)} key={id} htmlFor={id}>
+     <label tabIndex={value.tabIndex} ref={id+'Label'} className={this.getLabelClasses(id)} key={id} htmlFor={id}>
         {!this.isValid(id) ? errorTooltip : false}
         {value.label && value.labelPosition==='before' ? value.label : false}
         {input}
@@ -113,6 +117,14 @@ var Form = React.createClass({
   },
   getIconClass: function(field) {
     return Form.iconLabels[field];
+  },
+  toggleCheckBox: function(t) {
+    if(t.getAttribute("aria-checked")=="false") {
+      t.setAttribute("aria-checked","true");
+    } else {
+      t.setAttribute("aria-checked","false");
+    }
+    t.focus();
   },
   handleReset: function(event) {
     this.clearValidations();

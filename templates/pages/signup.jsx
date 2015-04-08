@@ -14,7 +14,8 @@ var fieldValues = [
       'placeholder': 'Username',
       'type': 'text',
       'validator': 'username',
-      'label': false
+      'label': false,
+      'tabIndex': '1'
     }
   },
   {
@@ -22,7 +23,8 @@ var fieldValues = [
       'placeholder': 'Email',
       'type': 'email',
       'validator': 'email',
-      'label': false
+      'label': false,
+      'tabIndex': '2'
     }
   },
   {
@@ -30,7 +32,8 @@ var fieldValues = [
       'placeholder': 'Password',
       'type': 'password',
       'validator': 'password',
-      'label': false
+      'label': false,
+      'tabIndex': '3'
     }
   },
   {
@@ -38,7 +41,8 @@ var fieldValues = [
       'label': 'Tell me about Mozilla news & events',
       'labelPosition': 'after',
       'type': 'checkbox',
-      'className': 'checkBox'
+      'className': 'checkBox',
+      'tabIndex': '4'
     }
   }
 ];
