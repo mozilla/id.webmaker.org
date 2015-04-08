@@ -4,30 +4,28 @@ div[role=form] {
     margin-bottom: 0;
     padding-bottom: 10px;
     .warning {
-      position: relative;
-      background: #e7518f;
-      color: white;
-      padding: 8px 10px;
-      font-size: 12px;
-      white-space: nowrap;
-      position: absolute;
-      top: -20px;
-      right: 0;
-      border-radius: 5px;
-      line-height: 8px;
-      &:before  {
-        .hideLabel {
-          background: black;
-        }
-        content: '';
+        background: #e7518f;
+        border-radius: .5em;
+        bottom: 5em;
+        color: white;
+        display: block;
+        right: -.9em;
+        padding: 8px 10px;
         position: absolute;
-        background: transparent;
-        border-left: 7px solid transparent;
-        border-right: 7px solid transparent;
-        border-top: 7px solid #e7518f;
-        position: absolute;
-        top: 100%;
-        right: 10%;
+        text-shadow: 0 1px 0 #000;
+        white-space: nowrap;
+        font-weight: normal;
+        font-size: 12px;
+        line-height: 8px;
+        &:after {
+          border: solid;
+          border-color: #e7518f transparent;
+          border-width: .5em .5em 0 .5em;
+          top: 2em;
+          content: "";
+          display: block;
+          right: 2em;
+          position: absolute;
       }
     }
     input {
