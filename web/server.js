@@ -75,17 +75,22 @@ module.exports = function(options) {
           {
             assign: 'user',
             method: function(request, reply) {
-              if ( request.auth.isAuthenticated ) {
+              if (request.auth.isAuthenticated) {
                 return reply(request.auth.credentials);
               }
 
-              var loginRedirect = url.parse('/login', true);
-              loginRedirect.query.client_id = request.query.client_id;
-              loginRedirect.query.response_type = request.query.response_type;
-              loginRedirect.query.state = request.query.state;
-              loginRedirect.query.scopes = request.query.scopes;
+              var redirectUrl = '/login';
+              if (request.query.action === 'signup') {
+                redirectUrl = '/signup';
+              }
 
-              reply().takeover().redirect(url.format(loginRedirect));
+              var redirect = url.parse(redirectUrl, true);
+              redirect.query.client_id = request.query.client_id;
+              redirect.query.response_type = request.query.response_type;
+              redirect.query.state = request.query.state;
+              redirect.query.scopes = request.query.scopes;
+
+              reply().takeover().redirect(url.format(redirect));
             }
           },
           {
