@@ -401,6 +401,7 @@ lab.experiment("OAuth", function() {
     });
   });
 
+
   lab.test("GET authorize - no session", function(done) {
     var request = {
       method: "GET",
@@ -417,6 +418,31 @@ lab.experiment("OAuth", function() {
       var redirectUri = url.parse(response.headers.location, true);
 
       Code.expect(redirectUri.pathname).to.equal("/login");
+      Code.expect(redirectUri.query.client_id).to.equal("test");
+      Code.expect(redirectUri.query.scopes).to.equal("user");
+      Code.expect(redirectUri.query.state).to.equal("test");
+      Code.expect(redirectUri.query.response_type).to.equal("code");
+
+      done();
+    });
+  });
+
+  lab.test("GET authorize - no session, signup action", function(done) {
+    var request = {
+      method: "GET",
+      url: "/login/oauth/authorize?client_id=test&scopes=user&state=test&response_type=code&action=signup",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      }
+    };
+
+    s.inject(request, function(response) {
+      Code.expect(response.statusCode).to.equal(302);
+      Code.expect(response.headers.location).to.exist();
+
+      var redirectUri = url.parse(response.headers.location, true);
+
+      Code.expect(redirectUri.pathname).to.equal("/signup");
       Code.expect(redirectUri.query.client_id).to.equal("test");
       Code.expect(redirectUri.query.scopes).to.equal("user");
       Code.expect(redirectUri.query.state).to.equal("test");
