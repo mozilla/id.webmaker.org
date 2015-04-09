@@ -456,16 +456,7 @@ module.exports = function(options) {
       handler: function(request, reply) {
         account.checkUsername(request, function(err, json) {
           if ( err ) {
-            if ( err.isBoom ) {
-              if ( err.output.statusCode === 404 ) {
-                return reply({ exists: false });
-              }
-              return reply(err);
-            }
-            return reply(Boom.badImplementation(err));
-          }
-          if ( json.error ) {
-            return reply(Boom.badImplementation(json.error));
+            return reply(err);
           }
 
           reply(json);

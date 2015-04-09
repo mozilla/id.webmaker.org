@@ -172,10 +172,6 @@ module.exports = function() {
                 username: 'test'
               }
             });
-          } else if ( password === 'weak' ) {
-            return reply(Boom.badRequest({
-              passed: false
-            }));
           }
         }
 
@@ -186,16 +182,10 @@ module.exports = function() {
       method: 'post',
       path: '/api/v2/user/exists',
       handler: function(request, reply) {
-        var username = request.payload.uid;
-        if ( username === 'exists' ) {
+        if ( request.payload.uid === 'test' ) {
           return reply({
             exists: true,
             usePasswordLogin: true
-          });
-        } else if ( username === 'existsNoPass') {
-          return reply({
-            exists: true,
-            usePasswordLogin: false
           });
         }
 

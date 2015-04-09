@@ -543,6 +543,24 @@ lab.experiment("OAuth", function() {
     });
   });
 
+  lab.test("POST access_token - mismatched client_id", function(done) {
+    ls.start(function(error) {
+      var accessTokenRequest = {
+        method: "POST",
+        url: "/login/oauth/access_token",
+        payload: "client_id=test&client_secret=test&grant_type=authorization_code&code=mismatched",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        }
+      };
+
+      s.inject(accessTokenRequest, function(response) {
+        Code.expect(response.statusCode).to.equal(403);
+        done();
+      });
+    });
+  });
+
   lab.test("POST access_token - invalid client_secret", function(done) {
     ls.start(function(error) {
       var accessTokenRequest = {
@@ -681,6 +699,25 @@ lab.experiment("OAuth", function() {
         url: "/user",
         headers: {
           "authorization": "token testAccessToken"
+        }
+      };
+
+      s.inject(getUserRequest, function(response) {
+        Code.expect(response.statusCode).to.equal(200);
+        Code.expect(response.result.username).to.equal("test");
+        Code.expect(response.result.email).to.equal("test@example.com");
+        done();
+      });
+    });
+  });
+
+  lab.test("GET /user works with additional scopes set on token", function(done) {
+    ls.start(function(error) {
+      var getUserRequest = {
+        method: "GET",
+        url: "/user",
+        headers: {
+          "authorization": "token testAccessToken2"
         }
       };
 
@@ -901,6 +938,98 @@ lab.experiment("OAuth", function() {
 
       s.inject(migrateUserRequest, function(response) {
         Code.expect(response.statusCode).to.equal(401);
+        done();
+      });
+    });
+  });
+
+  lab.test("POST /migrate-user returns 400 if sent no password", function(done) {
+    ls.start(function(error) {
+      var migrateUserRequest = {
+        method: "POST",
+        url: "/migrate-user",
+        payload: {
+          username: "test",
+          token: "nufuk-kakav"
+        }
+      };
+
+      s.inject(migrateUserRequest, function(response) {
+        Code.expect(response.statusCode).to.equal(400);
+        done();
+      });
+    });
+  });
+
+  lab.test("POST /migrate-user returns 400 if sent a weak password", function(done) {
+    ls.start(function(error) {
+      var migrateUserRequest = {
+        method: "POST",
+        url: "/migrate-user",
+        payload: {
+          username: "test",
+          token: "nufuk-kakav",
+          password: "password"
+        }
+      };
+
+      s.inject(migrateUserRequest, function(response) {
+        Code.expect(response.statusCode).to.equal(400);
+        done();
+      });
+    });
+  });
+
+  lab.test("POST /migrate-user returns 500 if set password fails on login", function(done) {
+    ls.start(function(error) {
+      var migrateUserRequest = {
+        method: "POST",
+        url: "/migrate-user",
+        payload: {
+          username: "test",
+          token: "kakav-nufuk",
+          password: "Super-Duper-Strong-Passphrase-9002"
+        }
+      };
+
+      s.inject(migrateUserRequest, function(response) {
+        Code.expect(response.statusCode).to.equal(500);
+        done();
+      });
+    });
+  });
+
+  lab.test("POST /check-username returns 200, exists & usePasswordLogin true", function(done) {
+    ls.start(function(error) {
+      var checkUsernameRequest = {
+        method: "POST",
+        url: "/check-username",
+        payload: {
+          uid: "test"
+        }
+      };
+
+      s.inject(checkUsernameRequest, function(response) {
+        Code.expect(response.statusCode).to.equal(200);
+        Code.expect(response.result.exists).to.equal(true);
+        Code.expect(response.result.usePasswordLogin).to.equal(true);
+        done();
+      });
+    });
+  });
+
+  lab.test("POST /check-username returns 404 for non-existent user", function(done) {
+    ls.start(function(error) {
+      var checkUsernameRequest = {
+        method: "POST",
+        url: "/check-username",
+        payload: {
+          uid: "nobody"
+        }
+      };
+
+      s.inject(checkUsernameRequest, function(response) {
+        Code.expect(response.statusCode).to.equal(404);
         done();
       });
     });
