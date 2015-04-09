@@ -37,8 +37,20 @@ module.exports = {
       access_token: 'expiredAccessToken',
       client_id: 'test',
       user_id: 'test',
-      scopes: 'user',
+      scopes: 'user email',
       expires_at: Date.now() - 60 * 1000
+    }, {
+      access_token: 'invalidScope',
+      client_id: 'test',
+      user_id: 'test',
+      scopes: 'avatar',
+      expires_at: Date.now() + 60 * 1000
+    }, {
+      access_token: 'getUserFail',
+      client_id: 'test',
+      user_id: 'invalid',
+      scopes: 'user email',
+      expires_at: Date.now() + 60 * 1000
     }
   ]
 };

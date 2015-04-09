@@ -21,6 +21,19 @@ lab.experiment("OAuth", function() {
     loginAPI: "http://localhost:3232"
   });
 
+  lab.test("GET / Redirects to /signup", function(done) {
+    var request = {
+      method: "GET",
+      url: "/"
+    };
+
+    s.inject(request, function(response) {
+      Code.expect(response.statusCode).to.equal(302);
+      Code.expect(response.headers.location).to.equal("/signup");
+      done();
+    });
+  });
+
   lab.test("POST Create User", function(done) {
     ls.start(function(error) {
       Code.expect(error).to.be.undefined();
@@ -83,6 +96,30 @@ lab.experiment("OAuth", function() {
       });
     });
   });
+
+  lab.test(
+    "POST Create User returns 400 if the login server response object contains an error message",
+    function(done) {
+      ls.start(function(error) {
+        Code.expect(error).to.be.undefined();
+        var request = {
+          method: "POST",
+          url: "/create-user",
+          payload: {
+            email: "webmaker@example.com",
+            username: "jsonError",
+            password: "password"
+          }
+        };
+
+        s.inject(request, function(response) {
+          Code.expect(response.statusCode).to.equal(400);
+          Code.expect(response.result.message).to.equal("LoginAPI error");
+          ls.stop(done);
+        });
+      });
+    }
+  );
 
   lab.test("POST Request Reset", function(done) {
     ls.start(function(error) {
@@ -378,7 +415,7 @@ lab.experiment("OAuth", function() {
   lab.test("GET authorize", function(done) {
     var request = {
       method: "GET",
-      url: "/login/oauth/authorize?client_id=test&scopes=user:email&state=test",
+      url: "/login/oauth/authorize?client_id=test&scopes=user email&state=test",
       credentials: {
         username: "webmaker",
         email: "webmaker@example.org"
@@ -405,10 +442,7 @@ lab.experiment("OAuth", function() {
   lab.test("GET authorize - no session", function(done) {
     var request = {
       method: "GET",
-      url: "/login/oauth/authorize?client_id=test&scopes=user&state=test&response_type=code",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded"
-      }
+      url: "/login/oauth/authorize?client_id=test&scopes=user&state=test&response_type=code"
     };
 
     s.inject(request, function(response) {
@@ -459,9 +493,6 @@ lab.experiment("OAuth", function() {
       credentials: {
         username: "webmaker",
         email: "webmaker@example.org"
-      },
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded"
       }
     };
 
@@ -645,7 +676,7 @@ lab.experiment("OAuth", function() {
 
   lab.test("GET /user", function(done) {
     ls.start(function(error) {
-      var accessTokenRequest = {
+      var getUserRequest = {
         method: "GET",
         url: "/user",
         headers: {
@@ -653,7 +684,7 @@ lab.experiment("OAuth", function() {
         }
       };
 
-      s.inject(accessTokenRequest, function(response) {
+      s.inject(getUserRequest, function(response) {
         Code.expect(response.statusCode).to.equal(200);
         Code.expect(response.result.username).to.equal("test");
         Code.expect(response.result.email).to.equal("test@example.com");
@@ -664,7 +695,7 @@ lab.experiment("OAuth", function() {
 
   lab.test("GET /user returns 401 with malformed Authorization header", function(done) {
     ls.start(function(error) {
-      var accessTokenRequest = {
+      var getUserRequest = {
         method: "GET",
         url: "/user",
         headers: {
@@ -672,7 +703,7 @@ lab.experiment("OAuth", function() {
         }
       };
 
-      s.inject(accessTokenRequest, function(response) {
+      s.inject(getUserRequest, function(response) {
         Code.expect(response.statusCode).to.equal(401);
         done();
       });
@@ -681,7 +712,7 @@ lab.experiment("OAuth", function() {
 
   lab.test("GET /user returns 401 with malformed Authorization header", function(done) {
     ls.start(function(error) {
-      var accessTokenRequest = {
+      var getUserRequest = {
         method: "GET",
         url: "/user",
         headers: {
@@ -689,7 +720,7 @@ lab.experiment("OAuth", function() {
         }
       };
 
-      s.inject(accessTokenRequest, function(response) {
+      s.inject(getUserRequest, function(response) {
         Code.expect(response.statusCode).to.equal(401);
         done();
       });
@@ -698,7 +729,7 @@ lab.experiment("OAuth", function() {
 
   lab.test("GET /user returns 401 with invalid access token", function(done) {
     ls.start(function(error) {
-      var accessTokenRequest = {
+      var getUserRequest = {
         method: "GET",
         url: "/user",
         headers: {
@@ -706,7 +737,7 @@ lab.experiment("OAuth", function() {
         }
       };
 
-      s.inject(accessTokenRequest, function(response) {
+      s.inject(getUserRequest, function(response) {
         Code.expect(response.statusCode).to.equal(401);
         done();
       });
@@ -715,7 +746,7 @@ lab.experiment("OAuth", function() {
 
   lab.test("GET /user returns 401 with expired access token", function(done) {
     ls.start(function(error) {
-      var accessTokenRequest = {
+      var getUserRequest = {
         method: "GET",
         url: "/user",
         headers: {
@@ -723,7 +754,152 @@ lab.experiment("OAuth", function() {
         }
       };
 
-      s.inject(accessTokenRequest, function(response) {
+      s.inject(getUserRequest, function(response) {
+        Code.expect(response.statusCode).to.equal(401);
+        done();
+      });
+    });
+  });
+
+  lab.test("GET /user returns 401 with no authorization header", function(done) {
+    ls.start(function(error) {
+      var getUserRequest = {
+        method: "GET",
+        url: "/user"
+      };
+
+      s.inject(getUserRequest, function(response) {
+        Code.expect(response.statusCode).to.equal(401);
+        done();
+      });
+    });
+  });
+
+  lab.test("GET /user returns 401 when token has insufficient scope", function(done) {
+    ls.start(function(error) {
+      var getUserRequest = {
+        method: "GET",
+        url: "/user",
+        headers: {
+          "authorization": "token invalidScope"
+        }
+      };
+
+      s.inject(getUserRequest, function(response) {
+        Code.expect(response.statusCode).to.equal(401);
+        done();
+      });
+    });
+  });
+
+  lab.test("GET /user returns 500 when loginAPI fails", function(done) {
+    ls.start(function(error) {
+      var getUserRequest = {
+        method: "GET",
+        url: "/user",
+        headers: {
+          "authorization": "token getUserFail"
+        }
+      };
+
+      s.inject(getUserRequest, function(response) {
+        Code.expect(response.statusCode).to.equal(500);
+        done();
+      });
+    });
+  });
+
+  lab.test("POST /request-migration-email succeeds", function(done) {
+    ls.start(function(error) {
+      var migrationEmailRequest = {
+        method: "POST",
+        url: "/request-migration-email",
+        payload: {
+          username: "test",
+          oauth: {
+            oauthy: "params"
+          }
+        }
+      };
+
+      s.inject(migrationEmailRequest, function(response) {
+        Code.expect(response.statusCode).to.equal(200);
+        done();
+      });
+    });
+  });
+
+  lab.test("POST /request-migration-email fails if user not found on loginapi", function(done) {
+    ls.start(function(error) {
+      var migrationEmailRequest = {
+        method: "POST",
+        url: "/request-migration-email",
+        payload: {
+          username: "fakeuser",
+          oauth: {
+            oauthy: "params"
+          }
+        }
+      };
+
+      s.inject(migrationEmailRequest, function(response) {
+        Code.expect(response.statusCode).to.equal(500);
+        done();
+      });
+    });
+  });
+
+  lab.test("POST /migrate-user", function(done) {
+    ls.start(function(error) {
+      var migrateUserRequest = {
+        method: "POST",
+        url: "/migrate-user",
+        payload: {
+          username: "test",
+          token: "kakav-nufuk",
+          password: "Super-Duper-Strong-Passphrase-9001"
+        }
+      };
+
+      s.inject(migrateUserRequest, function(response) {
+        Code.expect(response.statusCode).to.equal(200);
+        done();
+      });
+    });
+  });
+
+  lab.test("POST /migrate-user returns 401 if using invalid username", function(done) {
+    ls.start(function(error) {
+      var migrateUserRequest = {
+        method: "POST",
+        url: "/migrate-user",
+        payload: {
+          username: "fake",
+          token: "kakav-nufuk",
+          password: "Super-Duper-Strong-Passphrase-9001"
+        }
+      };
+
+      s.inject(migrateUserRequest, function(response) {
+        Code.expect(response.statusCode).to.equal(401);
+        done();
+      });
+    });
+  });
+
+  lab.test("POST /migrate-user returns 401 if using bad token", function(done) {
+    ls.start(function(error) {
+      var migrateUserRequest = {
+        method: "POST",
+        url: "/migrate-user",
+        payload: {
+          username: "test",
+          token: "nufuk-kakav",
+          password: "Super-Duper-Strong-Passphrase-9001"
+        }
+      };
+
+      s.inject(migrateUserRequest, function(response) {
         Code.expect(response.statusCode).to.equal(401);
         done();
       });

@@ -96,6 +96,12 @@ module.exports = function() {
           return reply('not json');
         }
 
+        if ( payload.user.username === 'jsonError' ) {
+          return reply({
+            error: 'LoginAPI error'
+          });
+        }
+
         reply(Boom.badImplementation('login API failure'));
       }
     },
@@ -114,7 +120,86 @@ module.exports = function() {
           .type('application/json');
         }
 
+        if ( username === 'jsonError' ) {
+          return reply({
+            error: 'Login API error'
+          });
+        }
+
         reply(Boom.badImplementation('login API failure'));
+      }
+    },
+    {
+      method: 'post',
+      path: '/api/v2/user/request',
+      handler: function(request, reply) {
+        var username = request.payload.uid;
+        if ( username === 'test' ) {
+          return reply({
+            status: 'Login Token Sent'
+          });
+        }
+
+        reply(Boom.badImplementation('Login Database error'));
+      }
+    },
+    {
+      method: 'post',
+      path: '/api/v2/user/authenticateToken',
+      handler: function(request, reply) {
+        var username = request.payload.uid;
+        var token = request.payload.token;
+        if ( username === 'test' ) {
+          if ( token === 'kakav-nufuk' ) {
+            return reply(true);
+          }
+        }
+
+        reply(Boom.unauthorized('invalid username/password combination'));
+      }
+    },
+    {
+      method: 'post',
+      path: '/api/v2/user/enable-passwords',
+      handler: function(request, reply) {
+        var username = request.payload.uid;
+        var password = request.payload.password;
+        if ( username === 'test' ) {
+          if ( password === 'Super-Duper-Strong-Passphrase-9001' ) {
+            // success
+            return reply({
+              user: {
+                username: 'test'
+              }
+            });
+          } else if ( password === 'weak' ) {
+            return reply(Boom.badRequest({
+              passed: false
+            }));
+          }
+        }
+
+        reply(Boom.badImplementation('Error setting password'));
+      }
+    },
+    {
+      method: 'post',
+      path: '/api/v2/user/exists',
+      handler: function(request, reply) {
+        var username = request.payload.uid;
+        if ( username === 'exists' ) {
+          return reply({
+            exists: true,
+            usePasswordLogin: true
+          });
+        } else if ( username === 'existsNoPass') {
+          return reply({
+            exists: true,
+            usePasswordLogin: false
+          });
+        }
+
+        reply(Boom.notFound('user does not exist'));
       }
     }
   ]);

@@ -102,7 +102,6 @@ var UserMigration = React.createClass({
         "Content-Type": "application/json; charset=utf-8"
       },
       body: JSON.stringify({
-        username: query.uid,
         token: query.token,
         password: data.password
       })
