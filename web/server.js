@@ -7,6 +7,17 @@ var url = require('url');
 var OAuthDB = require('../lib/oauth-db');
 var Scopes = require('../lib/scopes');
 
+var PassTest = require('pass-test');
+
+var passTest = new PassTest({
+  specialChars: {
+    enabled: false
+  },
+  userValues: {
+    enabled: true
+  }
+});
+
 module.exports = function(options) {
   var server = new Hapi.Server({
     debug: options.debug
@@ -198,10 +209,7 @@ module.exports = function(options) {
             method: function(request, reply) {
               account.verifyPassword(request, function(err, json) {
                 if ( err ) {
-                  if ( err.isBoom ) {
-                    return reply(err);
-                  }
-                  return reply(Boom.badImplementation(err));
+                  return reply(err);
                 }
 
                 reply(json.user);
@@ -224,10 +232,7 @@ module.exports = function(options) {
       handler: function(request, reply) {
         account.requestReset(request, function(err, json) {
           if ( err ) {
-            if ( err.isBoom ) {
-              return reply(err);
-            }
-            return reply(Boom.badImplementation(err));
+            return reply(err);
           }
 
           reply(json);
@@ -243,10 +248,7 @@ module.exports = function(options) {
       handler: function(request, reply) {
         account.resetPassword(request, function(err, json) {
           if ( err ) {
-            if ( err.isBoom ) {
-              return reply(err);
-            }
-            return reply(Boom.badImplementation(err));
+            return reply(err);
           }
 
           reply(json);
@@ -262,13 +264,10 @@ module.exports = function(options) {
       handler: function(request, reply) {
         account.createUser(request, function(err, json) {
           if ( err ) {
-            if ( err.isBoom ) {
-              return reply(err);
-            }
             return reply(Boom.badImplementation(err));
           }
           if ( json.error ) {
-            return reply(Boom.badImplementation(json.error, json.login_error));
+            return reply(Boom.badRequest(json.error, json.login_error));
           }
           request.auth.session.set(json.user);
           reply(json.user);
@@ -351,13 +350,7 @@ module.exports = function(options) {
             method: function(request, reply) {
               account.getUser(request.pre.token.user_id, function(err, json) {
                 if ( err ) {
-                  if ( err.isBoom ) {
-                    return reply(err);
-                  }
                   return reply(Boom.badImplementation(err));
-                }
-                if ( json.error ) {
-                  return reply(Boom.badImplementation(json.error));
                 }
                 reply(json.user);
               });
@@ -372,6 +365,102 @@ module.exports = function(options) {
         );
 
         reply(responseObj);
+      }
+    },
+    {
+      method: 'POST',
+      path: '/request-migration-email',
+      config: {
+        auth: false
+      },
+      handler: function(request, reply) {
+        account.requestMigrateEmail(request, function(err, json) {
+          if ( err ) {
+            return reply(Boom.badImplementation(err));
+          }
+          reply({ status: 'migration email sent' });
+        });
+      }
+    },
+    {
+      method: 'POST',
+      path: '/migrate-user',
+      config: {
+        auth: false,
+        pre: [
+          {
+            assign: 'username',
+            method: function(request, reply) {
+              reply(request.payload.username);
+            }
+          },
+          {
+            assign: 'password',
+            method: function(request, reply) {
+              var password = request.payload.password;
+              if ( !password ) {
+                return reply(Boom.badRequest('No password provided'));
+              }
+
+              var result = passTest.test(password, [request.pre.username]);
+
+              if ( !result.passed ) {
+                return reply(Boom.badRequest('Password not strong enough'), result);
+              }
+
+              reply(password);
+            }
+          },
+          {
+            assign: 'isValidToken',
+            method: function(request, reply) {
+              account.verifyToken(request, function(err, json) {
+                if ( err ) {
+                  return reply(err);
+                }
+
+                reply(true);
+              });
+            }
+          },
+          {
+            assign: 'user',
+            method: function(request, reply) {
+              account.setPassword(
+                request,
+                request.pre.username,
+                request.pre.password,
+                function(err, json) {
+                  if ( err ) {
+                    return reply(err);
+                  }
+
+                  reply(json.user);
+                }
+              );
+            }
+          }
+        ]
+      },
+      handler: function(request, reply) {
+        request.auth.session.set(request.pre.user);
+        reply({ status: 'Logged in' });
+      }
+    },
+    {
+      method: 'POST',
+      path: '/check-username',
+      config: {
+        auth: false
+      },
+      handler: function(request, reply) {
+        account.checkUsername(request, function(err, json) {
+          if ( err ) {
+            return reply(err);
+          }
+
+          reply(json);
+        });
       }
     }
   ]);
