@@ -93,7 +93,6 @@ module.exports = function(options) {
               var redirectUrl = '/login';
               if (request.query.action === 'signup') {
                 redirectUrl = '/signup';
-
               }
 
               var redirect = url.parse(redirectUrl, true);
