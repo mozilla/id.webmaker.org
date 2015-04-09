@@ -103,6 +103,7 @@ var UserMigration = React.createClass({
       },
       body: JSON.stringify({
         token: query.token,
+        username: query.uid,
         password: data.password
       })
     }).then((response) => {
