@@ -2,6 +2,8 @@ var React = require('react');
 var validators = require('../lib/validatorset');
 var Form = require('./form/form.jsx');
 var IconText = require('./icontext.jsx');
+var Router = require('react-router');
+var API = require('../lib/api.jsx');
 
 var fields = [
   {
@@ -15,6 +17,11 @@ var fields = [
 var fieldsValidators = validators.getValidatorSet(fields);
 
 var LoginNoPassword = React.createClass({
+  mixins: [
+    Router.Navigation,
+    Router.State,
+    API
+  ],
   render: function() {
     return (
       <div className="migrateKeyContainer centerDiv loginNoPass">
@@ -27,7 +34,7 @@ var LoginNoPassword = React.createClass({
                 </IconText>
                 <div className="migrateKey innerForm fullHeight">
 
-        <Form origin="Migration" ref="userform" fields={fields} validators={fieldsValidators} defaultUsername={this.props.username} />
+        <Form onInputBlur={this.handleBlur} origin="Migration" ref="userform" fields={fields} validators={fieldsValidators} defaultUsername={this.props.username} />
         <button onClick={this.processFormData} className="btn btn-awsm">Set Password</button>
         </div>
       </div>
@@ -36,6 +43,11 @@ var LoginNoPassword = React.createClass({
   processFormData: function() {
     var form = this.refs.userform;
     form.processFormData(this.props.submitForm);
+  },
+  handleBlur: function(fieldName, value) {
+    if ( fieldName === 'username' && value ) {
+      this.checkUsername(value);
+    }
   }
 });
 

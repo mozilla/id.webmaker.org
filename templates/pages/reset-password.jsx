@@ -5,7 +5,7 @@ var IconText = require('../components/icontext.jsx');
 var ResetView = require('../components/reset-password-view.jsx');
 var RequestView = require('../components/request-reset-view.jsx');
 var Router = require('react-router');
-
+var API = require('../lib/api.jsx');
 
 var Url = require('url');
 var ga = require('react-ga');
