@@ -1,6 +1,5 @@
 var should = require('should');
 var React = require('react/addons');
-var TestUtils = React.addons.TestUtils;
 var RouterStub = require('react-router-stub');
 var Header = require('./header.jsx');
 

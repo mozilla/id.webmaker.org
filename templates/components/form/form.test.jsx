@@ -2,6 +2,7 @@ var should = require('should');
 var React = require('react/addons');
 var TestUtils = React.addons.TestUtils;
 var Form = require('./form.jsx');
+var RouterStub = require('react-router-stub');
 
 var fieldValues = [
   {
@@ -50,8 +51,16 @@ describe('form', function() {
 
   describe('prop validation', function() {
     it('should take field and validators props', function () {
-      var instance = TestUtils.renderIntoDocument(<Form fields={fieldValues} validators={fieldValidators} />);
+      var instance = RouterStub.render(Form, {'origin': 'test', fields: fieldValues, validators: fieldValidators}, {
+        getCurrentQuery () {
+          return { username: true };
+        },
+        getCurrentPathname () {
+          return 'test';
+        }
+      });
     });
+
     it('should not allow an empty fields or validators prop', function () {
       should.throws(function () {
         var instance = TestUtils.renderIntoDocument(<Form />);
@@ -60,8 +69,14 @@ describe('form', function() {
   });
 
   describe('inputs', function () {
-
-    var instance = TestUtils.renderIntoDocument(<Form fields={fieldValues} validators={fieldValidators} />);
+    var instance = RouterStub.render(Form, {'origin': 'test', fields: fieldValues, validators: fieldValidators}, {
+      getCurrentQuery () {
+        return { username: true };
+      },
+      getCurrentPathname () {
+        return 'test';
+      }
+    });
     var el = instance.getDOMNode();
 
     fieldValues.forEach(function (set) {

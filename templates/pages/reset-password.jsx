@@ -8,7 +8,8 @@ var Router = require('react-router');
 
 var Url = require('url');
 var ga = require('react-ga');
-require('whatwg-fetch');
+require('es6-promise').polyfill();
+require('isomorphic-fetch');
 
 // This wraps every view
 var ResetPassword = React.createClass({

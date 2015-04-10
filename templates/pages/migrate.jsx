@@ -9,7 +9,8 @@ var ga = require('react-ga');
 var State = require("react-router").State;
 var url = require('url');
 
-require('whatwg-fetch');
+require('es6-promise').polyfill();
+require('isomorphic-fetch');
 
 var UserMigration = React.createClass({
   mixins: [
