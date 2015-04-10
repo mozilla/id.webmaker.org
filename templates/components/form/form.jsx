@@ -1,6 +1,7 @@
 var React = require('react/addons');
 var ValidationMixin = require('react-validation-mixin');
 var ga = require('react-ga');
+var ToolTip = require('../tooltip/tooltip.jsx');
 
 var Form = React.createClass({
   propTypes: {
@@ -43,6 +44,7 @@ var Form = React.createClass({
       if(err) {
         ga.event({category: origin, action: 'Validation Error', label: 'Error on ' + id + ' field.'});
       }
+      this.props.passwordError = null;
       var dirty = this.state.dirty;
       dirty[id] = true;
       this.setState({dirty: dirty});
@@ -57,7 +59,13 @@ var Form = React.createClass({
     var value = this.props.fields[i][id];
     this.passChecked = value.checked;
     this.beforeLabel = value.label === undefined ? true : value.label;
-    var invalidPasswordMessage = 'Invalid password';
+
+    var passwordError = this.props.passwordError;
+
+    if(id === 'password' && !this.isValid(id) && !passwordError) {
+      passwordError = 'Invalid Password';
+    }
+    var isValid = this.isValid(id) && !passwordError;
 
     var input = (
       <input type={value.type}
@@ -70,7 +78,7 @@ var Form = React.createClass({
              aria-checked={value.type === 'checkbox' ? 'false' : null}
              onClick={value.type === 'checkbox' ? this.toggleCheckBox : null}
              onBlur={this.handleValidation(id, this.dirty(id, this.props.origin))}
-             className={this.getInputClasses(id)}
+             className={this.getInputClasses(id, isValid)}
              disabled={value.disabled ? "disabled" : false}
              autoFocus={value.focus ? true : false}
       />
@@ -79,15 +87,14 @@ var Form = React.createClass({
     if (value.type === 'checkbox') {
       input = (<span className={value.className}>{input}<span/></span>);
     }
-
-    var errorTooltip = value.customError;
-    if (!errorTooltip) {
-      errorTooltip = (id === 'password' ? invalidPasswordMessage : this.getValidationMessages(id)[0]);
+    var errorMessage = value.customError;
+    if (!errorMessage) {
+      errorMessage = (id === 'password' ? passwordError : this.getValidationMessages(id)[0]);
     }
-    errorTooltip = <span className="warning">{errorTooltip}</span>;
+    var errorTooltip = <ToolTip ref="tooltip" className="warning" message={errorMessage}/>;
     return (
-     <label ref={id+'Label'} className={this.getLabelClasses(id)} key={id} htmlFor={id}>
-        {!this.isValid(id) ? errorTooltip : false}
+     <label ref={id+'Label'} className={this.getLabelClasses(id, isValid)} key={id} htmlFor={id}>
+        {passwordError || !this.isValid(id) ? errorTooltip : false}
         {value.label && value.labelPosition==='before' ? value.label : false}
         {input}
         {value.label && value.labelPosition==='after' ? value.label : false}
@@ -98,8 +105,7 @@ var Form = React.createClass({
      var fields = Object.keys(this.props.fields).map(this.buildFormElement);
      return <div role="form">{fields}</div>;
   },
-  getInputClasses: function(field) {
-    var isValid = this.isValid(field);
+  getInputClasses: function(field, isValid) {
     var classes = {};
     classes['has-error'] = !isValid;
     classes['is-valid'] = isValid;
@@ -107,9 +113,8 @@ var Form = React.createClass({
     classes[this.getIconClass(field)] = true;
     return React.addons.classSet(classes);
   },
-  getLabelClasses: function(field) {
+  getLabelClasses: function(field, isValid) {
     var classes = {};
-    var isValid = this.isValid(field);
     var ref = this.refs[field + 'Input'];
     classes['inputBox'] = field === 'feedback';
     classes[this.getIconClass(field)] = true;
