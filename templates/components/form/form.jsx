@@ -2,7 +2,7 @@ var React = require('react/addons');
 var ValidationMixin = require('react-validation-mixin');
 var ga = require('react-ga');
 var ToolTip = require('../tooltip/tooltip.jsx');
-var webmakerActions = require('../../lib/webmaker-actions.jsx');
+var WebmakerActions = require('../../lib/webmaker-actions.jsx');
 
 var Form = React.createClass({
   propTypes: {
@@ -31,10 +31,10 @@ var Form = React.createClass({
     this.validClass = this.getIconClass('valid');
   },
   componentDidMount: function() {
-    webmakerActions.addListener('FORM_ERROR', this.formError);
+    WebmakerActions.addListener('FORM_ERROR', this.formError);
   },
   componentWillUnmount: function() {
-    webmakerActions.deleteListener('FORM_ERROR', this.formError);
+    WebmakerActions.deleteListener('FORM_ERROR', this.formError);
   },
   getInitialState: function() {
     return {
@@ -48,10 +48,10 @@ var Form = React.createClass({
     };
   },
   formError: function(data) {
-    var err = {};
-    err[data.field] = data.message;
     this.setState({
-      errorMessage: err
+      errorMessage: {
+        [data.field]: data.message
+      }
     });
   },
   dirty: function(id, origin) {
