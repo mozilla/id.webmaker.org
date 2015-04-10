@@ -23,16 +23,17 @@ var UserMigration = React.createClass({
       login: false,
       emailedKey: false,
       setPass: !!this.getQuery().token,
-      success: false
+      success: false,
+      errorMessage: null
     };
   },
   render: function() {
     var username = this.getQuery().username;
-    var content = (<LoginNoPasswordForm submitForm={this.handleSendToken} username={username}/>);
+    var content = (<LoginNoPasswordForm ref="LoginNoPasswordForm" displayError={this.displayError} submitForm={this.handleSendToken} username={username}/>);
     if(this.state.emailedKey) {
-      content = (<KeyEmailed />);
+      content = (<KeyEmailed ref="KeyEmailed" />);
     } else if(this.state.setPass) {
-      content = (<SetPasswordMigrationForm submitForm={this.handleSetPassword} />);
+      content = (<SetPasswordMigrationForm ref="SetPasswordMigrationForm" errorMessage={this.state.errorMessage} submitForm={this.handleSetPassword} />);
     } else if(this.state.success) {
       content = (<div className="successBanner centerDiv"><IconText
           iconClass="successBannerIcon icon"
@@ -107,8 +108,16 @@ var UserMigration = React.createClass({
         password: data.password
       })
     }).then((response) => {
-      if ( response.status !== 200 ) {
-        console.error("Non 200 status recieved while attemting migration", response.statusText);
+      return response.json();
+    }).then((json) => {
+      if ( json.statusCode === 400 ) {
+        this.setState({errorMessage: json.message})
+        console.error("Error 400 statusCode recieved ", json.message);
+        ga.event({category: 'Migration', action: 'Error', label: 'Error Handling Set Password'});
+        return;
+      }
+      else if ( json.statusCode !== 200 ) {
+        console.error("Non 200 statusCode recieved while attemting migration", json.statusText);
         ga.event({category: 'Migration', action: 'Error', label: 'Error Handling Set Password'});
         return;
       }
