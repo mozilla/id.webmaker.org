@@ -6,7 +6,6 @@ var ResetView = require('../components/reset-password-view.jsx');
 var RequestView = require('../components/request-reset-view.jsx');
 var Router = require('react-router');
 
-
 var Url = require('url');
 var ga = require('react-ga');
 require('whatwg-fetch');

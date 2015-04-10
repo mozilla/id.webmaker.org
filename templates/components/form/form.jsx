@@ -2,6 +2,7 @@ var React = require('react/addons');
 var ValidationMixin = require('react-validation-mixin');
 var ga = require('react-ga');
 var ToolTip = require('../tooltip/tooltip.jsx');
+var WebmakerActions = require('../../lib/webmaker-actions.jsx');
 
 var Form = React.createClass({
   propTypes: {
@@ -29,6 +30,12 @@ var Form = React.createClass({
     this.errorClass = this.getIconClass('error');
     this.validClass = this.getIconClass('valid');
   },
+  componentDidMount: function() {
+    WebmakerActions.addListener('FORM_ERROR', this.formError);
+  },
+  componentWillUnmount: function() {
+    WebmakerActions.deleteListener('FORM_ERROR', this.formError);
+  },
   getInitialState: function() {
     return {
       username: this.props.defaultUsername || '',
@@ -36,8 +43,16 @@ var Form = React.createClass({
       email: '',
       checked: false,
       dirty: {},
-      key: ''
+      key: '',
+      errorMessage: {}
     };
+  },
+  formError: function(data) {
+    this.setState({
+      errorMessage: {
+        [data.field]: data.message
+      }
+    });
   },
   dirty: function(id, origin) {
     return function(err, valid) {
@@ -47,7 +62,10 @@ var Form = React.createClass({
       this.props.passwordError = null;
       var dirty = this.state.dirty;
       dirty[id] = true;
-      this.setState({dirty: dirty});
+      this.setState({
+        dirty: dirty,
+        errorMessage: {[id]: null}
+      });
       if ( this.props.onInputBlur ) {
         this.props.onInputBlur(id, this.state.username);
       }
@@ -65,7 +83,8 @@ var Form = React.createClass({
     if(id === 'password' && !this.isValid(id) && !passwordError) {
       passwordError = 'Invalid Password';
     }
-    var isValid = this.isValid(id) && !passwordError;
+
+    var isValid = !this.state.errorMessage[id] && this.isValid(id) && !passwordError;
 
     var input = (
       <input type={value.type}
@@ -87,14 +106,11 @@ var Form = React.createClass({
     if (value.type === 'checkbox') {
       input = (<span className={value.className}>{input}<span/></span>);
     }
-    var errorMessage = value.customError;
-    if (!errorMessage) {
-      errorMessage = (id === 'password' ? passwordError : this.getValidationMessages(id)[0]);
-    }
+    var errorMessage = (id === 'password' ? passwordError : this.state.errorMessage[id] || this.getValidationMessages(id)[0]);
     var errorTooltip = <ToolTip ref="tooltip" className="warning" message={errorMessage}/>;
     return (
      <label ref={id+'Label'} className={this.getLabelClasses(id, isValid)} key={id} htmlFor={id}>
-        {passwordError || !this.isValid(id) ? errorTooltip : false}
+        {passwordError || !isValid ? errorTooltip : false}
         {value.label && value.labelPosition==='before' ? value.label : false}
         {input}
         {value.label && value.labelPosition==='after' ? value.label : false}

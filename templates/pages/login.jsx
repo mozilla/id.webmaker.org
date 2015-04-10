@@ -6,6 +6,7 @@ var Form = require('../components/form/form.jsx');
 var Header = require('../components/header/header.jsx');
 var Url = require('url');
 var ga = require('react-ga');
+var API = require('../lib/api.jsx');
 
 require('whatwg-fetch');
 
@@ -35,12 +36,19 @@ var fieldValidators = validators.getValidatorSet(fieldValues);
 var Login = React.createClass({
   mixins: [
     Router.Navigation,
-    Router.State
+    Router.State,
+    API
   ],
+  getInitialState: function() {
+    return {
+      usernameError: null
+    };
+  },
   componentDidMount: function() {
     document.title = "Webmaker Login - Login";
   },
   render: function() {
+    var username = this.getQuery().username;
     // FIXME: totally not localized yet!
     var buttonText = "Log In";
     var queryObj = Url.parse(window.location.href, true).query;
@@ -51,7 +59,7 @@ var Login = React.createClass({
         <Header origin="Login" className="mobileHeader" redirectLabel="Signup" redirectPage="signup" redirectQuery={queryObj} mobile />
 
         <div className="loginPage innerForm centerDiv">
-          <Form ref="userform" fields={fieldValues} validators={fieldValidators} origin="Login" onInputBlur={this.handleBlur} />
+          <Form usernameError={this.state.usernameError} defaultUsername={username} ref="userform" fields={fieldValues} validators={fieldValidators} origin="Login" onInputBlur={this.handleBlur} />
           <button onClick={this.processFormData} className="btn btn-awsm">{buttonText}</button>
           <Link onClick={this.handleGA.bind(this, 'Forgot your password')} to="reset-password" query={queryObj} className="need-help">Forgot your password?</Link>
         </div>
@@ -62,31 +70,6 @@ var Login = React.createClass({
     if ( fieldName === 'username' && value ) {
       this.checkUsername(value);
     }
-  },
-  checkUsername: function(username) {
-    fetch('/check-username', {
-      method: 'post',
-      headers: {
-        'Accept': 'application/json; charset=utf-8',
-        'Content-Type': 'application/json; charset=utf-8'
-      },
-      body: JSON.stringify({
-        uid: username
-      })
-    }).then((response) => {
-      return response.json();
-    }).then((json) => {
-      var query;
-      if ( !json.exists ) {
-        // some UI cue?
-      } else if ( !json.usePasswordLogin ) {
-        query = this.getQuery();
-        query.username = username;
-        this.transitionTo('/migrate', '', query );
-      }
-    }).catch((ex) => {
-      console.error("Request failed");
-    });
   },
   processFormData: function() {
     var form = this.refs.userform;
