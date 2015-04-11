@@ -27,7 +27,7 @@ var SetPasswordMigration = React.createClass({
             <p>Please create a password for your account.</p>
         </IconText>
         <div className="migrateKey innerForm">
-          <Form passwordError={this.props.errorMessage} origin="Migration" ref="userform" fields={fields} validators={fieldsValidators} />
+          <Form origin="Migration" ref="userform" fields={fields} validators={fieldsValidators} />
           <button onClick={this.processFormData} className="btn btn-awsm">Continue</button>
         </div>
       </div>
