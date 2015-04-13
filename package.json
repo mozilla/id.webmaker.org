@@ -5,20 +5,24 @@
   "main": "index.js",
   "scripts": {
     "start": "parallelshell \"node web/index.js\" \"npm run watch:css\" \"npm run watch:js\"",
-    "test": "npm run test:server && npm run test:browser && npm run lint",
+    "start:production": "parallelshell \"node web/index.js\" \"npm run watch:css\" \"npm run watch:js:production\"",
     "build": "npm run build:css && npm run build:js",
+    "build:production": "npm run build:css && npm run build:js:production",
     "build:css": "npm run watch:css -- --no-watch",
     "build:js": "webpack --config webpack.config.js --progress --profile --colors",
+    "build:js:production": "webpack --config webpack.config.js --progress --profile --colors  --optimize-minimize --optimize-dedupe",
     "jscs": "jscs -c node_modules/mofo-style/linters/.jscsrc lib test web webpack.config.js",
     "jshint": "jshint -c node_modules/mofo-style/linters/.jshintrc lib test web webpack.config.js",
     "jsbeautify": "js-beautify lib test web *.js -r",
     "lint": "npm run jshint && npm run jscs",
-    "postinstall": "npm run build",
+    "postinstall": "npm run build:production",
     "pretest:browser": "ncp node_modules/mocha/mocha.js public/tests/mocha.js && ncp node_modules/mocha/mocha.css public/tests/mocha.css",
     "test:browser": "npm run build && mocha-phantomjs -s loadImages=false public/tests/index.html",
     "test:server": "lab -t 95",
     "watch:js": "npm run build:js -- --watch",
-    "watch:css": "autoless --source-map templates/less public"
+    "watch:js:production": "npm run build:js:production -- --watch",
+    "watch:css": "autoless --source-map templates/less public",
+    "test": "npm run test:server && npm run test:browser && npm run lint"
   },
   "repository": {
     "type": "git",
