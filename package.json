@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "parallelshell \"node web/index.js\" \"npm run watch:css\" \"npm run watch:js\"",
+    "test": "npm run test:server && npm run test:browser && npm run lint",
     "start:production": "parallelshell \"node web/index.js\" \"npm run watch:css\" \"npm run watch:js:production\"",
     "build": "npm run build:css && npm run build:js",
     "build:production": "npm run build:css && npm run build:js:production",
@@ -21,8 +22,7 @@
     "test:server": "lab -t 95",
     "watch:js": "npm run build:js -- --watch",
     "watch:js:production": "npm run build:js:production -- --watch",
-    "watch:css": "autoless --source-map templates/less public",
-    "test": "npm run test:server && npm run test:browser && npm run lint"
+    "watch:css": "autoless --source-map templates/less public"
   },
   "repository": {
     "type": "git",
