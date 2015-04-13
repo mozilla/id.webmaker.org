@@ -178,7 +178,6 @@ var Form = React.createClass({
   processFormData: function(callback) {
     var self = this;
     this.validate(function(error, data) {
-      console.log("inside Form, we see:", error, data);
       self.onValidate(callback, error, data);
     });
   },
