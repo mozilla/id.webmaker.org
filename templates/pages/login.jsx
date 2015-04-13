@@ -6,9 +6,9 @@ var Form = require('../components/form/form.jsx');
 var Header = require('../components/header/header.jsx');
 var Url = require('url');
 var ga = require('react-ga');
-var API = require('../lib/api.jsx');
 
-require('whatwg-fetch');
+require('es6-promise').polyfill();
+require('isomorphic-fetch');
 
 var fieldValues = [
   {
@@ -34,21 +34,10 @@ var fieldValidators = validators.getValidatorSet(fieldValues);
 
 // This wraps every view
 var Login = React.createClass({
-  mixins: [
-    Router.Navigation,
-    Router.State,
-    API
-  ],
-  getInitialState: function() {
-    return {
-      usernameError: null
-    };
-  },
   componentDidMount: function() {
     document.title = "Webmaker Login - Login";
   },
   render: function() {
-    var username = this.getQuery().username;
     // FIXME: totally not localized yet!
     var buttonText = "Log In";
     var queryObj = Url.parse(window.location.href, true).query;
@@ -59,17 +48,16 @@ var Login = React.createClass({
         <Header origin="Login" className="mobileHeader" redirectLabel="Signup" redirectPage="signup" redirectQuery={queryObj} mobile />
 
         <div className="loginPage innerForm centerDiv">
-          <Form usernameError={this.state.usernameError} defaultUsername={username} ref="userform" fields={fieldValues} validators={fieldValidators} origin="Login" onInputBlur={this.handleBlur} />
+          <Form ref="userform"
+                fields={fieldValues}
+                validators={fieldValidators}
+                origin="Login"
+          />
           <button onClick={this.processFormData} className="btn btn-awsm">{buttonText}</button>
           <Link onClick={this.handleGA.bind(this, 'Forgot your password')} to="reset-password" query={queryObj} className="need-help">Forgot your password?</Link>
         </div>
       </div>
     );
-  },
-  handleBlur: function(fieldName, value) {
-    if ( fieldName === 'username' && value ) {
-      this.checkUsername(value);
-    }
   },
   processFormData: function() {
     var form = this.refs.userform;

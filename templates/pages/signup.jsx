@@ -3,10 +3,12 @@ var React = require('react');
 var Form = require('../components/form/form.jsx');
 var Header = require('../components/header/header.jsx');
 var IconText = require('../components/icontext.jsx');
+var Router = require('react-router');
 
 var Url = require('url');
 var ga = require('react-ga');
-require('whatwg-fetch');
+require('es6-promise').polyfill();
+require('isomorphic-fetch');
 
 var fieldValues = [
   {
@@ -83,7 +85,6 @@ var Signup = React.createClass({
   processSignup: function(evt) {
     this.refs.userform.processFormData(this.handleFormData);
   },
-
   handleFormData: function(error, data) {
     if ( error ) {
       ga.event({category: 'Signup', action: 'Error during form validation'});

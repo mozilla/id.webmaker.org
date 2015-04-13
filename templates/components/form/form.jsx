@@ -3,6 +3,8 @@ var ValidationMixin = require('react-validation-mixin');
 var ga = require('react-ga');
 var ToolTip = require('../tooltip/tooltip.jsx');
 var WebmakerActions = require('../../lib/webmaker-actions.jsx');
+var API = require('../../lib/api.jsx');
+var Router = require('react-router');
 
 var Form = React.createClass({
   propTypes: {
@@ -22,7 +24,10 @@ var Form = React.createClass({
   },
   mixins: [
     ValidationMixin,
-    React.addons.LinkedStateMixin
+    React.addons.LinkedStateMixin,
+    Router.Navigation,
+    Router.State,
+    API
   ],
   validatorTypes: false,
   componentWillMount: function() {
@@ -32,44 +37,57 @@ var Form = React.createClass({
   },
   componentDidMount: function() {
     WebmakerActions.addListener('FORM_ERROR', this.formError);
+    WebmakerActions.addListener('FORM_VALID', this.setFormState);
   },
   componentWillUnmount: function() {
     WebmakerActions.deleteListener('FORM_ERROR', this.formError);
+    WebmakerActions.deleteListener('FORM_VALID', this.setFormState);
   },
   getInitialState: function() {
     return {
-      username: this.props.defaultUsername || '',
+      username: this.getQuery().username || '',
       password: '',
       email: '',
       checked: false,
       dirty: {},
       key: '',
-      errorMessage: {}
+      errorMessage: {},
+      valid_username: false
     };
+  },
+  setFormState: function(data) {
+    this.setState({
+      valid_username: true,
+      errorMessage: {[data.field]: null}
+    });
   },
   formError: function(data) {
     this.setState({
+      ['valid_'+data.field]: false,
       errorMessage: {
         [data.field]: data.message
       }
     });
   },
   dirty: function(id, origin) {
-    return function(err, valid) {
+    return (err, valid) => {
       if(err) {
         ga.event({category: origin, action: 'Validation Error', label: 'Error on ' + id + ' field.'});
       }
       this.props.passwordError = null;
-      var dirty = this.state.dirty;
-      dirty[id] = true;
-      this.setState({
-        dirty: dirty,
-        errorMessage: {[id]: null}
-      });
-      if ( this.props.onInputBlur ) {
-        this.props.onInputBlur(id, this.state.username);
-      }
-    }.bind(this);
+      this.handleBlur(id, this.state.username)
+    }
+  },
+  handleBlur: function(fieldName, value) {
+    if( (this.state.valid_username && fieldName === 'username') || fieldName === 'username' ) {
+      this.checkUsername(fieldName, value);
+    }
+    var dirty = this.state.dirty;
+    dirty[fieldName] = true;
+    this.setState({
+      dirty: dirty
+    });
+
   },
   buildFormElement: function(key, i) {
     // we always expect this.props.fields[i] to be one object with one property.
