@@ -4,3 +4,4 @@ node_modules/
 styles.css*
 public/tests/mocha*
 .env
+npm-debug*

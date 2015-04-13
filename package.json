@@ -4,7 +4,7 @@
   "description": "OAuth 2.0 identity provider for Webmaker https://id.webmaker.org",
   "main": "index.js",
   "scripts": {
-    "start": "parallelshell \"node web/index.js\" \"npm run watch:css\" \"npm run watch:js\"",
+    "start": "npm-run-all --parallel server watch:css watch:js ",
     "test": "npm run test:server && npm run test:browser && npm run lint",
     "build": "npm run build:css && npm run build:js",
     "build:css": "npm run watch:css -- --no-watch",
@@ -18,7 +18,8 @@
     "test:browser": "npm run build && mocha-phantomjs -s loadImages=false public/tests/index.html",
     "test:server": "lab -t 95",
     "watch:js": "npm run build:js -- --watch",
-    "watch:css": "autoless --source-map templates/less public"
+    "watch:css": "autoless --source-map templates/less public",
+    "server": "node web/index.js"
   },
   "repository": {
     "type": "git",
@@ -73,7 +74,7 @@
     "mocha-phantomjs": "^3.5.3",
     "mofo-style": "latest",
     "ncp": "^2.0.0",
-    "parallelshell": "^1.1.1",
+    "npm-run-all": "^1.1.3",
     "phantomjs": "^1.9.16"
   },
   "engines": {
