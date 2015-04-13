@@ -15,7 +15,7 @@
     "jshint": "jshint -c node_modules/mofo-style/linters/.jshintrc lib test web webpack.config.js",
     "jsbeautify": "js-beautify lib test web *.js -r",
     "lint": "npm run jshint && npm run jscs",
-    "postinstall": "npm run build:production",
+    "postinstall": "node build",
     "pretest:browser": "ncp node_modules/mocha/mocha.js public/tests/mocha.js && ncp node_modules/mocha/mocha.css public/tests/mocha.css",
     "test:browser": "npm run build && mocha-phantomjs -s loadImages=false public/tests/index.html",
     "test:server": "lab -t 95",
