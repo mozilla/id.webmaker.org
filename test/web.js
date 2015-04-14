@@ -43,7 +43,7 @@ lab.experiment("OAuth", function() {
         payload: {
           email: "webmaker@example.com",
           username: "webmaker",
-          password: "password"
+          password: "CantGuessThis"
         }
       };
 
@@ -66,27 +66,7 @@ lab.experiment("OAuth", function() {
         payload: {
           email: "webmaker@example.com",
           username: "invalidResponse",
-          password: "password"
-        }
-      };
-
-      s.inject(request, function(response) {
-        Code.expect(response.statusCode).to.equal(500);
-        ls.stop(done);
-      });
-    });
-  });
-
-  lab.test("POST Create User (login API failure)", function(done) {
-    ls.start(function(error) {
-      Code.expect(error).to.be.undefined();
-      var request = {
-        method: "POST",
-        url: "/create-user",
-        payload: {
-          email: "webmaker@example.com",
-          username: "notgonnawork",
-          password: "password"
+          password: "CantGuessThis"
         }
       };
 
@@ -98,7 +78,7 @@ lab.experiment("OAuth", function() {
   });
 
   lab.test(
-    "POST Create User returns 400 if the login server response object contains an error message",
+    "POST Create User returns 400 if the user provides a weak password",
     function(done) {
       ls.start(function(error) {
         Code.expect(error).to.be.undefined();
@@ -107,7 +87,7 @@ lab.experiment("OAuth", function() {
           url: "/create-user",
           payload: {
             email: "webmaker@example.com",
-            username: "jsonError",
+            username: "weakpass",
             password: "password"
           }
         };
