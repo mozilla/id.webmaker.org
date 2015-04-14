@@ -102,7 +102,7 @@ module.exports = function() {
           }).code(200);
         }
 
-        if ( payload.user.username = "weakpass" ) {
+        if ( payload.user.username === "weakpass" ) {
           return reply()
             .code(400);
         }

@@ -77,6 +77,26 @@ lab.experiment("OAuth", function() {
     });
   });
 
+  lab.test("POST Create User (login API failure)", function(done) {
+    ls.start(function(error) {
+      Code.expect(error).to.be.undefined();
+      var request = {
+        method: "POST",
+        url: "/create-user",
+        payload: {
+          email: "webmaker@example.com",
+          username: "notgonnawork",
+          password: "CantGuessThis"
+        }
+      };
+
+      s.inject(request, function(response) {
+        Code.expect(response.statusCode).to.equal(500);
+        ls.stop(done);
+      });
+    });
+  });
+
   lab.test(
     "POST Create User returns 400 if the user provides a weak password",
     function(done) {
