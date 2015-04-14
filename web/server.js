@@ -264,7 +264,8 @@ module.exports = function(options) {
       handler: function(request, reply) {
         account.createUser(request, function(err, json) {
           if ( err ) {
-            return reply(Boom.badImplementation(err));
+            err.output.payload.data = err.data;
+            return reply(err);
           }
           if ( json.error ) {
             return reply(Boom.badRequest(json.error, json.login_error));

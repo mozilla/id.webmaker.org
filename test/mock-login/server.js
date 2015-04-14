@@ -99,7 +99,12 @@ module.exports = function() {
         if ( payload.user.username === 'jsonError' ) {
           return reply({
             error: 'LoginAPI error'
-          });
+          }).code(200);
+        }
+
+        if ( payload.user.username === 'weakpass' ) {
+          return reply()
+            .code(400);
         }
 
         reply(Boom.badImplementation('login API failure'));
