@@ -8,6 +8,7 @@ var IconText = require('../components/icontext.jsx');
 var ga = require('react-ga');
 var State = require("react-router").State;
 var url = require('url');
+var WebmakerActions = require('../lib/webmaker-actions.jsx');
 
 require('es6-promise').polyfill();
 require('isomorphic-fetch');
@@ -30,11 +31,11 @@ var UserMigration = React.createClass({
   },
   render: function() {
     var username = this.getQuery().username;
-    var content = (<LoginNoPasswordForm ref="LoginNoPasswordForm" displayError={this.displayError} submitForm={this.handleSendToken} username={username}/>);
+    var content = (<LoginNoPasswordForm ref="LoginNoPasswordForm" submitForm={this.handleSendToken} username={username}/>);
     if(this.state.emailedKey) {
       content = (<KeyEmailed ref="KeyEmailed" />);
     } else if(this.state.setPass) {
-      content = (<SetPasswordMigrationForm ref="SetPasswordMigrationForm" errorMessage={this.state.errorMessage} submitForm={this.handleSetPassword} />);
+      content = (<SetPasswordMigrationForm ref="SetPasswordMigrationForm" submitForm={this.handleSetPassword} />);
     } else if(this.state.success) {
       content = (<div className="successBanner centerDiv"><IconText
           iconClass="successBannerIcon icon"
@@ -91,7 +92,6 @@ var UserMigration = React.createClass({
   handleSetPassword: function(error, data) {
     if(error) {
       ga.event({category: 'Migration', action: 'Error', label: 'Error Handling Set Password'});
-      console.error("inside App we see:", error, data);
       return;
     }
 
@@ -109,32 +109,35 @@ var UserMigration = React.createClass({
         password: data.password
       })
     }).then((response) => {
+      if(response.status === 200) {
+        this.setState({
+          setPass: false,
+          success: true
+        });
+        ga.event({category: 'Migration', action: 'Set new password'});
+        window.setTimeout(() => {
+          var redirectObj = url.parse(window.location.href);
+          redirectObj.pathname = '/login/oauth/authorize';
+          redirectObj.search = redirectObj.path = null;
+          redirectObj.query = this.getQuery();
+
+          window.location = url.format(redirectObj);
+        }, 5000);
+      }
       return response.json();
     }).then((json) => {
       if ( json.statusCode === 400 ) {
-        this.setState({errorMessage: json.message})
+        WebmakerActions.displayError({'field': 'password', 'message': json.message});
         console.error("Error 400 statusCode recieved ", json.message);
         ga.event({category: 'Migration', action: 'Error', label: 'Error Handling Set Password'});
         return;
       }
       else if ( json.statusCode !== 200 ) {
-        console.error("Non 200 statusCode recieved while attemting migration", json.statusText);
+        WebmakerActions.displayError({'field': 'password', 'message': json.message});
+        console.error("Non 200 statusCode recieved while attemting migration", json.message);
         ga.event({category: 'Migration', action: 'Error', label: 'Error Handling Set Password'});
         return;
       }
-      this.setState({
-        setPass: false,
-        success: true
-      });
-      ga.event({category: 'Migration', action: 'Set new password'});
-      window.setTimeout(() => {
-        var redirectObj = url.parse(window.location.href);
-        redirectObj.pathname = '/login/oauth/authorize';
-        redirectObj.search = redirectObj.path = null;
-        redirectObj.query = this.getQuery();
-
-        window.location = url.format(redirectObj);
-      }, 5000);
     }).catch((ex) => {
       console.error("Exception Creating Password", ex);
       ga.event({category: 'Migration', action: 'Error', label: 'Error Handling Set Password'});

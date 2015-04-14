@@ -52,7 +52,8 @@ var Form = React.createClass({
       dirty: {},
       key: '',
       errorMessage: {},
-      valid_username: false
+      valid_username: false,
+      passwordError: false
     };
   },
   setFormState: function(data) {
@@ -74,7 +75,7 @@ var Form = React.createClass({
       if(err) {
         ga.event({category: origin, action: 'Validation Error', label: 'Error on ' + id + ' field.'});
       }
-      this.props.passwordError = null;
+      this.state.passwordError = null;
       this.handleBlur(id, this.state.username)
     }
   },
@@ -96,7 +97,7 @@ var Form = React.createClass({
     this.passChecked = value.checked;
     this.beforeLabel = value.label === undefined ? true : value.label;
 
-    var passwordError = this.props.passwordError;
+    var passwordError = this.state.passwordError;
 
     if(id === 'password' && !this.isValid(id) && !passwordError) {
       passwordError = 'Invalid Password';
@@ -124,7 +125,7 @@ var Form = React.createClass({
     if (value.type === 'checkbox') {
       input = (<span className={value.className}>{input}<span/></span>);
     }
-    var errorMessage = (id === 'password' ? passwordError : this.state.errorMessage[id] || this.getValidationMessages(id)[0]);
+    var errorMessage = (id === 'password' ? this.state.errorMessage[id] || passwordError : this.state.errorMessage[id] || this.getValidationMessages(id)[0]);
     var errorTooltip = <ToolTip ref="tooltip" className="warning" message={errorMessage}/>;
     return (
      <label ref={id+'Label'} className={this.getLabelClasses(id, isValid)} key={id} htmlFor={id}>
