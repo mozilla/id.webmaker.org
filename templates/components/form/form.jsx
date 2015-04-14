@@ -83,6 +83,9 @@ var Form = React.createClass({
     if( (this.state.valid_username && fieldName === 'username') || fieldName === 'username' ) {
       this.checkUsername(fieldName, value);
     }
+   if ( this.props.onInputBlur ) {
+     this.props.onInputBlur(fieldName, value);
+    }
     var dirty = this.state.dirty;
     dirty[fieldName] = true;
     this.setState({

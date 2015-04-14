@@ -30,6 +30,7 @@ var UserMigration = React.createClass({
     };
   },
   render: function() {
+    var queryObj = url.parse(window.location.href, true).query;
     var username = this.getQuery().username;
     var content = (<LoginNoPasswordForm ref="LoginNoPasswordForm" submitForm={this.handleSendToken} username={username}/>);
     if(this.state.emailedKey) {
@@ -48,8 +49,8 @@ var UserMigration = React.createClass({
     }
     return (
       <div>
-        <Header origin="Migration" className="desktopHeader"/>
-        <Header origin="Migration" className="mobileHeader" redirectLabel="Signup" redirectPage="signup" mobile />
+        <Header redirectQuery={queryObj} origin="Migration" className="desktopHeader"/>
+        <Header redirectQuery={queryObj} origin="Migration" className="mobileHeader" redirectLabel="Signup" redirectPage="signup" mobile />
         {content}
       </div>
     );

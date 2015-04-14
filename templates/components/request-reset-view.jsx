@@ -27,7 +27,13 @@ var RequestResetPassword = React.createClass({
     var username = this.getQuery().username;
     return (
       <div className="requestPassword innerForm centerDiv">
-        <Form defaultUsername={username} onInputBlur={this.handleBlur} origin="Reset Password" ref="userform" fields={fields} validators={fieldsValidators} />
+        <Form defaultUsername={username}
+              onInputBlur={this.handleBlur}
+              origin="Reset Password"
+              ref="userform"
+              fields={fields}
+              validators={fieldsValidators}
+        />
         <button onClick={this.processFormData} className="btn btn-awsm">Set a new password</button>
       </div>
     );
