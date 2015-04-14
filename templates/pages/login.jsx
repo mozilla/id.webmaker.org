@@ -37,11 +37,16 @@ var Login = React.createClass({
   componentDidMount: function() {
     document.title = "Webmaker Login - Login";
   },
+  getInitialState: function() {
+    return {
+      username: ''
+    };
+  },
   render: function() {
     // FIXME: totally not localized yet!
     var buttonText = "Log In";
     var queryObj = Url.parse(window.location.href, true).query;
-
+    queryObj.username = this.state.username;
     return (
       <div>
         <Header origin="Login" className="desktopHeader" redirectQuery={queryObj} />
@@ -52,6 +57,7 @@ var Login = React.createClass({
                 fields={fieldValues}
                 validators={fieldValidators}
                 origin="Login"
+                onInputBlur={this.handleBlur}
           />
           <button onClick={this.processFormData} className="btn btn-awsm">{buttonText}</button>
           <Link onClick={this.handleGA.bind(this, 'Forgot your password')} to="reset-password" query={queryObj} className="need-help">Forgot your password?</Link>
@@ -66,6 +72,11 @@ var Login = React.createClass({
   },
   handleGA: function(name) {
     ga.event({category: 'Login', action: 'Clicked on ' + name + ' link.'});
+  },
+  handleBlur: function(fieldName, value) {
+    if ( fieldName === 'username' && value ) {
+      this.setState({username: value});
+    }
   },
   handleFormData: function(error, data) {
     if ( error ) {
