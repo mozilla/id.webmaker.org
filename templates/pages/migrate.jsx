@@ -127,17 +127,19 @@ var UserMigration = React.createClass({
       }
       return response.json();
     }).then((json) => {
-      if ( json.statusCode === 400 ) {
-        WebmakerActions.displayError({'field': 'password', 'message': json.message});
-        console.error("Error 400 statusCode recieved ", json.message);
-        ga.event({category: 'Migration', action: 'Error', label: 'Error Handling Set Password'});
-        return;
-      }
-      else if ( json.statusCode !== 200 ) {
-        WebmakerActions.displayError({'field': 'password', 'message': json.message});
-        console.error("Non 200 statusCode recieved while attemting migration", json.message);
-        ga.event({category: 'Migration', action: 'Error', label: 'Error Handling Set Password'});
-        return;
+      if(!this.state.success) {
+        if ( json.statusCode === 400 ) {
+          WebmakerActions.displayError({'field': 'password', 'message': json.message});
+          console.error("Error 400 statusCode recieved ", json.message);
+          ga.event({category: 'Migration', action: 'Error', label: 'Error Handling Set Password'});
+          return;
+        }
+        else if ( json.statusCode !== 200 ) {
+          WebmakerActions.displayError({'field': 'password', 'message': 'Something went wrong. Try again!'});
+          console.error("Non 200 statusCode recieved while attemting migration", json.message);
+          ga.event({category: 'Migration', action: 'Error', label: 'Error Handling Set Password'});
+          return;
+        }
       }
     }).catch((ex) => {
       console.error("Exception Creating Password", ex);
