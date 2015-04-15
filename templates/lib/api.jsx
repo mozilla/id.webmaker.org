@@ -1,10 +1,12 @@
 var Router = require('react-router');
 var WebmakerActions = require('./webmaker-actions.jsx');
+var cookiejs = require('cookie-js');
 var MIN_PASSWORD_LEN = 8;
 
 require('es6-promise').polyfill();
 require('isomorphic-fetch');
 
+var csrfToken = cookiejs.parse(document.cookie).crumb;
 module.exports = {
   checkUsername: function(username) {
     fetch('/check-username', {
@@ -12,7 +14,8 @@ module.exports = {
       credentials: 'same-origin',
       headers: {
         'Accept': 'application/json; charset=utf-8',
-        'Content-Type': 'application/json; charset=utf-8'
+        'Content-Type': 'application/json; charset=utf-8',
+        'X-CSRF-Token': csrfToken
       },
       body: JSON.stringify({
         uid: username

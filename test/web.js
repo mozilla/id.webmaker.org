@@ -14,7 +14,18 @@ lab.experiment("OAuth", function() {
     cookieSecret: "test",
     oauth_clients: testCreds.clients,
     authCodes: testCreds.authCodes,
-    accessTokens: testCreds.accessTokens
+    accessTokens: testCreds.accessTokens,
+    enableCSRF: false
+  });
+
+  var s2 = server({
+    debug: false,
+    loginAPI: "http://localhost:3232",
+    cookieSecret: "test",
+    oauth_clients: testCreds.clients,
+    authCodes: testCreds.authCodes,
+    accessTokens: testCreds.accessTokens,
+    enableCSRF: true
   });
 
   var ls = loginServer({
@@ -30,6 +41,20 @@ lab.experiment("OAuth", function() {
     s.inject(request, function(response) {
       Code.expect(response.statusCode).to.equal(302);
       Code.expect(response.headers.location).to.equal("/signup");
+      done();
+    });
+  });
+
+  lab.test("GET /signup sets a crumb cookie", function(done) {
+    var request = {
+      method: "GET",
+      url: "/signup"
+    };
+
+    s2.inject(request, function(response) {
+      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(response.headers["set-cookie"]).to.exist();
+      Code.expect(response.headers["set-cookie"]).to.match(/crumb=/);
       done();
     });
   });
@@ -53,6 +78,55 @@ lab.experiment("OAuth", function() {
         Code.expect(response.headers["set-cookie"]).to.exist();
         Code.expect(response.result.email).to.equal("webmaker@example.com");
         Code.expect(response.result.username).to.equal("webmaker");
+        ls.stop(done);
+      });
+    });
+  });
+
+  lab.test("POST Create User - with CSRF Token Headers succeeds", function(done) {
+    ls.start(function(error) {
+      Code.expect(error).to.be.undefined();
+      var request = {
+        method: "POST",
+        url: "/create-user",
+        headers: {
+          "Cookie": "crumb=02mke0occKoOiqFkr9MUYo9YnMellJE_0dPD6UowyeJ",
+          "X-CSRF-Token": "02mke0occKoOiqFkr9MUYo9YnMellJE_0dPD6UowyeJ"
+        },
+        payload: {
+          email: "webmaker@example.com",
+          username: "webmaker",
+          password: "CantGuessThis123",
+          feedback: true
+        }
+      };
+
+      s2.inject(request, function(response) {
+        Code.expect(response.statusCode).to.equal(200);
+        Code.expect(response.headers["set-cookie"]).to.exist();
+        Code.expect(response.result.email).to.equal("webmaker@example.com");
+        Code.expect(response.result.username).to.equal("webmaker");
+        ls.stop(done);
+      });
+    });
+  });
+
+  lab.test("POST Create User - without CSRF Token Headers returns 403", function(done) {
+    ls.start(function(error) {
+      Code.expect(error).to.be.undefined();
+      var request = {
+        method: "POST",
+        url: "/create-user",
+        payload: {
+          email: "webmaker@example.com",
+          username: "webmaker",
+          password: "CantGuessThis",
+          feedback: true
+        }
+      };
+
+      s2.inject(request, function(response) {
+        Code.expect(response.statusCode).to.equal(403);
         ls.stop(done);
       });
     });
@@ -236,6 +310,47 @@ lab.experiment("OAuth", function() {
     });
   });
 
+  lab.test("POST Request Reset - with CSRF Token Headers succeeds", function(done) {
+    ls.start(function(error) {
+      Code.expect(error).to.be.undefined();
+      var request = {
+        method: "POST",
+        url: "/request-reset",
+        headers: {
+          "Cookie": "crumb=02mke0occKoOiqFkr9MUYo9YnMellJE_0dPD6UowyeJ",
+          "X-CSRF-Token": "02mke0occKoOiqFkr9MUYo9YnMellJE_0dPD6UowyeJ"
+        },
+        payload: {
+          uid: "webmaker"
+        }
+      };
+
+      s2.inject(request, function(response) {
+        Code.expect(response.statusCode).to.equal(200);
+        Code.expect(response.result.status).to.equal("created");
+        ls.stop(done);
+      });
+    });
+  });
+
+  lab.test("POST Request Reset - without CSRF Token Headers returns 403", function(done) {
+    ls.start(function(error) {
+      Code.expect(error).to.be.undefined();
+      var request = {
+        method: "POST",
+        url: "/request-reset",
+        payload: {
+          uid: "webmaker"
+        }
+      };
+
+      s2.inject(request, function(response) {
+        Code.expect(response.statusCode).to.equal(403);
+        ls.stop(done);
+      });
+    });
+  });
+
   lab.test("POST Request Reset (failure)", function(done) {
     ls.start(function(error) {
       Code.expect(error).to.be.undefined();
@@ -288,6 +403,51 @@ lab.experiment("OAuth", function() {
       s.inject(request, function(response) {
         Code.expect(response.statusCode).to.equal(200);
         Code.expect(response.result.status).to.equal("success");
+        ls.stop(done);
+      });
+    });
+  });
+
+  lab.test("POST Reset Password - With CSRF Token Headers succeeds", function(done) {
+    ls.start(function(error) {
+      Code.expect(error).to.be.undefined();
+      var request = {
+        method: "POST",
+        url: "/reset-password",
+        headers: {
+          "Cookie": "crumb=02mke0occKoOiqFkr9MUYo9YnMellJE_0dPD6UowyeJ",
+          "X-CSRF-Token": "02mke0occKoOiqFkr9MUYo9YnMellJE_0dPD6UowyeJ"
+        },
+        payload: {
+          uid: "webmaker",
+          resetCode: "resetCode",
+          password: "UnguessablePassword"
+        }
+      };
+
+      s2.inject(request, function(response) {
+        Code.expect(response.statusCode).to.equal(200);
+        Code.expect(response.result.status).to.equal("success");
+        ls.stop(done);
+      });
+    });
+  });
+
+  lab.test("POST Reset Password - Without CSRF Token Headers returns 403", function(done) {
+    ls.start(function(error) {
+      Code.expect(error).to.be.undefined();
+      var request = {
+        method: "POST",
+        url: "/reset-password",
+        payload: {
+          uid: "webmaker",
+          resetCode: "resetCode",
+          password: "UnguessablePassword"
+        }
+      };
+
+      s2.inject(request, function(response) {
+        Code.expect(response.statusCode).to.equal(403);
         ls.stop(done);
       });
     });
@@ -370,6 +530,49 @@ lab.experiment("OAuth", function() {
       s.inject(request, function(response) {
         Code.expect(response.statusCode).to.equal(200);
         Code.expect(response.headers["set-cookie"]).to.exist();
+        ls.stop(done);
+      });
+    });
+  });
+
+  lab.test("POST login - With CSRF Token Headers succeeds", function(done) {
+    ls.start(function(error) {
+      Code.expect(error).to.be.undefined();
+      var request = {
+        method: "POST",
+        url: "/login",
+        headers: {
+          "Cookie": "crumb=02mke0occKoOiqFkr9MUYo9YnMellJE_0dPD6UowyeJ",
+          "X-CSRF-Token": "02mke0occKoOiqFkr9MUYo9YnMellJE_0dPD6UowyeJ"
+        },
+        payload: {
+          uid: "webmaker",
+          password: "password"
+        }
+      };
+
+      s2.inject(request, function(response) {
+        Code.expect(response.statusCode).to.equal(200);
+        Code.expect(response.headers["set-cookie"]).to.exist();
+        ls.stop(done);
+      });
+    });
+  });
+
+  lab.test("POST login - without CSRF Token headers returns 403", function(done) {
+    ls.start(function(error) {
+      Code.expect(error).to.be.undefined();
+      var request = {
+        method: "POST",
+        url: "/login",
+        payload: {
+          uid: "webmaker",
+          password: "password"
+        }
+      };
+
+      s2.inject(request, function(response) {
+        Code.expect(response.statusCode).to.equal(403);
         ls.stop(done);
       });
     });
@@ -616,6 +819,47 @@ lab.experiment("OAuth", function() {
         Code.expect(response.result.access_token).to.be.a.string();
         Code.expect(response.result.scopes).to.equal("user");
         Code.expect(response.result.token_type).to.equal("bearer");
+        done();
+      });
+    });
+  });
+
+  lab.test("POST access_token - With CSRF Token Headers succeeds", function(done) {
+    ls.start(function(error) {
+      var accessTokenRequest = {
+        method: "POST",
+        url: "/login/oauth/access_token",
+        payload: "client_id=test&client_secret=test&grant_type=authorization_code&code=test",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "Cookie": "crumb=02mke0occKoOiqFkr9MUYo9YnMellJE_0dPD6UowyeJ",
+          "X-CSRF-Token": "02mke0occKoOiqFkr9MUYo9YnMellJE_0dPD6UowyeJ"
+        }
+      };
+
+      s2.inject(accessTokenRequest, function(response) {
+        Code.expect(response.statusCode).to.equal(200);
+        Code.expect(response.result.access_token).to.be.a.string();
+        Code.expect(response.result.scopes).to.equal("user");
+        Code.expect(response.result.token_type).to.equal("bearer");
+        done();
+      });
+    });
+  });
+
+  lab.test("POST access_token - Without CSRF Token returns 403", function(done) {
+    ls.start(function(error) {
+      var accessTokenRequest = {
+        method: "POST",
+        url: "/login/oauth/access_token",
+        payload: "client_id=test&client_secret=test&grant_type=authorization_code&code=test",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        }
+      };
+
+      s2.inject(accessTokenRequest, function(response) {
+        Code.expect(response.statusCode).to.equal(403);
         done();
       });
     });
@@ -962,6 +1206,50 @@ lab.experiment("OAuth", function() {
     });
   });
 
+  lab.test("POST /request-migration-email with CSRF Token Headers succeeds", function(done) {
+    ls.start(function(error) {
+      var migrationEmailRequest = {
+        method: "POST",
+        url: "/request-migration-email",
+        headers: {
+          "Cookie": "crumb=02mke0occKoOiqFkr9MUYo9YnMellJE_0dPD6UowyeJ",
+          "X-CSRF-Token": "02mke0occKoOiqFkr9MUYo9YnMellJE_0dPD6UowyeJ"
+        },
+        payload: {
+          username: "test",
+          oauth: {
+            oauthy: "params"
+          }
+        }
+      };
+
+      s2.inject(migrationEmailRequest, function(response) {
+        Code.expect(response.statusCode).to.equal(200);
+        done();
+      });
+    });
+  });
+
+  lab.test("POST /request-migration-email Without CSRF Token Headers returns 403", function(done) {
+    ls.start(function(error) {
+      var migrationEmailRequest = {
+        method: "POST",
+        url: "/request-migration-email",
+        payload: {
+          username: "test",
+          oauth: {
+            oauthy: "params"
+          }
+        }
+      };
+
+      s2.inject(migrationEmailRequest, function(response) {
+        Code.expect(response.statusCode).to.equal(403);
+        done();
+      });
+    });
+  });
+
   lab.test("POST /request-migration-email fails if user not found on loginapi", function(done) {
     ls.start(function(error) {
       var migrationEmailRequest = {
@@ -996,6 +1284,48 @@ lab.experiment("OAuth", function() {
 
       s.inject(migrateUserRequest, function(response) {
         Code.expect(response.statusCode).to.equal(200);
+        done();
+      });
+    });
+  });
+
+  lab.test("POST /migrate-user - With CSRF Token Headers succeeds", function(done) {
+    ls.start(function(error) {
+      var migrateUserRequest = {
+        method: "POST",
+        url: "/migrate-user",
+        headers: {
+          "Cookie": "crumb=02mke0occKoOiqFkr9MUYo9YnMellJE_0dPD6UowyeJ",
+          "X-CSRF-Token": "02mke0occKoOiqFkr9MUYo9YnMellJE_0dPD6UowyeJ"
+        },
+        payload: {
+          username: "test",
+          token: "kakav-nufuk",
+          password: "Super-Duper-Strong-Passphrase-9001"
+        }
+      };
+
+      s2.inject(migrateUserRequest, function(response) {
+        Code.expect(response.statusCode).to.equal(200);
+        done();
+      });
+    });
+  });
+
+  lab.test("POST /migrate-user - Without CSRF Token Headers returns 403", function(done) {
+    ls.start(function(error) {
+      var migrateUserRequest = {
+        method: "POST",
+        url: "/migrate-user",
+        payload: {
+          username: "test",
+          token: "kakav-nufuk",
+          password: "Super-Duper-Strong-Passphrase-9001"
+        }
+      };
+
+      s2.inject(migrateUserRequest, function(response) {
+        Code.expect(response.statusCode).to.equal(403);
         done();
       });
     });
@@ -1113,6 +1443,47 @@ lab.experiment("OAuth", function() {
       });
     });
   });
+
+  lab.test("POST /check-username - With CSRF Token Headers succeeds", function(done) {
+    ls.start(function(error) {
+      var checkUsernameRequest = {
+        method: "POST",
+        url: "/check-username",
+        headers: {
+          "Cookie": "crumb=02mke0occKoOiqFkr9MUYo9YnMellJE_0dPD6UowyeJ",
+          "X-CSRF-Token": "02mke0occKoOiqFkr9MUYo9YnMellJE_0dPD6UowyeJ"
+        },
+        payload: {
+          uid: "test"
+        }
+      };
+
+      s2.inject(checkUsernameRequest, function(response) {
+        Code.expect(response.statusCode).to.equal(200);
+        Code.expect(response.result.exists).to.equal(true);
+        Code.expect(response.result.usePasswordLogin).to.equal(true);
+        done();
+      });
+    });
+  });
+
+  lab.test("POST /check-username - Without CSRF Token Headers returns 403", function(done) {
+    ls.start(function(error) {
+      var checkUsernameRequest = {
+        method: "POST",
+        url: "/check-username",
+        payload: {
+          uid: "test"
+        }
+      };
+
+      s2.inject(checkUsernameRequest, function(response) {
+        Code.expect(response.statusCode).to.equal(403);
+        done();
+      });
+    });
+  });
+
 
   lab.test("POST /check-username returns 404 for non-existent user", function(done) {
     ls.start(function(error) {

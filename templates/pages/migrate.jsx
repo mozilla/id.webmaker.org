@@ -9,6 +9,7 @@ var ga = require('react-ga');
 var State = require("react-router").State;
 var url = require('url');
 var WebmakerActions = require('../lib/webmaker-actions.jsx');
+var cookiejs = require('cookie-js');
 
 require('es6-promise').polyfill();
 require('isomorphic-fetch');
@@ -61,6 +62,7 @@ var UserMigration = React.createClass({
       console.error("inside App we see:", error, data);
       return;
     }
+    var csrfToken = cookiejs.parse(document.cookie).crumb;
     var query = this.getQuery();
     delete query.username;
 
@@ -69,7 +71,8 @@ var UserMigration = React.createClass({
       credentials: 'same-origin',
       headers: {
         "Accept": "application/json; charset=utf-8",
-        "Content-Type": "application/json; charset=utf-8"
+        "Content-Type": "application/json; charset=utf-8",
+        'X-CSRF-Token': csrfToken
       },
       body: JSON.stringify({
         username: data.username,
@@ -96,7 +99,7 @@ var UserMigration = React.createClass({
       ga.event({category: 'Migration', action: 'Error', label: 'Error Handling Set Password'});
       return;
     }
-
+    var csrfToken = cookiejs.parse(document.cookie).crumb;
     var query = this.getQuery();
 
     fetch('/migrate-user', {
@@ -104,7 +107,8 @@ var UserMigration = React.createClass({
       credentials: 'same-origin',
       headers: {
         "Accept": "application/json; charset=utf-8",
-        "Content-Type": "application/json; charset=utf-8"
+        "Content-Type": "application/json; charset=utf-8",
+        'X-CSRF-Token': csrfToken
       },
       body: JSON.stringify({
         token: query.token,
