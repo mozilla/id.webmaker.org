@@ -100,6 +100,7 @@ var UserMigration = React.createClass({
 
     fetch('/migrate-user', {
       method: "post",
+      credentials: 'same-origin',
       headers: {
         "Accept": "application/json; charset=utf-8",
         "Content-Type": "application/json; charset=utf-8"

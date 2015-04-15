@@ -8,6 +8,7 @@ module.exports = {
   checkUsername: function(id, username) {
     fetch('/check-username', {
       method: 'post',
+      credentials: 'same-origin',
       headers: {
         'Accept': 'application/json; charset=utf-8',
         'Content-Type': 'application/json; charset=utf-8'

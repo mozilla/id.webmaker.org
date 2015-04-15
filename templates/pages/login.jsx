@@ -87,6 +87,7 @@ var Login = React.createClass({
     var queryObj = Url.parse(window.location.href, true).query;
     fetch('/login', {
       method: 'post',
+      credentials: 'same-origin',
       headers: {
         'Accept': 'application/json; charset=utf-8',
         'Content-Type': 'application/json; charset=utf-8'
