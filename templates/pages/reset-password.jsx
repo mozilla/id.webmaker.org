@@ -65,6 +65,7 @@ var ResetPassword = React.createClass({
 
     fetch('/reset-password', {
       method: 'post',
+      credentials: 'same-origin',
       headers: {
         'Accept': 'application/json; charset=utf-8',
         'Content-Type': 'application/json; charset=utf-8'
@@ -103,6 +104,7 @@ var ResetPassword = React.createClass({
 
     fetch('/request-reset', {
       method: 'post',
+      credentials: 'same-origin',
       headers: {
         'Accept': 'application/json; charset=utf-8',
         'Content-Type': 'application/json; charset=utf-8'
