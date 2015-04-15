@@ -43,7 +43,8 @@ lab.experiment("OAuth", function() {
         payload: {
           email: "webmaker@example.com",
           username: "webmaker",
-          password: "CantGuessThis"
+          password: "CantGuessThis",
+          feedback: true
         }
       };
 
@@ -66,7 +67,8 @@ lab.experiment("OAuth", function() {
         payload: {
           email: "webmaker@example.com",
           username: "invalidResponse",
-          password: "CantGuessThis"
+          password: "CantGuessThis",
+          feedback: true
         }
       };
 
@@ -86,7 +88,8 @@ lab.experiment("OAuth", function() {
         payload: {
           email: "webmaker@example.com",
           username: "notgonnawork",
-          password: "CantGuessThis"
+          password: "CantGuessThis",
+          feedback: true
         }
       };
 
@@ -108,13 +111,106 @@ lab.experiment("OAuth", function() {
           payload: {
             email: "webmaker@example.com",
             username: "weakpass",
-            password: "password"
+            password: "password",
+            feedback: true
           }
         };
 
         s.inject(request, function(response) {
           Code.expect(response.statusCode).to.equal(400);
           Code.expect(response.result.message).to.equal("LoginAPI error");
+          ls.stop(done);
+        });
+      });
+    }
+  );
+
+  lab.test(
+    "POST Create User returns 400 if no email param provided",
+    function(done) {
+      ls.start(function(error) {
+        Code.expect(error).to.be.undefined();
+        var request = {
+          method: "POST",
+          url: "/create-user",
+          payload: {
+            username: "webmaker",
+            password: "CantGuessThis",
+            feedback: true
+          }
+        };
+
+        s.inject(request, function(response) {
+          Code.expect(response.statusCode).to.equal(400);
+          ls.stop(done);
+        });
+      });
+    }
+  );
+
+  lab.test(
+    "POST Create User returns 400 if no username param provided",
+    function(done) {
+      ls.start(function(error) {
+        Code.expect(error).to.be.undefined();
+        var request = {
+          method: "POST",
+          url: "/create-user",
+          payload: {
+            email: "webmaker@example.com",
+            password: "CantGuessThis",
+            feedback: true
+          }
+        };
+
+        s.inject(request, function(response) {
+          Code.expect(response.statusCode).to.equal(400);
+          ls.stop(done);
+        });
+      });
+    }
+  );
+
+  lab.test(
+    "POST Create User returns 400 if no password param provided",
+    function(done) {
+      ls.start(function(error) {
+        Code.expect(error).to.be.undefined();
+        var request = {
+          method: "POST",
+          url: "/create-user",
+          payload: {
+            email: "webmaker@example.com",
+            username: "webmaker",
+            feedback: true
+          }
+        };
+
+        s.inject(request, function(response) {
+          Code.expect(response.statusCode).to.equal(400);
+          ls.stop(done);
+        });
+      });
+    }
+  );
+
+  lab.test(
+    "POST Create User returns 400 if no feedback param provided",
+    function(done) {
+      ls.start(function(error) {
+        Code.expect(error).to.be.undefined();
+        var request = {
+          method: "POST",
+          url: "/create-user",
+          payload: {
+            email: "webmaker@example.com",
+            username: "webmaker",
+            password: "CantGuessThis"
+          }
+        };
+
+        s.inject(request, function(response) {
+          Code.expect(response.statusCode).to.equal(400);
           ls.stop(done);
         });
       });
