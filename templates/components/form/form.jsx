@@ -48,7 +48,7 @@ var Form = React.createClass({
       username: this.getQuery().username || '',
       password: '',
       email: '',
-      checked: false,
+      feedback: false,
       dirty: {},
       key: '',
       errorMessage: {},
@@ -115,9 +115,6 @@ var Form = React.createClass({
              tabIndex={value.tabIndex}
              placeholder={value.placeholder}
              valueLink={this.linkState(id)}
-             role={value.type === 'checkbox' ? 'checkbox' : false}
-             aria-checked={value.type === 'checkbox' ? 'false' : null}
-             onClick={value.type === 'checkbox' ? this.toggleCheckBox : null}
              onBlur={this.handleValidation(id, this.dirty(id, this.props.origin))}
              className={this.getInputClasses(id, isValid)}
              disabled={value.disabled ? "disabled" : false}
@@ -126,6 +123,19 @@ var Form = React.createClass({
     );
 
     if (value.type === 'checkbox') {
+      var input = (
+        <input type={value.type}
+               id={id}
+               ref={id+'Input'}
+               checked={this.state.feedback}
+               tabIndex={value.tabIndex}
+               role='checkbox'
+               aria-checked='false'
+               onChange={this.toggleCheckBox}
+               onBlur={this.handleValidation(id, this.dirty(id, this.props.origin))}
+               className={this.getInputClasses(id, isValid)}
+        />
+      );
       input = (<span className={value.className}>{input}<span/></span>);
     }
     var errorMessage = (id === 'password' ? this.state.errorMessage[id] || passwordError : this.state.errorMessage[id] || this.getValidationMessages(id)[0]);
@@ -166,15 +176,13 @@ var Form = React.createClass({
   },
   toggleCheckBox: function(e) {
     if(e.target.getAttribute('aria-checked') === 'false') {
+      this.setState({feedback: !this.state.feedback});
       e.target.setAttribute('aria-checked','true');
     } else {
+      this.setState({feedback: !this.state.feedback});
       e.target.setAttribute('aria-checked','false');
     }
     e.target.focus();
-  },
-  handleReset: function(event) {
-    this.clearValidations();
-    this.setState(this.getInitialState());
   },
   /**
    * "owner" components call form.processFormData on us
