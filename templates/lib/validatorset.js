@@ -5,7 +5,7 @@ var fieldValidators = {
   password:       Joi.string().regex(/^\S{8,128}$/).label('Password'),
   verifyPassword: Joi.any().valid(Joi.ref('password')).required().label('Password Confirmation'),
   email:          Joi.string().email().required().label('Email'),
-  key:            Joi.string().alphanum().min(1).required().label('Key')
+  feedback:       Joi.boolean().required().label('Feedback')
 };
 
 module.exports = {
