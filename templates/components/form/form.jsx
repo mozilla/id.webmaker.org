@@ -53,12 +53,13 @@ var Form = React.createClass({
       key: '',
       errorMessage: {},
       valid_username: false,
+      valid_email: false,
       passwordError: false
     };
   },
   setFormState: function(data) {
     this.setState({
-      valid_username: true,
+      ['valid_'+data.field]: true,
       errorMessage: {[data.field]: null}
     });
   },
@@ -73,10 +74,21 @@ var Form = React.createClass({
   dirty: function(id, origin) {
     return (err, valid) => {
       if(err) {
+        if(id === 'email') {
+          this.setState({
+            ['valid_'+id]: false,
+            errorMessage: {
+              [id]: 'Please use a valid email address.'
+            }
+          });
+        }
         ga.event({category: origin, action: 'Validation Error', label: 'Error on ' + id + ' field.'});
       }
+      if(!err && id === 'email') {
+        this.setFormState({field: 'email'})
+      }
       this.state.passwordError = null;
-      this.handleBlur(id, this.state.username)
+      this.handleBlur(id, this.state[id])
     }
   },
   handleBlur: function(fieldName, value) {
@@ -103,7 +115,7 @@ var Form = React.createClass({
     var passwordError = this.state.passwordError;
 
     if(id === 'password' && !this.isValid(id) && !passwordError) {
-      passwordError = 'Invalid Password';
+      passwordError = 'Invalid password.';
     }
 
     var isValid = !this.state.errorMessage[id] && this.isValid(id) && !passwordError;

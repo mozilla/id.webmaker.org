@@ -48,5 +48,23 @@ module.exports = {
     }).catch((ex) => {
       console.error("Request failed", ex);
     });
+  },
+  checkEmail: function(id, email, callback) {
+    fetch('/check-username', {
+      method: 'post',
+      headers: {
+        'Accept': 'application/json; charset=utf-8',
+        'Content-Type': 'application/json; charset=utf-8'
+      },
+      body: JSON.stringify({
+        uid: email
+      })
+    }).then((response) => {
+      return response.json();
+    }).then((json) => {
+      return callback(json);
+    }).catch((ex) => {
+      console.error("Request failed", ex);
+    });
   }
 };

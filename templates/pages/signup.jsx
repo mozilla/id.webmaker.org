@@ -4,6 +4,7 @@ var Form = require('../components/form/form.jsx');
 var Header = require('../components/header/header.jsx');
 var IconText = require('../components/icontext.jsx');
 var Router = require('react-router');
+var WebmakerActions = require('../lib/webmaker-actions.jsx');
 
 var Url = require('url');
 var ga = require('react-ga');
@@ -70,7 +71,12 @@ var Signup = React.createClass({
         <h1>Build the web. Learn new skills.</h1>
         <h2>Free and open source – forever.</h2>
         <div className="innerForm">
-          <Form ref="userform" fields={fieldValues} validators={fieldValidators} origin="Signup" />
+          <Form ref="userform"
+                fields={fieldValues}
+                validators={fieldValidators}
+                origin="Signup"
+                onInputBlur={this.handleBlur}
+          />
         </div>
         <div className="commit">
           <IconText iconClass="agreement" textClass="eula">
@@ -85,13 +91,21 @@ var Signup = React.createClass({
   processSignup: function(evt) {
     this.refs.userform.processFormData(this.handleFormData);
   },
+  handleBlur: function(fieldName, value) {
+    if ( fieldName === 'email' && value ) {
+      this.refs.userform.checkEmail(fieldName, value, (json) => {
+        if(json.exists) {
+          WebmakerActions.displayError({'field': 'email', 'message': 'Email address already taken!'});
+        }
+      });
+    }
+  },
   handleFormData: function(error, data) {
     if ( error ) {
       ga.event({category: 'Signup', action: 'Error during form validation'});
       console.error("validation error", error);
       return;
     }
-
     var queryObj = Url.parse(window.location.href, true).query;
     fetch("/create-user", {
       method: "post",

@@ -260,6 +260,33 @@ module.exports = function(options) {
       path: '/create-user',
       config: {
         auth: false,
+        pre: [
+          {
+            assign: 'username',
+            method: function(request, reply) {
+              reply(request.payload.username);
+            }
+          },
+          {
+            assign: 'password',
+            method: function(request, reply) {
+              var password = request.payload.password;
+              if ( !password ) {
+                return reply(Boom.badRequest('No password provided'));
+              }
+
+              var result = passTest.test(password, [request.pre.username]);
+
+              if ( !result.passed ) {
+                var err = Boom.badRequest('Password not strong enough.', result);
+                err.output.payload.details = err.data;
+                return reply(err);
+              }
+
+              reply(password);
+            }
+          }
+        ],
         validate: {
           payload: {
             username: Joi.string().alphanum().min(1).max(20).required(),
