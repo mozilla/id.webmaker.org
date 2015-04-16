@@ -52,49 +52,41 @@ var Form = React.createClass({
       dirty: {},
       key: '',
       errorMessage: {},
-      valid_username: false,
-      valid_email: false,
-      passwordError: false
+      valid_username: true,
+      valid_password: true,
+      valid_feedback: true,
+      valid_email: true
     };
   },
   setFormState: function(data) {
+    var errorMessage = Object.assign({}, this.state.errorMessage);
+    errorMessage[data.field] = null;
     this.setState({
-      ['valid_'+data.field]: true,
-      errorMessage: {[data.field]: null}
+      ['valid_' + data.field]: true,
+      errorMessage: errorMessage
     });
   },
   formError: function(data) {
+    var errorMessage = Object.assign({
+      [data.field]: data.message
+    }, this.state.errorMessage);
     this.setState({
-      ['valid_'+data.field]: false,
-      errorMessage: {
-        [data.field]: data.message
-      }
+      ['valid_' + data.field]: false,
+      errorMessage: errorMessage
     });
   },
   dirty: function(id, origin) {
     return (err, valid) => {
       if(err) {
         if(id === 'email') {
-          this.setState({
-            ['valid_'+id]: false,
-            errorMessage: {
-              [id]: 'Please use a valid email address.'
-            }
-          });
+          this.formError({field: 'email', message: 'Please use a valid email address.'});
         }
         ga.event({category: origin, action: 'Validation Error', label: 'Error on ' + id + ' field.'});
       }
-      if(!err && id === 'email') {
-        this.setFormState({field: 'email'})
-      }
-      this.state.passwordError = null;
       this.handleBlur(id, this.state[id])
     }
   },
   handleBlur: function(fieldName, value) {
-    if( (this.state.valid_username && fieldName === 'username') || fieldName === 'username' ) {
-      this.checkUsername(fieldName, value);
-    }
    if ( this.props.onInputBlur ) {
      this.props.onInputBlur(fieldName, value);
     }
@@ -111,14 +103,9 @@ var Form = React.createClass({
     var value = this.props.fields[i][id];
     this.passChecked = value.checked;
     this.beforeLabel = value.label === undefined ? true : value.label;
+    var passwordError = 'Invalid password.';
 
-    var passwordError = this.state.passwordError;
-
-    if(id === 'password' && !this.isValid(id) && !passwordError) {
-      passwordError = 'Invalid password.';
-    }
-
-    var isValid = !this.state.errorMessage[id] && this.isValid(id) && !passwordError;
+    var isValid = !this.state.errorMessage[id] && this.isValid(id) && this.state['valid_' + id];
 
     var input = (
       <input type={value.type}
@@ -150,11 +137,13 @@ var Form = React.createClass({
       );
       input = (<span className={value.className}>{input}<span/></span>);
     }
+    if(id === 'username')
     var errorMessage = (id === 'password' ? this.state.errorMessage[id] || passwordError : this.state.errorMessage[id] || this.getValidationMessages(id)[0]);
     var errorTooltip = <ToolTip ref="tooltip" className="warning" message={errorMessage}/>;
+
     return (
      <label ref={id+'Label'} className={this.getLabelClasses(id, isValid)} key={id} htmlFor={id}>
-        {passwordError || !isValid ? errorTooltip : false}
+        {!isValid ? errorTooltip : false}
         {value.label && value.labelPosition==='before' ? value.label : false}
         {input}
         {value.label && value.labelPosition==='after' ? value.label : false}

@@ -57,9 +57,13 @@ var Signup = React.createClass({
   componentDidMount: function() {
     document.title = "Webmaker Login - Sign Up";
     document.body.className = "signup-bg";
+    WebmakerActions.addListener('FORM_ERROR', (data) => {
+      this.refs.userform.setState({['valid_' +data.field]: false});
+    });
   },
   componentWillUnmount: function() {
     document.body.className = "";
+    WebmakerActions.deleteListener('FORM_ERROR');
   },
   render: function() {
     var queryObj = Url.parse(window.location.href, true).query;
@@ -92,12 +96,19 @@ var Signup = React.createClass({
     this.refs.userform.processFormData(this.handleFormData);
   },
   handleBlur: function(fieldName, value) {
+    var userform = this.refs.userform;
     if ( fieldName === 'email' && value ) {
-      this.refs.userform.checkEmail(fieldName, value, (json) => {
+      userform.checkEmail(fieldName, value, (json) => {
         if(json.exists) {
           WebmakerActions.displayError({'field': 'email', 'message': 'Email address already taken!'});
+          userform.setState({valid_email: false});
+        } else {
+          userform.setFormState({field: 'email'});
         }
       });
+    }
+    if( fieldName === 'username' && value ) {
+      userform.checkUsername(fieldName, value);
     }
   },
   handleFormData: function(error, data) {

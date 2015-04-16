@@ -67,27 +67,26 @@ lab.experiment("OAuth", function() {
         payload: {
           email: "webmaker@example.com",
           username: "invalidResponse",
-          password: "CantGuessThis",
+          password: "CantGuessThis1234",
           feedback: true
         }
       };
 
       s.inject(request, function(response) {
-        Code.expect(response.statusCode).to.equal(400);
-        Code.expect(response.result.message).to.equal("Password not strong enough.");
+        Code.expect(response.statusCode).to.equal(500);
         ls.stop(done);
       });
     });
   });
 
-  lab.test("POST Create User with invalid email", function(done) {
+  lab.test("POST Create User (login API failure)", function(done) {
     ls.start(function(error) {
       Code.expect(error).to.be.undefined();
       var request = {
         method: "POST",
         url: "/create-user",
         payload: {
-          email: "webmaker",
+          email: "webmaker@example.com",
           username: "notgonnawork",
           password: "CantGuessThis1234",
           feedback: true
@@ -95,8 +94,7 @@ lab.experiment("OAuth", function() {
       };
 
       s.inject(request, function(response) {
-        Code.expect(response.statusCode).to.equal(400);
-        Code.expect(response.result.message).to.equal("invalid payload: email");
+        Code.expect(response.statusCode).to.equal(500);
         ls.stop(done);
       });
     });
