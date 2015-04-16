@@ -74,8 +74,9 @@ var Login = React.createClass({
     ga.event({category: 'Login', action: 'Clicked on ' + name + ' link.'});
   },
   handleBlur: function(fieldName, value) {
+    var userform = this.refs.userform;
     if ( fieldName === 'username' && value ) {
-      this.setState({username: value});
+      userform.checkUsername(value);
     }
   },
   handleFormData: function(error, data) {

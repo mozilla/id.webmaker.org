@@ -5,7 +5,7 @@ require('es6-promise').polyfill();
 require('isomorphic-fetch');
 
 module.exports = {
-  checkUsername: function(id, username) {
+  checkUsername: function(username) {
     fetch('/check-username', {
       method: 'post',
       credentials: 'same-origin',

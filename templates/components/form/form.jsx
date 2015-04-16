@@ -67,9 +67,9 @@ var Form = React.createClass({
     });
   },
   formError: function(data) {
-    var errorMessage = Object.assign({
-      [data.field]: data.message
-    }, this.state.errorMessage);
+    var errorMessage = Object.assign({}, this.state.errorMessage);
+    errorMessage[data.field] = data.message;
+
     this.setState({
       ['valid_' + data.field]: false,
       errorMessage: errorMessage
@@ -82,6 +82,9 @@ var Form = React.createClass({
           this.formError({field: 'email', message: 'Please use a valid email address.'});
         }
         ga.event({category: origin, action: 'Validation Error', label: 'Error on ' + id + ' field.'});
+      }
+      if(!err && id === 'email') {
+        this.setFormState({field: 'email'});
       }
       this.handleBlur(id, this.state[id])
     }
@@ -137,8 +140,12 @@ var Form = React.createClass({
       );
       input = (<span className={value.className}>{input}<span/></span>);
     }
-    if(id === 'username')
-    var errorMessage = (id === 'password' ? this.state.errorMessage[id] || passwordError : this.state.errorMessage[id] || this.getValidationMessages(id)[0]);
+    var errorMessage;
+    if(id === 'password') {
+      errorMessage = this.state.errorMessage[id] || passwordError;
+    } else {
+      errorMessage = this.state.errorMessage[id] || this.getValidationMessages(id)[0];
+    }
     var errorTooltip = <ToolTip ref="tooltip" className="warning" message={errorMessage}/>;
 
     return (
