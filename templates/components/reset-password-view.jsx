@@ -28,7 +28,12 @@ var ResetPassword = React.createClass({
   render: function() {
     return (
       <div className="resetPassword innerForm centerDiv">
-        <Form ref="userform" fields={fields} validators={fieldsValidators} defaultUsername={this.props.username}/>
+        <Form ref="userform"
+              fields={fields}
+              validators={fieldsValidators}
+              defaultUsername={this.props.username}
+              onInputBlur={this.handleBlur}
+        />
         <button onClick={this.processFormData} className="btn btn-awsm">Save</button>
       </div>
     );
@@ -36,6 +41,11 @@ var ResetPassword = React.createClass({
   processFormData: function() {
     var form = this.refs.userform;
     form.processFormData(this.props.submitForm);
+  },
+  handleBlur: function(fieldName, value) {
+    if ( fieldName === 'password' && value ) {
+      this.refs.userform.validatePassword(value);
+    }
   }
 });
 
