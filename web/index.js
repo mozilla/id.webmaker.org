@@ -11,7 +11,8 @@ var options = {
   accessTokens: process.env.ACCESS_TOKENS ? JSON.parse(process.env.ACCESS_TOKENS) : [],
   cookieSecret: process.env.COOKIE_SECRET,
   secureCookies: process.env.SECURE_COOKIES === 'true',
-  uri: process.env.URI
+  uri: process.env.URI,
+  enableCSRF: process.env.ENABLE_CSRF !== 'false'
 };
 
 var server = require('./server')(options);

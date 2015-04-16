@@ -6,6 +6,7 @@ var Form = require('../components/form/form.jsx');
 var Header = require('../components/header/header.jsx');
 var Url = require('url');
 var ga = require('react-ga');
+var cookiejs = require('cookie-js');
 
 require('es6-promise').polyfill();
 require('isomorphic-fetch');
@@ -85,13 +86,15 @@ var Login = React.createClass({
       console.error('validation error', error);
       return;
     }
+    var csrfToken = cookiejs.parse(document.cookie).crumb;
     var queryObj = Url.parse(window.location.href, true).query;
     fetch('/login', {
       method: 'post',
       credentials: 'same-origin',
       headers: {
         'Accept': 'application/json; charset=utf-8',
-        'Content-Type': 'application/json; charset=utf-8'
+        'Content-Type': 'application/json; charset=utf-8',
+        'X-CSRF-Token': csrfToken
       },
       body: JSON.stringify({
         uid: data.username,

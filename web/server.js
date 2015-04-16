@@ -45,6 +45,20 @@ module.exports = function(options) {
     });
   });
 
+  function skipCSRF(request, reply) {
+    return true;
+  }
+
+  server.register({
+    register: require('crumb'),
+    options: {
+      restful: true,
+      skip: !options.enableCSRF ? skipCSRF : undefined
+    }
+  }, function(err) {
+    Hoek.assert(!err, err);
+  });
+
   var account = require('../lib/account')({
     loginAPI: options.loginAPI,
     uri: options.uri

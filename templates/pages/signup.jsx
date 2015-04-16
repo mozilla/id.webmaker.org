@@ -4,8 +4,8 @@ var Form = require('../components/form/form.jsx');
 var Header = require('../components/header/header.jsx');
 var IconText = require('../components/icontext.jsx');
 var Router = require('react-router');
+var cookiejs = require('cookie-js');
 var WebmakerActions = require('../lib/webmaker-actions.jsx');
-
 var Url = require('url');
 var ga = require('react-ga');
 require('es6-promise').polyfill();
@@ -120,15 +120,19 @@ var Signup = React.createClass({
       console.error("validation error", error);
       return;
     }
+
     var userform = this.refs.userform;
+    var csrfToken = cookiejs.parse(document.cookie).crumb;
     var queryObj = Url.parse(window.location.href, true).query;
+
     userform.validatePassword(data.password);
     fetch("/create-user", {
       method: "post",
       credentials: 'same-origin',
       headers: {
         "Accept": "application/json; charset=utf-8",
-        "Content-Type": "application/json; charset=utf-8"
+        "Content-Type": "application/json; charset=utf-8",
+        "X-CSRF-Token": csrfToken
       },
       body: JSON.stringify({
         email: data.email,

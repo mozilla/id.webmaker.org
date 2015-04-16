@@ -5,6 +5,7 @@ var IconText = require('../components/icontext.jsx');
 var ResetView = require('../components/reset-password-view.jsx');
 var RequestView = require('../components/request-reset-view.jsx');
 var Router = require('react-router');
+var cookiejs = require('cookie-js');
 
 var Url = require('url');
 var ga = require('react-ga');
@@ -63,12 +64,14 @@ var ResetPassword = React.createClass({
       return;
     }
 
+    var csrfToken = cookiejs.parse(document.cookie).crumb;
     fetch('/reset-password', {
       method: 'post',
       credentials: 'same-origin',
       headers: {
         'Accept': 'application/json; charset=utf-8',
-        'Content-Type': 'application/json; charset=utf-8'
+        'Content-Type': 'application/json; charset=utf-8',
+        'X-CSRF-Token': csrfToken
       },
       body: JSON.stringify({
         uid: data.username,
