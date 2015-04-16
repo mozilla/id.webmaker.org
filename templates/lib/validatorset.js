@@ -1,10 +1,10 @@
 var Joi = require('joi');
+var regex = require('./regex/regex.js');
 
 var fieldValidators = {
   username:       Joi.string().alphanum().min(1).max(20).required().label('Username'),
   password:       Joi.string().regex(/^\S{8,128}$/).label('Password'),
-  verifyPassword: Joi.any().valid(Joi.ref('password')).required().label('Password Confirmation'),
-  email:          Joi.string().regex(/^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i).label('Email'),
+  email:          Joi.string().regex(regex.email).label('Email'),
   feedback:       Joi.boolean().required().label('Feedback')
 };
 

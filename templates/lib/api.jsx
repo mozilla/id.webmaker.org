@@ -1,7 +1,10 @@
 var Router = require('react-router');
 var WebmakerActions = require('./webmaker-actions.jsx');
 var cookiejs = require('cookie-js');
+var regex = require('./regex/regex.js');
+
 var MIN_PASSWORD_LEN = 8;
+var MAX_PASSWORD_LEN = 128;
 
 require('es6-promise').polyfill();
 require('isomorphic-fetch');
@@ -53,12 +56,14 @@ module.exports = {
       console.error("Request failed", ex);
     });
   },
-  checkEmail: function(id, email, callback) {
+  checkEmail: function(email) {
     fetch('/check-username', {
       method: 'post',
+      credentials: 'same-origin',
       headers: {
         'Accept': 'application/json; charset=utf-8',
-        'Content-Type': 'application/json; charset=utf-8'
+        'Content-Type': 'application/json; charset=utf-8',
+        'X-CSRF-Token': csrfToken
       },
       body: JSON.stringify({
         uid: email
@@ -66,23 +71,32 @@ module.exports = {
     }).then((response) => {
       return response.json();
     }).then((json) => {
-      return callback(json);
+      if(json.exists) {
+        WebmakerActions.displayError({'field': 'email', 'message': 'Email address already taken!'});
+        this.setState({valid_email: false});
+      } else if (!json.exists && this.state.valid_email) {
+        this.setFormState({field: 'email'});
+      }
     }).catch((ex) => {
       console.error("Request failed", ex);
     });
   },
   validatePassword: function(password) {
-    var containsBothCases = /^.*(?=.*[a-z])(?=.*[A-Z]).*$/,
-        containsDigit = /\d/;
+    var containsBothCases = regex.password.bothCases,
+        containsDigit = regex.password.digit;
 
     var username = this.state.username || this.getQuery().uid || this.getQuery().username;
 
     var lengthValid = password.length >= MIN_PASSWORD_LEN,
-      caseValid = !! password.match(containsBothCases),
-      digitValid = !! password.match(containsDigit);
+        lengthNotValid = password.length > MAX_PASSWORD_LEN,
+        caseValid = !! password.match(containsBothCases),
+        digitValid = !! password.match(containsDigit);
 
     if(!lengthValid) {
       WebmakerActions.displayError({'field': 'password', 'message': 'Password must be at least eight characters long.'});
+    }
+    if(lengthNotValid) {
+      WebmakerActions.displayError({'field': 'password', 'message': 'Password cannot be more than 128 characters long.'});
     }
     if(!caseValid) {
       WebmakerActions.displayError({'field': 'password', 'message': 'Password must contain at least one uppercase and lowercase letter.'});
@@ -96,7 +110,7 @@ module.exports = {
         WebmakerActions.displayError({'field': 'password', 'message': 'Password cannot contain your username.'});
       }
     }
-    if(lengthValid && caseValid && digitValid && containUserValid) {
+    if(lengthValid && caseValid && digitValid && containUserValid && !lengthNotValid) {
       this.setFormState({field: 'password'});
     }
   }

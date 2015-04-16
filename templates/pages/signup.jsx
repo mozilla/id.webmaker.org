@@ -98,14 +98,7 @@ var Signup = React.createClass({
   handleBlur: function(fieldName, value) {
     var userform = this.refs.userform;
     if ( fieldName === 'email' && value ) {
-      userform.checkEmail(fieldName, value, (json) => {
-        if(json.exists) {
-          WebmakerActions.displayError({'field': 'email', 'message': 'Email address already taken!'});
-          userform.setState({valid_email: false});
-        } else if (!json.exists && userform.state.valid_email) {
-          userform.setFormState({field: 'email'});
-        }
-      });
+      userform.checkEmail(value);
     }
     if( fieldName === 'username' && value ) {
       userform.checkUsername(value);
