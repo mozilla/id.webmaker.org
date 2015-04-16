@@ -69,7 +69,8 @@ lab.experiment("OAuth", function() {
           email: "webmaker@example.com",
           username: "webmaker",
           password: "CantGuessThis1234",
-          feedback: true
+          feedback: true,
+          client_id: "test"
         }
       };
 
@@ -97,7 +98,8 @@ lab.experiment("OAuth", function() {
           email: "webmaker@example.com",
           username: "webmaker",
           password: "CantGuessThis123",
-          feedback: true
+          feedback: true,
+          client_id: "test"
         }
       };
 
@@ -121,7 +123,8 @@ lab.experiment("OAuth", function() {
           email: "webmaker@example.com",
           username: "webmaker",
           password: "CantGuessThis",
-          feedback: true
+          feedback: true,
+          client_id: "test"
         }
       };
 
@@ -142,7 +145,8 @@ lab.experiment("OAuth", function() {
           email: "webmaker@example.com",
           username: "invalidResponse",
           password: "CantGuessThis1234",
-          feedback: true
+          feedback: true,
+          client_id: "test"
         }
       };
 
@@ -163,7 +167,8 @@ lab.experiment("OAuth", function() {
           email: "webmaker@example.com",
           username: "notgonnawork",
           password: "CantGuessThis1234",
-          feedback: true
+          feedback: true,
+          client_id: "test"
         }
       };
 
@@ -186,7 +191,8 @@ lab.experiment("OAuth", function() {
             email: "webmaker@example.com",
             username: "weakpass",
             password: "password",
-            feedback: true
+            feedback: true,
+            client_id: "test"
           }
         };
 
@@ -210,7 +216,8 @@ lab.experiment("OAuth", function() {
           payload: {
             username: "webmaker",
             password: "CantGuessThis",
-            feedback: true
+            feedback: true,
+            client_id: "test"
           }
         };
 
@@ -233,7 +240,8 @@ lab.experiment("OAuth", function() {
           payload: {
             email: "webmaker@example.com",
             password: "CantGuessThis",
-            feedback: true
+            feedback: true,
+            client_id: "test"
           }
         };
 
@@ -256,7 +264,8 @@ lab.experiment("OAuth", function() {
           payload: {
             email: "webmaker@example.com",
             username: "webmaker",
-            feedback: true
+            feedback: true,
+            client_id: "test"
           }
         };
 
@@ -279,7 +288,8 @@ lab.experiment("OAuth", function() {
           payload: {
             email: "webmaker@example.com",
             username: "webmaker",
-            password: "CantGuessThis"
+            password: "CantGuessThis",
+            client_id: "test"
           }
         };
 
