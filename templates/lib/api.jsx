@@ -5,7 +5,7 @@ require('es6-promise').polyfill();
 require('isomorphic-fetch');
 
 module.exports = {
-  checkUsername: function(id, username) {
+  checkUsername: function(username) {
     fetch('/check-username', {
       method: 'post',
       credentials: 'same-origin',
@@ -45,6 +45,24 @@ module.exports = {
         WebmakerActions.validField({'field': 'username', 'message': 'Available'});
       }
 
+    }).catch((ex) => {
+      console.error("Request failed", ex);
+    });
+  },
+  checkEmail: function(id, email, callback) {
+    fetch('/check-username', {
+      method: 'post',
+      headers: {
+        'Accept': 'application/json; charset=utf-8',
+        'Content-Type': 'application/json; charset=utf-8'
+      },
+      body: JSON.stringify({
+        uid: email
+      })
+    }).then((response) => {
+      return response.json();
+    }).then((json) => {
+      return callback(json);
     }).catch((ex) => {
       console.error("Request failed", ex);
     });

@@ -270,7 +270,30 @@ module.exports = function(options) {
           failAction: function(request, reply, source, error) {
             reply(Boom.badRequest('invalid ' + source + ': ' + error.data.details[0].path));
           }
-        }
+        },
+        pre: [
+          {
+            assign: 'username',
+            method: function(request, reply) {
+              reply(request.payload.username);
+            }
+          },
+          {
+            assign: 'password',
+            method: function(request, reply) {
+              var password = request.payload.password;
+              var result = passTest.test(password, [request.pre.username]);
+
+              if ( !result.passed ) {
+                var err = Boom.badRequest('Password not strong enough.', result);
+                err.output.payload.details = err.data;
+                return reply(err);
+              }
+
+              reply(password);
+            }
+          }
+        ]
       },
       handler: function(request, reply) {
         account.createUser(request, function(err, json) {

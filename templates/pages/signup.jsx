@@ -4,6 +4,7 @@ var Form = require('../components/form/form.jsx');
 var Header = require('../components/header/header.jsx');
 var IconText = require('../components/icontext.jsx');
 var Router = require('react-router');
+var WebmakerActions = require('../lib/webmaker-actions.jsx');
 
 var Url = require('url');
 var ga = require('react-ga');
@@ -56,9 +57,11 @@ var Signup = React.createClass({
   componentDidMount: function() {
     document.title = "Webmaker Login - Sign Up";
     document.body.className = "signup-bg";
+    WebmakerActions.addListener('FORM_ERROR', this.setFormState);
   },
   componentWillUnmount: function() {
     document.body.className = "";
+    WebmakerActions.deleteListener('FORM_ERROR', this.setFormState);
   },
   render: function() {
     var queryObj = Url.parse(window.location.href, true).query;
@@ -70,7 +73,12 @@ var Signup = React.createClass({
         <h1>Build the web. Learn new skills.</h1>
         <h2>Free and open source – forever.</h2>
         <div className="innerForm">
-          <Form ref="userform" fields={fieldValues} validators={fieldValidators} origin="Signup" />
+          <Form ref="userform"
+                fields={fieldValues}
+                validators={fieldValidators}
+                origin="Signup"
+                onInputBlur={this.handleBlur}
+          />
         </div>
         <div className="commit">
           <IconText iconClass="agreement" textClass="eula">
@@ -81,9 +89,27 @@ var Signup = React.createClass({
       </div>
     );
   },
-
+  setFormState: function(data) {
+    this.refs.userform.setState({['valid_' +data.field]: false});
+  },
   processSignup: function(evt) {
     this.refs.userform.processFormData(this.handleFormData);
+  },
+  handleBlur: function(fieldName, value) {
+    var userform = this.refs.userform;
+    if ( fieldName === 'email' && value ) {console.log(userform.state.valid_email)
+      userform.checkEmail(fieldName, value, (json) => {
+        if(json.exists) {
+          WebmakerActions.displayError({'field': 'email', 'message': 'Email address already taken!'});
+          userform.setState({valid_email: false});
+        } else if (!json.exists && userform.state.valid_email) {
+          userform.setFormState({field: 'email'});
+        }
+      });
+    }
+    if( fieldName === 'username' && value ) {
+      userform.checkUsername(value);
+    }
   },
   handleFormData: function(error, data) {
     if ( error ) {
@@ -91,7 +117,6 @@ var Signup = React.createClass({
       console.error("validation error", error);
       return;
     }
-
     var queryObj = Url.parse(window.location.href, true).query;
     fetch("/create-user", {
       method: "post",
