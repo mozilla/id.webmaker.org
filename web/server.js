@@ -279,7 +279,8 @@ module.exports = function(options) {
             username: Joi.string().alphanum().min(1).max(20).required(),
             email: Joi.string().email().required(),
             password: Joi.string().regex(/^\S{8,128}$/).required(),
-            feedback: Joi.boolean().required()
+            feedback: Joi.boolean().required(),
+            client_id: Joi.string().required()
           },
           failAction: function(request, reply, source, error) {
             reply(Boom.badRequest('invalid ' + source + ': ' + error.data.details[0].path));
@@ -305,6 +306,18 @@ module.exports = function(options) {
               }
 
               reply(password);
+            }
+          },
+          {
+            assign: 'client',
+            method: function(request, reply) {
+              oauthDb.getClient(request.payload.client_id, reply);
+            }
+          },
+          {
+            assign: 'isTeach',
+            method: function(request, reply) {
+              reply(!!request.pre.client.isTeach);
             }
           }
         ]
