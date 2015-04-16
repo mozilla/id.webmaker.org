@@ -45,7 +45,7 @@ var Form = React.createClass({
   },
   getInitialState: function() {
     return {
-      username: this.getQuery().username || '',
+      username: this.props.defaultUsername || this.getQuery().username || this.getQuery().uid || '',
       password: '',
       email: '',
       feedback: false,
@@ -117,6 +117,7 @@ var Form = React.createClass({
              tabIndex={value.tabIndex}
              placeholder={value.placeholder}
              valueLink={this.linkState(id)}
+             defaultValue={this.props.defaultUsername}
              onBlur={this.handleValidation(id, this.dirty(id, this.props.origin))}
              className={this.getInputClasses(id, isValid)}
              disabled={value.disabled ? "disabled" : false}

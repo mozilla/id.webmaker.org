@@ -97,7 +97,7 @@ var Signup = React.createClass({
   },
   handleBlur: function(fieldName, value) {
     var userform = this.refs.userform;
-    if ( fieldName === 'email' && value ) {console.log(userform.state.valid_email)
+    if ( fieldName === 'email' && value ) {
       userform.checkEmail(fieldName, value, (json) => {
         if(json.exists) {
           WebmakerActions.displayError({'field': 'email', 'message': 'Email address already taken!'});
@@ -110,6 +110,9 @@ var Signup = React.createClass({
     if( fieldName === 'username' && value ) {
       userform.checkUsername(value);
     }
+    if( fieldName === 'password' && value ) {
+      userform.validatePassword(value);
+    }
   },
   handleFormData: function(error, data) {
     if ( error ) {
@@ -117,7 +120,9 @@ var Signup = React.createClass({
       console.error("validation error", error);
       return;
     }
+    var userform = this.refs.userform;
     var queryObj = Url.parse(window.location.href, true).query;
+    userform.validatePassword(data.password);
     fetch("/create-user", {
       method: "post",
       credentials: 'same-origin',

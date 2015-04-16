@@ -1,5 +1,6 @@
 var Router = require('react-router');
 var WebmakerActions = require('./webmaker-actions.jsx');
+var MIN_PASSWORD_LEN = 8;
 
 require('es6-promise').polyfill();
 require('isomorphic-fetch');
@@ -66,5 +67,34 @@ module.exports = {
     }).catch((ex) => {
       console.error("Request failed", ex);
     });
+  },
+  validatePassword: function(password) {
+    var containsBothCases = /^.*(?=.*[a-z])(?=.*[A-Z]).*$/,
+        containsDigit = /\d/;
+
+    var username = this.state.username || this.getQuery().uid || this.getQuery().username;
+
+    var lengthValid = password.length >= MIN_PASSWORD_LEN,
+      caseValid = !! password.match(containsBothCases),
+      digitValid = !! password.match(containsDigit);
+
+    if(!lengthValid) {
+      WebmakerActions.displayError({'field': 'password', 'message': 'Password must be at least eight characters long.'});
+    }
+    if(!caseValid) {
+      WebmakerActions.displayError({'field': 'password', 'message': 'Password must contain at least one uppercase and lowercase letter.'});
+    }
+    if(!digitValid) {
+      WebmakerActions.displayError({'field': 'password', 'message': 'Password must contain at least one number.'});
+    }
+    if(username) {
+      var containUserValid = !password.match(username);
+      if(!containUserValid) {
+        WebmakerActions.displayError({'field': 'password', 'message': 'Password cannot contain your username.'});
+      }
+    }
+    if(lengthValid && caseValid && digitValid && containUserValid) {
+      this.setFormState({field: 'password'});
+    }
   }
 };
