@@ -2,6 +2,7 @@ var React = require('react');
 var validators = require('../lib/validatorset');
 var Form = require('./form/form.jsx');
 var Router = require('react-router');
+var WebmakerActions = require('../lib/webmaker-actions.jsx');
 
 var API = require('../lib/api.jsx');
 
@@ -23,6 +24,12 @@ var RequestResetPassword = React.createClass({
     Router.State,
     API
   ],
+  componentWillMount: function() {
+    WebmakerActions.addListener('FORM_VALIDATION', this.handleFormData);
+  },
+  componentWillUnmount: function() {
+    WebmakerActions.deleteListener('FORM_VALIDATION', this.handleFormData);
+  },
   render: function() {
     var username = this.getQuery().username;
     return (
@@ -34,18 +41,21 @@ var RequestResetPassword = React.createClass({
               fields={fields}
               validators={fieldsValidators}
         />
-        <button onClick={this.processFormData} className="btn btn-awsm">Set a new password</button>
+        <button type="submit" onClick={this.processFormData} className="btn btn-awsm">Set a new password</button>
       </div>
     );
+  },
+  handleFormData: function(data) {
+    this.props.submitForm(data);
   },
   handleBlur: function(fieldName, value) {
     if ( fieldName === 'username' && value ) {
       this.checkUsername(value);
     }
   },
-  processFormData: function() {
+  processFormData: function(e) {
     var form = this.refs.userform;
-    form.processFormData(this.props.submitForm);
+    form.processFormData(e);
   }
 });
 

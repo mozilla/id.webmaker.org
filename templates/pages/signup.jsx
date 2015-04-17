@@ -58,10 +58,12 @@ var Signup = React.createClass({
     document.title = "Webmaker Login - Sign Up";
     document.body.className = "signup-bg";
     WebmakerActions.addListener('FORM_ERROR', this.setFormState);
+    WebmakerActions.addListener('FORM_VALIDATION', this.handleFormData);
   },
   componentWillUnmount: function() {
     document.body.className = "";
     WebmakerActions.deleteListener('FORM_ERROR', this.setFormState);
+    WebmakerActions.deleteListener('FORM_VALIDATION', this.handleFormData);
   },
   render: function() {
     var queryObj = Url.parse(window.location.href, true).query;
@@ -84,7 +86,7 @@ var Signup = React.createClass({
           <IconText iconClass="agreement" textClass="eula">
             By signing up, I agree to Webmaker&lsquo;s <a tabIndex="5" href="//webmaker.org/en-US/terms" className="underline">Terms of Service</a> and <a tabIndex="6" href="//webmaker.org/en-US/privacy" className="underline">Privacy Policy</a>.
           </IconText>
-          <div className="signup-button"><button tabIndex="7" className="btn btn-awsm" onClick={this.processSignup}>SIGN UP</button></div>
+          <div className="signup-button"><button type="submit" tabIndex="7" className="btn btn-awsm" onClick={this.processSignup}>SIGN UP</button></div>
         </div>
       </div>
     );
@@ -93,7 +95,7 @@ var Signup = React.createClass({
     this.refs.userform.setState({['valid_' +data.field]: false});
   },
   processSignup: function(evt) {
-    this.refs.userform.processFormData(this.handleFormData);
+    this.refs.userform.processFormData(evt);
   },
   handleBlur: function(fieldName, value) {
     var userform = this.refs.userform;
@@ -107,7 +109,9 @@ var Signup = React.createClass({
       userform.validatePassword(value);
     }
   },
-  handleFormData: function(error, data) {
+  handleFormData: function(data) {
+    var error = data.err;
+    var data = data.user;
     if ( error ) {
       ga.event({category: 'Signup', action: 'Error during form validation'});
       console.error("validation error", error);

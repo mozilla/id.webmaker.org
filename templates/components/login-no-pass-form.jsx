@@ -4,6 +4,7 @@ var Form = require('./form/form.jsx');
 var IconText = require('./icontext.jsx');
 var Router = require('react-router');
 var API = require('../lib/api.jsx');
+var WebmakerActions = require('../lib/webmaker-actions.jsx');
 
 var fields = [
   {
@@ -22,6 +23,12 @@ var LoginNoPassword = React.createClass({
     Router.State,
     API
   ],
+  componentWillMount: function() {
+    WebmakerActions.addListener('FORM_VALIDATION', this.handleFormData);
+  },
+  componentWillUnmount: function() {
+    WebmakerActions.deleteListener('FORM_VALIDATION', this.handleFormData);
+  },
   render: function() {
     return (
       <div className="migrateKeyContainer centerDiv loginNoPass">
@@ -34,15 +41,24 @@ var LoginNoPassword = React.createClass({
                 </IconText>
                 <div className="migrateKey innerForm fullHeight">
 
-        <Form onInputBlur={this.handleBlur} origin="Migration" ref="userform" fields={fields} validators={fieldsValidators} defaultUsername={this.props.username} />
-        <button onClick={this.processFormData} className="btn btn-awsm">Set Password</button>
+        <Form onInputBlur={this.handleBlur}
+              origin="Request password migration"
+              ref="userform"
+              fields={fields}
+              validators={fieldsValidators}
+              defaultUsername={this.props.username}
+        />
+        <button type="submit" onClick={this.processFormData} className="btn btn-awsm">Set Password</button>
         </div>
       </div>
     );
   },
-  processFormData: function() {
+  handleFormData: function(data) {
+    this.props.submitForm(data);
+  },
+  processFormData: function(e) {
     var form = this.refs.userform;
-    form.processFormData(this.props.submitForm);
+    form.processFormData(e);
   },
   handleBlur: function(fieldName, value) {
     if ( fieldName === 'username' && value ) {

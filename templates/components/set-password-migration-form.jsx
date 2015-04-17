@@ -2,6 +2,7 @@ var React = require('react');
 var validators = require('../lib/validatorset');
 var Form = require('./form/form.jsx');
 var IconText = require('./icontext.jsx');
+var WebmakerActions = require('../lib/webmaker-actions.jsx');
 
 var fields = [
   {
@@ -16,6 +17,12 @@ var fields = [
 var fieldsValidators = validators.getValidatorSet(fields);
 
 var SetPasswordMigration = React.createClass({
+  componentWillMount: function() {
+    WebmakerActions.addListener('FORM_VALIDATION', this.handleFormData);
+  },
+  componentWillUnmount: function() {
+    WebmakerActions.deleteListener('FORM_VALIDATION', this.handleFormData);
+  },
   render: function() {
     return (
       <div className="migrateKeyContainer centerDiv">
@@ -28,20 +35,23 @@ var SetPasswordMigration = React.createClass({
         </IconText>
         <div className="migrateKey innerForm">
           <Form defaultUsername={this.props.username}
-                origin="Migration"
+                origin="Set password migration"
                 ref="userform"
                 fields={fields}
                 validators={fieldsValidators}
                 onInputBlur={this.handleBlur}
           />
-          <button onClick={this.processFormData} className="btn btn-awsm">Continue</button>
+          <button type="submit" onClick={this.processFormData} className="btn btn-awsm">Continue</button>
         </div>
       </div>
     );
   },
-  processFormData: function() {
+  handleFormData: function(data) {
+    this.props.submitForm(data);
+  },
+  processFormData: function(e) {
     var form = this.refs.userform;
-    form.processFormData(this.props.submitForm);
+    form.processFormData(e);
   },
   handleBlur: function(fieldName, value) {
     if ( fieldName === 'password' && value ) {
