@@ -45,18 +45,15 @@ module.exports = function(options) {
     });
   });
 
-
+  function skipCSRF(request, reply) {
+    return true;
+  }
 
   server.register({
     register: require('crumb'),
     options: {
       restful: true,
-      skip: function skipCSRFCheck(request, reply) {
-        if ( request.path === '/login/oauth/access_token' ) {
-          return true;
-        }
-        return !options.enableCSRF;
-      }
+      skip: !options.enableCSRF ? skipCSRF : undefined
     }
   }, function(err) {
     Hoek.assert(!err, err);
@@ -171,6 +168,9 @@ module.exports = function(options) {
           }
         },
         auth: false,
+        plugins: {
+          crumb: false
+        },
         pre: [
           {
             assign: 'client',

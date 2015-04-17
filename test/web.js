@@ -834,6 +834,27 @@ lab.experiment("OAuth", function() {
     });
   });
 
+  lab.test("POST access_token - Without CSRF Token succeeds", function(done) {
+    ls.start(function(error) {
+      var accessTokenRequest = {
+        method: "POST",
+        url: "/login/oauth/access_token",
+        payload: "client_id=test&client_secret=test&grant_type=authorization_code&code=test",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        }
+      };
+
+      s2.inject(accessTokenRequest, function(response) {
+        Code.expect(response.statusCode).to.equal(200);
+        Code.expect(response.result.access_token).to.be.a.string();
+        Code.expect(response.result.scopes).to.equal("user");
+        Code.expect(response.result.token_type).to.equal("bearer");
+        done();
+      });
+    });
+  });
+
   lab.test("POST access_token - unknown client_id", function(done) {
     ls.start(function(error) {
       var accessTokenRequest = {
