@@ -834,47 +834,6 @@ lab.experiment("OAuth", function() {
     });
   });
 
-  lab.test("POST access_token - With CSRF Token Headers succeeds", function(done) {
-    ls.start(function(error) {
-      var accessTokenRequest = {
-        method: "POST",
-        url: "/login/oauth/access_token",
-        payload: "client_id=test&client_secret=test&grant_type=authorization_code&code=test",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          "Cookie": "crumb=02mke0occKoOiqFkr9MUYo9YnMellJE_0dPD6UowyeJ",
-          "X-CSRF-Token": "02mke0occKoOiqFkr9MUYo9YnMellJE_0dPD6UowyeJ"
-        }
-      };
-
-      s2.inject(accessTokenRequest, function(response) {
-        Code.expect(response.statusCode).to.equal(200);
-        Code.expect(response.result.access_token).to.be.a.string();
-        Code.expect(response.result.scopes).to.equal("user");
-        Code.expect(response.result.token_type).to.equal("bearer");
-        done();
-      });
-    });
-  });
-
-  lab.test("POST access_token - Without CSRF Token returns 403", function(done) {
-    ls.start(function(error) {
-      var accessTokenRequest = {
-        method: "POST",
-        url: "/login/oauth/access_token",
-        payload: "client_id=test&client_secret=test&grant_type=authorization_code&code=test",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        }
-      };
-
-      s2.inject(accessTokenRequest, function(response) {
-        Code.expect(response.statusCode).to.equal(403);
-        done();
-      });
-    });
-  });
-
   lab.test("POST access_token - unknown client_id", function(done) {
     ls.start(function(error) {
       var accessTokenRequest = {
