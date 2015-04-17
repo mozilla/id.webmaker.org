@@ -18,7 +18,8 @@ var fieldValues = [
       'type': 'text',
       'validator': 'username',
       'label': false,
-      'tabIndex': '1'
+      'tabIndex': '1',
+      'autocomplete': 'off'
     }
   },
   {
@@ -27,7 +28,8 @@ var fieldValues = [
       'type': 'email',
       'validator': 'email',
       'label': false,
-      'tabIndex': '2'
+      'tabIndex': '2',
+      'autocomplete': 'off'
     }
   },
   {
@@ -36,7 +38,8 @@ var fieldValues = [
       'type': 'password',
       'validator': 'password',
       'label': false,
-      'tabIndex': '3'
+      'tabIndex': '3',
+      'autocomplete': 'off'
     }
   },
   {

@@ -121,6 +121,7 @@ var Form = React.createClass({
       <input type={value.type}
              id={id}
              ref={id+'Input'}
+             autoComplete={value.autocomplete ? value.autocomplete : "on"}
              tabIndex={value.tabIndex}
              placeholder={value.placeholder}
              valueLink={this.linkState(id)}
@@ -167,7 +168,14 @@ var Form = React.createClass({
   },
   render: function() {
      var fields = Object.keys(this.props.fields).map(this.buildFormElement);
-     return <div role="form"><form action="#" onSubmit={this.processFormData} id="form">{fields}<input className="hidden" type="submit"/></form></div>;
+     return (
+        <div role="form">
+          <form action="#" onSubmit={this.processFormData} id="form">
+            {fields}
+            <input className="hidden" type="submit"/>
+          </form>
+        </div>
+      );
   },
   getInputClasses: function(field, isValid) {
     var classes = {};
