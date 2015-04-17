@@ -168,6 +168,9 @@ module.exports = function(options) {
           }
         },
         auth: false,
+        plugins: {
+          crumb: false
+        },
         pre: [
           {
             assign: 'client',
