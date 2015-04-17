@@ -160,7 +160,7 @@ var Form = React.createClass({
   },
   render: function() {
      var fields = Object.keys(this.props.fields).map(this.buildFormElement);
-     return <div role="form">{fields}</div>;
+     return <div role="form"><form id="form">{fields}</form></div>;
   },
   getInputClasses: function(field, isValid) {
     var classes = {};
