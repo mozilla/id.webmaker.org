@@ -366,7 +366,8 @@ module.exports = function(options) {
 
         var redirectObj = url.parse(request.pre.redirectUri, true);
         redirectObj.query.logout = true;
-        reply.redirect(url.format(redirectObj));
+        reply.redirect(url.format(redirectObj))
+          .header('cache-control', 'no-cache');
       }
     },
     {
