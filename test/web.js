@@ -667,6 +667,7 @@ lab.experiment("OAuth", function() {
       );
 
       Code.expect(response.headers.location).to.exist();
+      Code.expect(response.headers["cache-control"]).to.equal("no-cache");
 
       var redirectUri = url.parse(response.headers.location, true);
 
