@@ -99,6 +99,7 @@ var ResetPassword = React.createClass({
     });
   },
   handleResetPassword: function(error, data) {
+    var csrfToken = cookiejs.parse(document.cookie).crumb;
     if ( error ) {
       ga.event({category: 'Reset Password', action: 'Error', label: 'Error during form validation'});
       console.error("validation error", error);
@@ -110,7 +111,8 @@ var ResetPassword = React.createClass({
       credentials: 'same-origin',
       headers: {
         'Accept': 'application/json; charset=utf-8',
-        'Content-Type': 'application/json; charset=utf-8'
+        'Content-Type': 'application/json; charset=utf-8',
+        'X-CSRF-Token': csrfToken
       },
       body: JSON.stringify({
         uid: data.username,
