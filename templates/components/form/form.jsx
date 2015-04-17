@@ -160,7 +160,7 @@ var Form = React.createClass({
   },
   render: function() {
      var fields = Object.keys(this.props.fields).map(this.buildFormElement);
-     return <div role="form"><form id="form">{fields}</form></div>;
+     return <div role="form"><form action="#" onSubmit={this.processFormData} id="form">{fields}<input className="hidden" type="submit"/></form></div>;
   },
   getInputClasses: function(field, isValid) {
     var classes = {};
@@ -196,14 +196,11 @@ var Form = React.createClass({
   /**
    * "owner" components call form.processFormData on us
    */
-  processFormData: function(callback) {
-    var self = this;
-    this.validate(function(error, data) {
-      self.onValidate(callback, error, data);
+  processFormData: function(e) {
+    e.preventDefault();
+    this.validate((error, data) => {
+      WebmakerActions.onFormValidation({err: error, user: !!error ? false : JSON.parse(JSON.stringify(this.state))});
     });
-  },
-  onValidate: function(callback, error, data) {
-    callback(error, !!error? false : JSON.parse(JSON.stringify(this.state)));
   }
 });
 

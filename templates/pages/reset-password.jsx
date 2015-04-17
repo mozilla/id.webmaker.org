@@ -57,7 +57,9 @@ var ResetPassword = React.createClass({
       </div>
     );
   },
-  handleRequestPassword: function(error, data) {
+  handleRequestPassword: function(data) {
+    var error = data.err;
+    var data = data.user;
     if ( error ) {
       ga.event({category: 'Reset Password', action: 'Error during form validation'});
       console.error("validation error", error);
@@ -98,7 +100,9 @@ var ResetPassword = React.createClass({
       console.error('Error parsing response', ex);
     });
   },
-  handleResetPassword: function(error, data) {
+  handleResetPassword: function(data) {
+    var error = data.err;
+    var data = data.user;
     var csrfToken = cookiejs.parse(document.cookie).crumb;
     if ( error ) {
       ga.event({category: 'Reset Password', action: 'Error', label: 'Error during form validation'});

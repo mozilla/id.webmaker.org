@@ -56,7 +56,9 @@ var UserMigration = React.createClass({
       </div>
     );
   },
-  handleSendToken: function(error, data) {
+  handleSendToken: function(data) {
+    var error = data.err;
+    var data = data.user;
     if(error) {
       ga.event({category: 'Migration', action: 'Error', label: 'Error Handling Send Token'});
       console.error("inside App we see:", error, data);
@@ -94,7 +96,9 @@ var UserMigration = React.createClass({
       ga.event({category: 'Migration', action: 'Error', label: 'Error Handling Send Token'});
     });
   },
-  handleSetPassword: function(error, data) {
+  handleSetPassword: function(data) {
+    var error = data.err;
+    var data = data.user;
     if(error) {
       ga.event({category: 'Migration', action: 'Error', label: 'Error Handling Set Password'});
       return;

@@ -4,6 +4,7 @@ var Link = Router.Link;
 
 var Form = require('../components/form/form.jsx');
 var Header = require('../components/header/header.jsx');
+var WebmakerActions = require('../lib/webmaker-actions.jsx');
 var Url = require('url');
 var ga = require('react-ga');
 var cookiejs = require('cookie-js');
@@ -38,6 +39,10 @@ var fieldValidators = validators.getValidatorSet(fieldValues);
 var Login = React.createClass({
   componentDidMount: function() {
     document.title = "Webmaker Login - Login";
+    WebmakerActions.addListener('FORM_VALIDATION', this.handleFormData);
+  },
+  componentWillUnmount: function() {
+    WebmakerActions.deleteListener('FORM_VALIDATION', this.handleFormData);
   },
   getInitialState: function() {
     return {
@@ -61,16 +66,17 @@ var Login = React.createClass({
                 origin="Login"
                 onInputBlur={this.handleBlur}
           />
-          <button onClick={this.processFormData} className="btn btn-awsm">{buttonText}</button>
+          <button type="submit" onClick={this.processFormData} className="btn btn-awsm">{buttonText}</button>
           <Link onClick={this.handleGA.bind(this, 'Forgot your password')} to="reset-password" query={queryObj} className="need-help">Forgot your password?</Link>
         </div>
       </div>
     );
   },
-  processFormData: function() {
+  processFormData: function(e) {
+    e.preventDefault();
     var form = this.refs.userform;
     ga.event({category: 'Login', action: 'Start login'});
-    form.processFormData(this.handleFormData);
+    form.processFormData(e);
   },
   handleGA: function(name) {
     ga.event({category: 'Login', action: 'Clicked on ' + name + ' link.'});
@@ -81,7 +87,9 @@ var Login = React.createClass({
       userform.checkUsername(value);
     }
   },
-  handleFormData: function(error, data) {
+  handleFormData: function(data) {
+    var data = data.user;
+    var error = data.err
     if ( error ) {
       ga.event({category: 'Login', action: 'Error during form validation'})
       console.error('validation error', error);
