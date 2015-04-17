@@ -81,10 +81,17 @@ var Form = React.createClass({
         if(id === 'email') {
           this.formError({field: 'email', message: 'Please use a valid email address.'});
         }
+        if(id === 'password' && !this.state[id]) {
+          this.formError({field: 'password', message: 'Please specify a password.'});
+        }
         ga.event({category: origin, action: 'Validation Error', label: 'Error on ' + id + ' field.'});
       }
       if(!err && id === 'email') {
         this.setFormState({field: 'email'});
+      }
+
+      if(id === 'password' && this.state[id] && err) {
+        this.setFormState({field: 'password'});
       }
       this.handleBlur(id, this.state[id])
     }

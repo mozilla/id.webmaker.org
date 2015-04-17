@@ -52,12 +52,11 @@ var Login = React.createClass({
   render: function() {
     // FIXME: totally not localized yet!
     var buttonText = "Log In";
-    var queryObj = Url.parse(window.location.href, true).query;
-    queryObj.username = this.state.username;
+    this.queryObj = Url.parse(window.location.href, true).query;
     return (
       <div>
-        <Header origin="Login" className="desktopHeader" redirectQuery={queryObj} />
-        <Header origin="Login" className="mobileHeader" redirectLabel="Signup" redirectPage="signup" redirectQuery={queryObj} mobile />
+        <Header origin="Login" className="desktopHeader" redirectQuery={this.queryObj} />
+        <Header origin="Login" className="mobileHeader" redirectLabel="Signup" redirectPage="signup" redirectQuery={this.queryObj} mobile />
 
         <div className="loginPage innerForm centerDiv">
           <Form ref="userform"
@@ -66,8 +65,8 @@ var Login = React.createClass({
                 origin="Login"
                 onInputBlur={this.handleBlur}
           />
-          <button type="submit" onClick={this.processFormData} className="btn btn-awsm">{buttonText}</button>
-          <Link onClick={this.handleGA.bind(this, 'Forgot your password')} to="reset-password" query={queryObj} className="need-help">Forgot your password?</Link>
+          <button onClick={this.processFormData} className="btn btn-awsm">{buttonText}</button>
+          <Link onClick={this.handleGA.bind(this, 'Forgot your password')} to="reset-password" query={this.queryObj} className="need-help">Forgot your password?</Link>
         </div>
       </div>
     );
@@ -84,6 +83,7 @@ var Login = React.createClass({
   handleBlur: function(fieldName, value) {
     var userform = this.refs.userform;
     if ( fieldName === 'username' && value ) {
+      this.queryObj.username = value;
       userform.checkUsername(value);
     }
   },

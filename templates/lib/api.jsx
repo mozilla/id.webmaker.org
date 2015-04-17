@@ -87,30 +87,32 @@ module.exports = {
 
     var username = this.state.username || this.getQuery().uid || this.getQuery().username;
 
-    var lengthValid = password.length >= MIN_PASSWORD_LEN,
-        lengthNotValid = password.length > MAX_PASSWORD_LEN,
+    var tooShort = password.length < MIN_PASSWORD_LEN,
+        tooLong = password.length > MAX_PASSWORD_LEN,
         caseValid = !! password.match(containsBothCases),
         digitValid = !! password.match(containsDigit);
 
-    if(!lengthValid) {
+    if (tooShort) {
       WebmakerActions.displayError({'field': 'password', 'message': 'Password must be at least eight characters long.'});
     }
-    if(lengthNotValid) {
+    if(tooLong) {
       WebmakerActions.displayError({'field': 'password', 'message': 'Password cannot be more than 128 characters long.'});
     }
-    if(!caseValid) {
+    if (!caseValid) {
       WebmakerActions.displayError({'field': 'password', 'message': 'Password must contain at least one uppercase and lowercase letter.'});
     }
-    if(!digitValid) {
+    if (!digitValid) {
       WebmakerActions.displayError({'field': 'password', 'message': 'Password must contain at least one number.'});
     }
-    if(username) {
-      var containUserValid = !password.match(username);
+    if (username) {
+      var containUserValid = !password.match(username, 'i');
       if(!containUserValid) {
         WebmakerActions.displayError({'field': 'password', 'message': 'Password cannot contain your username.'});
       }
+    } else if (!username) {
+      WebmakerActions.displayError({'field': 'username', 'message': 'Please specify a username.'});
     }
-    if(lengthValid && caseValid && digitValid && containUserValid && !lengthNotValid) {
+    if(caseValid && digitValid && containUserValid && !tooShort && !tooLong) {
       this.setFormState({field: 'password'});
     }
   }
