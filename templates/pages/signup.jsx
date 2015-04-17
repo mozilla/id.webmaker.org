@@ -18,8 +18,7 @@ var fieldValues = [
       'type': 'text',
       'validator': 'username',
       'label': false,
-      'tabIndex': '1',
-      'autocomplete': 'off'
+      'tabIndex': '1'
     }
   },
   {
@@ -28,8 +27,7 @@ var fieldValues = [
       'type': 'email',
       'validator': 'email',
       'label': false,
-      'tabIndex': '2',
-      'autocomplete': 'off'
+      'tabIndex': '2'
     }
   },
   {
@@ -38,8 +36,7 @@ var fieldValues = [
       'type': 'password',
       'validator': 'password',
       'label': false,
-      'tabIndex': '3',
-      'autocomplete': 'off'
+      'tabIndex': '3'
     }
   },
   {
@@ -83,6 +80,7 @@ var Signup = React.createClass({
                 validators={fieldValidators}
                 origin="Signup"
                 onInputBlur={this.handleBlur}
+                autoComplete="off"
           />
         </div>
         <div className="commit">
