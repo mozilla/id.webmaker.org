@@ -7,6 +7,7 @@ var Header = require('../components/header/header.jsx');
 var Url = require('url');
 var ga = require('react-ga');
 var cookiejs = require('cookie-js');
+var WebmakerActions = require('../lib/webmaker-actions.jsx');
 
 require('es6-promise').polyfill();
 require('isomorphic-fetch');
@@ -103,10 +104,14 @@ var Login = React.createClass({
     }).then(function(response) {
       var redirectObj;
       if ( response.status === 200 ) {
+        WebmakerActions.validField({field: 'password'})
         redirectObj = Url.parse('/login/oauth/authorize', true);
         redirectObj.query = queryObj;
         ga.event({category: 'Login', action: 'Logged in'});
         window.location = Url.format(redirectObj);
+      }
+      if( response.status === 401 ) {
+        WebmakerActions.displayError({field: 'password', message: 'Invalid password.'})
       }
       // handle errors!
     }).catch(function(ex) {
