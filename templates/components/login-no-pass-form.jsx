@@ -36,7 +36,7 @@ var LoginNoPassword = React.createClass({
                   iconClass="emailSentIcon fa fa-lock"
                   className="emailSent arrow_box fullHeight"
                   headerClass="emailSentHeader"
-                  header="Uh oh. There isn't a password linked to that account yet.">
+                  header="Uh oh. There isn't a password for that account yet.">
                 </IconText>
                 <div className="migrateKey innerForm fullHeight">
 
