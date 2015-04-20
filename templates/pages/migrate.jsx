@@ -31,9 +31,11 @@ var UserMigration = React.createClass({
     };
   },
   render: function() {
-    var queryObj = url.parse(window.location.href, true).query;
-    var username = this.getQuery().username;
-    var content = (<LoginNoPasswordForm ref="LoginNoPasswordForm" submitForm={this.handleSendToken} username={username}/>);
+    var queryObj = this.getQuery();
+    var content = (<LoginNoPasswordForm ref="LoginNoPasswordForm" submitForm={this.handleSendToken} username={queryObj.username}/>);
+    var continueLink = url.parse("/login/oauth/authorize");
+    continueLink.query = queryObj;
+
     if(this.state.emailedKey) {
       content = (<KeyEmailed ref="KeyEmailed" />);
     } else if(this.state.setPass) {
@@ -45,7 +47,7 @@ var UserMigration = React.createClass({
           headerClass="successBannerHeader"
           header="Success!">
             <p>Thanks for setting your Webmaker password. From now on, use it to log in to your account.</p>
-            <a className="continueLink" href="https://webmaker.org">Continue</a>
+            <a className="continueLink" href={url.format(continueLink)}>Continue</a>
         </IconText></div>)
     }
     return (
