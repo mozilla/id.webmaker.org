@@ -23,9 +23,7 @@ module.exports = function(options) {
     debug: options.debug,
     connections: {
       routes: {
-        security: {
-          hsts: true
-        }
+        security: true
       }
     }
   });

@@ -45,7 +45,7 @@ lab.experiment("OAuth", function() {
     });
   });
 
-  lab.test("GET /signup sets a crumb cookie", function(done) {
+  lab.test("GET /signup returns 200, sets csrf cookie, and has security headers", function(done) {
     var request = {
       method: "GET",
       url: "/signup"
@@ -55,6 +55,13 @@ lab.experiment("OAuth", function() {
       Code.expect(response.statusCode).to.equal(200);
       Code.expect(response.headers["set-cookie"]).to.exist();
       Code.expect(response.headers["set-cookie"]).to.match(/crumb=/);
+
+      Code.expect(response.headers["strict-transport-security"]).to.equal("max-age=15768000");
+      Code.expect(response.headers["x-xss-protection"]).to.equal("1; mode=block");
+      Code.expect(response.headers["x-frame-options"]).to.equal("DENY");
+      Code.expect(response.headers["x-download-options"]).to.equal("noopen");
+      Code.expect(response.headers["x-content-type-options"]).to.equal("nosniff");
+
       done();
     });
   });
