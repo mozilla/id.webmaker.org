@@ -3,14 +3,13 @@ var IconText = require('./icontext.jsx');
 
 var KeyEmailed = React.createClass({
   render: function() {
-    var emailText = "We've emailed your login key to the address you provided.";
     return (
       <IconText
         iconClass="emailSentIcon fa fa-envelope-o"
         className="emailSent centerDiv"
-        header="Check your email"
+        header="Thanks!"
         headerClass="emailSentHeader">
-          <p>{emailText}</p>
+          <p>We've just emailed you a link to create your password.</p>
       </IconText>
     );
   }

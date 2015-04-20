@@ -36,8 +36,7 @@ var LoginNoPassword = React.createClass({
                   iconClass="emailSentIcon fa fa-lock"
                   className="emailSent arrow_box fullHeight"
                   headerClass="emailSentHeader"
-                  header="Set your password">
-                    <p>Webmaker is using a new log in system using passwords to ensure your experience is simple and safe. To get started, verify your username below, and click the "Set Password" button.</p>
+                  header="Uh oh. There isn't a password linked to that account yet.">
                 </IconText>
                 <div className="migrateKey innerForm fullHeight">
 
@@ -48,7 +47,7 @@ var LoginNoPassword = React.createClass({
               validators={fieldsValidators}
               defaultUsername={this.props.username}
         />
-        <button type="submit" onClick={this.processFormData} className="btn btn-awsm">Set Password</button>
+        <button type="submit" onClick={this.processFormData} className="btn btn-awsm">Continue</button>
         </div>
       </div>
     );
