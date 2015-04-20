@@ -20,7 +20,14 @@ var passTest = new PassTest({
 
 module.exports = function(options) {
   var server = new Hapi.Server({
-    debug: options.debug
+    debug: options.debug,
+    connections: {
+      routes: {
+        security: {
+          hsts: true
+        }
+      }
+    }
   });
   server.connection({
     host: options.host,
