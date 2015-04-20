@@ -96,7 +96,8 @@ var Signup = React.createClass({
     this.refs.userform.setState({['valid_' +data.field]: false});
   },
   processSignup: function(evt) {
-    this.refs.userform.processFormData(evt);
+    evt.preventDefault();
+    this.refs.userform.processFormData(evt, true);
   },
   handleBlur: function(fieldName, value) {
     var userform = this.refs.userform;

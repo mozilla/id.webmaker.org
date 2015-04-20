@@ -48,7 +48,7 @@ var ResetPassword = React.createClass({
   },
   processFormData: function(e) {
     var form = this.refs.userform;
-    form.processFormData(e);
+    form.processFormData(e, true);
   },
   handleFormData: function(data) {
     this.props.submitForm(data);

@@ -38,10 +38,14 @@ var Form = React.createClass({
   componentDidMount: function() {
     WebmakerActions.addListener('FORM_ERROR', this.formError);
     WebmakerActions.addListener('FORM_VALID', this.setFormState);
+    window.addEventListener("keyup", this.processFormData);
+    window.addEventListener("keydown", this.onKeyDownTriggered);
   },
   componentWillUnmount: function() {
     WebmakerActions.deleteListener('FORM_ERROR', this.formError);
     WebmakerActions.deleteListener('FORM_VALID', this.setFormState);
+    window.removeEventListener("keyup", this.processFormData);
+    window.removeEventListener("keydown", this.onKeyDownTriggered);
   },
   getInitialState: function() {
     return {
@@ -94,6 +98,11 @@ var Form = React.createClass({
         this.setFormState({field: 'password'});
       }
       this.handleBlur(id, this.state[id])
+    }
+  },
+  onKeyDownTriggered: function (event) {
+    if (event.keyCode === 13 && event.target === document.body) {
+      event.preventDefault();
     }
   },
   handleBlur: function(fieldName, value) {
@@ -171,10 +180,8 @@ var Form = React.createClass({
      var fields = Object.keys(this.props.fields).map(this.buildFormElement);
      return (
         <div role="form">
-          <form autoComplete={this.props.autoComplete ? this.props.autoComplete : "on"}
-                action="#"
-                onSubmit={this.processFormData}
-                id="form">
+          <form onSubmit={this.processFormData}
+                autoComplete={this.props.autoComplete ? this.props.autoComplete : "on"} id="form">
             {fields}
             { this.props.autoComplete === 'off' ?
               (
@@ -224,11 +231,13 @@ var Form = React.createClass({
   /**
    * "owner" components call form.processFormData on us
    */
-  processFormData: function(e) {
-    e.preventDefault();
-    this.validate((error, data) => {
-      WebmakerActions.onFormValidation({err: error, user: !!error ? false : JSON.parse(JSON.stringify(this.state))});
-    });
+  processFormData: function(evt, clicked) {
+    evt.preventDefault();
+    if (evt.keyCode === 13 || clicked) {
+      this.validate((error, data) => {
+        WebmakerActions.onFormValidation({err: error, user: !!error ? false : JSON.parse(JSON.stringify(this.state))});
+      });
+    }
   }
 });
 

@@ -57,7 +57,7 @@ var LoginNoPassword = React.createClass({
   },
   processFormData: function(e) {
     var form = this.refs.userform;
-    form.processFormData(e);
+    form.processFormData(e, true);
   },
   handleBlur: function(fieldName, value) {
     if ( fieldName === 'username' && value ) {

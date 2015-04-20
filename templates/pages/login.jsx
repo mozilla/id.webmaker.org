@@ -75,7 +75,7 @@ var Login = React.createClass({
     e.preventDefault();
     var form = this.refs.userform;
     ga.event({category: 'Login', action: 'Start login'});
-    form.processFormData(e);
+    form.processFormData(e, true);
   },
   handleGA: function(name) {
     ga.event({category: 'Login', action: 'Clicked on ' + name + ' link.'});
