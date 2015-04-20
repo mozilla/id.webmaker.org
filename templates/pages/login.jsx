@@ -39,6 +39,7 @@ var fieldValidators = validators.getValidatorSet(fieldValues);
 var Login = React.createClass({
   componentDidMount: function() {
     document.title = "Webmaker Login - Login";
+    document.body.className = "";
     WebmakerActions.addListener('FORM_VALIDATION', this.handleFormData);
   },
   componentWillUnmount: function() {
