@@ -51,7 +51,6 @@ module.exports = {
       } else if (currentPath === '/login'){
         WebmakerActions.validField({'field': 'username', 'message': 'Available'});
       }
-
     }).catch((ex) => {
       console.error("Request failed", ex);
     });

@@ -80,6 +80,7 @@ var Signup = React.createClass({
                 validators={fieldValidators}
                 origin="Signup"
                 onInputBlur={this.handleBlur}
+                autoComplete="off"
           />
         </div>
         <div className="commit">

@@ -122,7 +122,9 @@ var Form = React.createClass({
              id={id}
              ref={id+'Input'}
              tabIndex={value.tabIndex}
+             name={id}
              placeholder={value.placeholder}
+             autoComplete={this.props.autoComplete ? this.props.autoComplete : "on"}
              valueLink={this.linkState(id)}
              defaultValue={this.props.defaultUsername}
              onBlur={this.handleValidation(id, this.dirty(id, this.props.origin))}
@@ -167,7 +169,26 @@ var Form = React.createClass({
   },
   render: function() {
      var fields = Object.keys(this.props.fields).map(this.buildFormElement);
-     return <div role="form"><form action="#" onSubmit={this.processFormData} id="form">{fields}<input className="hidden" type="submit"/></form></div>;
+     return (
+        <div role="form">
+          <form autoComplete={this.props.autoComplete ? this.props.autoComplete : "on"}
+                action="#"
+                onSubmit={this.processFormData}
+                id="form">
+            {fields}
+            { this.props.autoComplete === 'off' ?
+              (
+                /* this is a hack to stop autocomplete for username and password on signup page */
+                <div>
+                  <input className="hidden" type="text" name="fakeusernameremembered"/>
+                  <input className="hidden" type="password" name="fakepasswordremembered"/>
+                </div>)
+              : false
+            }
+            <input className="hidden" type="submit"/>
+          </form>
+        </div>
+      );
   },
   getInputClasses: function(field, isValid) {
     var classes = {};
