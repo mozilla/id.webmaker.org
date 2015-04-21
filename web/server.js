@@ -32,7 +32,41 @@ module.exports = function(options) {
     port: options.port
   });
 
-  server.register(require('hapi-auth-cookie'), function(err) {
+  server.register([
+    require('hapi-auth-cookie'),
+    require('scooter'),
+    {
+      register: require('blankie'),
+      options: {
+        defaultSrc: [
+          '\'self\''
+        ],
+        styleSrc: [
+          '\'self\'',
+          'https://fonts.googleapis.com'
+        ],
+        imgSrc: [
+          '\'self\'',
+          'data:',
+          'https://www.google-analytics.com',
+          'http://www.google-analytics.com'
+        ],
+        frameSrc: [
+          '\'none\''
+        ],
+        scriptSrc: [
+          '\'self\'',
+          '\'unsafe-eval\'',
+          'https://www.google-analytics.com',
+          'http://www.google-analytics.com'
+        ],
+        fontSrc: [
+        '\'self\'',
+          'https://fonts.gstatic.com'
+        ]
+      }
+    }
+  ], function(err) {
     // MAYDAY, MAYDAY, MAYDAY!
     Hoek.assert(!err, err);
 
