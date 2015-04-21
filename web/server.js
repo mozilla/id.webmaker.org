@@ -284,7 +284,7 @@ module.exports = function(options) {
         auth: false,
         validate: {
           payload: {
-            username: Joi.string().alphanum().min(1).max(20).required(),
+            username: Joi.string().regex(/^[a-zA-Z0-9\-]{1,20}$/).required(),
             email: Joi.string().email().required(),
             password: Joi.string().regex(/^\S{8,128}$/).required(),
             feedback: Joi.boolean().required(),

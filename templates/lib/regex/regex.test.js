@@ -47,4 +47,49 @@ describe('Test regexes', function() {
       });
     });
   });
+  describe('username regex', function() {
+    describe('failing tests', function() {
+      it('Should fail for " "', function () {
+        should(!!" ".match(regex.username)).be.equal(false);
+      });
+      it('Should fail for "a."', function () {
+        should(!!"a.".match(regex.username)).be.equal(false);
+      });
+      it('Should fail for "a_"', function () {
+        should(!!"a_".match(regex.username)).be.equal(false);
+      });
+      it('Should fail for "a*"', function () {
+        should(!!"a*".match(regex.username)).be.equal(false);
+      });
+      it('Should fail for "a!@#$%^&*()_+"', function () {
+        should(!!"a!@#$%^&*()_+".match(regex.username)).be.equal(false);
+      });
+      it('Should fail for "abcdefghijklmnopqrstuvwxyz"', function () {
+        should(!!"abcdefghijklmnopqrstuvwxyz".match(regex.username)).be.equal(false);
+      });
+    });
+    describe('passing tests', function() {
+      it('Should pass for ali', function () {
+        should(!!"ali".match(regex.username)).be.equal(true);
+      });
+      it('Should pass for twentycharactershere', function () {
+        should(!!"twentycharactershere".match(regex.username)).be.equal(true);
+      });
+      it('Should pass for 1', function () {
+        should(!!"1".match(regex.username)).be.equal(true);
+      });
+      it('Should pass for a-z1-9', function () {
+        should(!!"a-z1-9".match(regex.username)).be.equal(true);
+      });
+      it('Should pass for a-', function () {
+        should(!!"a-".match(regex.username)).be.equal(true);
+      });
+      it('Should pass for -', function () {
+        should(!!"-".match(regex.username)).be.equal(true);
+      });
+      it('Should pass for ---------', function () {
+        should(!!"---------".match(regex.username)).be.equal(true);
+      });
+    });
+  });
 });

@@ -2,7 +2,7 @@ var Joi = require('joi');
 var regex = require('./regex/regex.js');
 
 var fieldValidators = {
-  username:       Joi.string().alphanum().min(1).max(20).required().label('Username'),
+  username:       Joi.string().regex(regex.username).label('Username'),
   password:       Joi.string().regex(/^\S{8,128}$/).label('Password'),
   email:          Joi.string().regex(regex.email).label('Email'),
   feedback:       Joi.boolean().required().label('Feedback')
