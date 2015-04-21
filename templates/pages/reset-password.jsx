@@ -6,10 +6,10 @@ var ResetView = require('../components/reset-password-view.jsx');
 var RequestView = require('../components/request-reset-view.jsx');
 var Router = require('react-router');
 var cookiejs = require('cookie-js');
+var WebmakerActions = require('../lib/webmaker-actions.jsx');
 
 var Url = require('url');
 var ga = require('react-ga');
-require('es6-promise').polyfill();
 require('isomorphic-fetch');
 
 // This wraps every view
@@ -58,13 +58,7 @@ var ResetPassword = React.createClass({
     );
   },
   handleRequestPassword: function(data) {
-    var error = data.err;
-    var data = data.user;
-    if ( error ) {
-      ga.event({category: 'Reset Password', action: 'Error during form validation'});
-      console.error("validation error", error);
-      return;
-    }
+    var user = data.user;
 
     var csrfToken = cookiejs.parse(document.cookie).crumb;
     fetch('/reset-password', {
@@ -76,8 +70,8 @@ var ResetPassword = React.createClass({
         'X-CSRF-Token': csrfToken
       },
       body: JSON.stringify({
-        uid: data.username,
-        password: data.password,
+        uid: user.username,
+        password: user.password,
         resetCode: this.state.queryObj.resetCode
       })
     }).then(function(response) {
@@ -94,6 +88,8 @@ var ResetPassword = React.createClass({
         ga.event({category: 'Reset Password', action: 'Successfully request new password'});
         window.location = Url.format(redirectObj);
         return;
+      } else {
+        WebmakerActions.displayError([{'field': 'password', 'message': 'Whoops! Something went wrong. Please try again.'}]);
       }
       // handle errors!
     }.bind(this)).catch(function(ex) {
@@ -106,6 +102,7 @@ var ResetPassword = React.createClass({
     var data = data.user;
     var csrfToken = cookiejs.parse(document.cookie).crumb;
     if ( error ) {
+      WebmakerActions.displayError(error);
       ga.event({category: 'Reset Password', action: 'Error', label: 'Error during form validation'});
       console.error("validation error", error);
       return;
@@ -137,6 +134,8 @@ var ResetPassword = React.createClass({
       } else if ( response.status === 401 ) {
         ga.event({category: 'Reset Password', action: 'Error', label: 'Unauthorized for request password reset'});
         console.error("Unauthorized", response.json());
+      } else {
+        WebmakerActions.displayError([{'field': 'username', 'message': 'Whoops! Something went wrong. Please try again.'}]);
       }
 
     }.bind(this)).catch(function(ex) {

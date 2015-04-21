@@ -1,9 +1,9 @@
 var React = require('react');
 
 var Header = require('../components/header/header.jsx');
-var LoginNoPasswordForm = require('../components/login-no-pass-form.jsx');
+var LoginNoPasswordForm = require('../components/migrate-request-password.jsx');
 var KeyEmailed = require('../components/key-emailed.jsx');
-var SetPasswordMigrationForm = require('../components/set-password-migration-form.jsx');
+var SetPasswordMigrationForm = require('../components/migrate-set-password.jsx');
 var IconText = require('../components/icontext.jsx');
 var ga = require('react-ga');
 var State = require("react-router").State;
@@ -11,7 +11,6 @@ var url = require('url');
 var WebmakerActions = require('../lib/webmaker-actions.jsx');
 var cookiejs = require('cookie-js');
 
-require('es6-promise').polyfill();
 require('isomorphic-fetch');
 
 var UserMigration = React.createClass({
@@ -26,8 +25,7 @@ var UserMigration = React.createClass({
       login: false,
       emailedKey: false,
       setPass: !!this.getQuery().token,
-      success: false,
-      errorMessage: null
+      success: false
     };
   },
   render: function() {
@@ -62,6 +60,7 @@ var UserMigration = React.createClass({
     var error = data.err;
     var data = data.user;
     if(error) {
+      WebmakerActions.displayError(error);
       ga.event({category: 'Migration', action: 'Error', label: 'Error Handling Send Token'});
       console.error("inside App we see:", error, data);
       return;
@@ -98,10 +97,10 @@ var UserMigration = React.createClass({
       ga.event({category: 'Migration', action: 'Error', label: 'Error Handling Send Token'});
     });
   },
-  handleSetPassword: function(data) {
-    var error = data.err;
-    var data = data.user;
-    if(error) {
+  handleSetPassword: function(error, data) {
+    var user = data.user;
+    if(error) {console.log(error)
+      WebmakerActions.displayError(error);
       ga.event({category: 'Migration', action: 'Error', label: 'Error Handling Set Password'});
       return;
     }
@@ -119,7 +118,7 @@ var UserMigration = React.createClass({
       body: JSON.stringify({
         token: query.token,
         username: query.uid,
-        password: data.password
+        password: user.password
       })
     }).then((response) => {
       if(response.status === 200) {
@@ -141,13 +140,13 @@ var UserMigration = React.createClass({
     }).then((json) => {
       if(!this.state.success) {
         if ( json.statusCode === 400 ) {
-          WebmakerActions.displayError({'field': 'password', 'message': json.message});
+          WebmakerActions.displayError([{'field': 'password', 'message': json.message}]);
           console.error("Error 400 statusCode recieved ", json.message);
           ga.event({category: 'Migration', action: 'Error', label: 'Error Handling Set Password'});
           return;
         }
         else if ( json.statusCode !== 200 ) {
-          WebmakerActions.displayError({'field': 'password', 'message': 'Something went wrong. Try again!'});
+          WebmakerActions.displayError([{'field': 'password', 'message': 'Something went wrong. Try again!'}]);
           console.error("Non 200 statusCode recieved while attemting migration", json.message);
           ga.event({category: 'Migration', action: 'Error', label: 'Error Handling Set Password'});
           return;

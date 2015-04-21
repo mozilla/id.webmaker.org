@@ -32,7 +32,12 @@ module.exports = {
       // https://github.com/webpack/webpack/issues/558#issuecomment-60889168
       { test: require.resolve('react'), loader: IMPORT_ES5_SHIM },
       { test: require.resolve('react/addons'), loader: IMPORT_ES5_SHIM },
-      { test: /\.json$/, loader: 'json-loader' }
+      { test: /\.json$/, loader: 'json-loader' },
+      {
+       test: /\.js.*$/,
+       exclude: /node_modules/,
+       loader: 'babel-loader?optional=runtime'
+      }
     ]
   },
   node: {

@@ -8,7 +8,6 @@ var cookiejs = require('cookie-js');
 var WebmakerActions = require('../lib/webmaker-actions.jsx');
 var Url = require('url');
 var ga = require('react-ga');
-require('es6-promise').polyfill();
 require('isomorphic-fetch');
 
 var fieldValues = [
@@ -50,20 +49,13 @@ var fieldValues = [
   }
 ];
 
-var validators = require('../lib/validatorset');
-var fieldValidators = validators.getValidatorSet(fieldValues);
-
 var Signup = React.createClass({
   componentDidMount: function() {
     document.title = "Webmaker Login - Sign Up";
     document.body.className = "signup-bg";
-    WebmakerActions.addListener('FORM_ERROR', this.setFormState);
-    WebmakerActions.addListener('FORM_VALIDATION', this.handleFormData);
   },
   componentWillUnmount: function() {
     document.body.className = "";
-    WebmakerActions.deleteListener('FORM_ERROR', this.setFormState);
-    WebmakerActions.deleteListener('FORM_VALIDATION', this.handleFormData);
   },
   render: function() {
     var queryObj = Url.parse(window.location.href, true).query;
@@ -77,10 +69,10 @@ var Signup = React.createClass({
         <div className="innerForm">
           <Form ref="userform"
                 fields={fieldValues}
-                validators={fieldValidators}
                 origin="Signup"
                 onInputBlur={this.handleBlur}
                 autoComplete="off"
+                handleSubmit={this.processSignup}
           />
         </div>
         <div className="commit">
@@ -92,66 +84,142 @@ var Signup = React.createClass({
       </div>
     );
   },
-  setFormState: function(data) {
-    this.refs.userform.setState({['valid_' +data.field]: false});
-  },
   processSignup: function(evt) {
-    this.refs.userform.processFormData(evt);
+    this.refs.userform.processFormData(evt, this.handleFormData);
   },
-  handleBlur: function(fieldName, value) {
+  handleBlur: function(e) {
+    var fieldName = e.target.id,
+        value = e.target.value,
+        userform = this.refs.userform;
+
+    if ( fieldName === 'email' ) {
+      userform.validateEmail(value, (error) => {
+        // if no error
+        if(!error) {
+          userform.checkEmail(value, (email) => {
+            if (email.exists) {
+              WebmakerActions.displayError([{'field': 'email', 'message': 'Email address already taken!'}]);
+              return;
+            } else if (!email.exists) {
+              WebmakerActions.validField({'field': 'email', 'message': 'Available'});
+            }
+          });
+        } else {
+          WebmakerActions.displayError(error);
+        }
+      });
+    }
+    if( fieldName === 'username' ) {
+      userform.setFormState({field: 'username'});
+      userform.validateUsername(value, (error) => {
+        if(!error) {
+          userform.checkUsername(value, (json) => {
+            if (json.exists) {
+              WebmakerActions.displayError([{'field': 'username', 'message': 'Username is taken!'}]);
+            } else if (json.exists === false) {
+              WebmakerActions.validField({'field': 'username', 'message': 'Available'});
+            } else {
+              WebmakerActions.displayError([{'field': 'username', 'message': 'Whoops! Something went wrong. Please try again.'}]);
+            }
+          });
+        } else {
+          WebmakerActions.displayError(error);
+        }
+      });
+    }
+    if( fieldName === 'password' ) {
+      userform.setFormState({field: 'password'});
+      if(!userform.state.username) {
+        WebmakerActions.displayError([{'field': 'username', 'message': 'Please specify a username.'}]);
+      }
+      userform.validatePassword(value, (error) => {
+        if(!error) {
+          userform.setFormState({field: 'password'});
+          return;
+        }
+        WebmakerActions.displayError(error);
+      });
+    }
+  },
+  handleFormData: function(error, data) {
     var userform = this.refs.userform;
-    if ( fieldName === 'email' && value ) {
-      userform.checkEmail(value);
-    }
-    if( fieldName === 'username' && value ) {
-      userform.checkUsername(value);
-    }
-    if( fieldName === 'password' && value ) {
-      userform.validatePassword(value);
-    }
-  },
-  handleFormData: function(data) {
-    var error = data.err;
-    var data = data.user;
+    var user = data.user;
+
     if ( error ) {
+      WebmakerActions.displayError(error);
       ga.event({category: 'Signup', action: 'Error during form validation'});
       console.error("validation error", error);
-      return;
     }
 
-    var userform = this.refs.userform;
-    var csrfToken = cookiejs.parse(document.cookie).crumb;
-    var queryObj = Url.parse(window.location.href, true).query;
-
-    userform.validatePassword(data.password);
-    fetch("/create-user", {
-      method: "post",
-      credentials: 'same-origin',
-      headers: {
-        "Accept": "application/json; charset=utf-8",
-        "Content-Type": "application/json; charset=utf-8",
-        "X-CSRF-Token": csrfToken
-      },
-      body: JSON.stringify({
-        email: data.email,
-        username: data.username,
-        password: data.password,
-        feedback: data.feedback,
-        client_id: queryObj.client_id
-      })
-    }).then(function(response) {
-      var redirectObj;
-      if ( response.status === 200 ) {
-        redirectObj = Url.parse("/login/oauth/authorize", true);
-        redirectObj.query = queryObj;
-        ga.event({category: 'Signup', action: 'Successfully created an account'});
-        window.location = Url.format(redirectObj);
+    if (data.userObj.exists) {
+      // if this username is taken report an error and do early return
+      WebmakerActions.displayError([{'field': 'username', 'message': 'Username is taken!'}]);
+      return;
+    } else if (!data.userObj.exists) {
+      WebmakerActions.validField({'field': 'username', 'message': 'Available'});
+    }
+    // validate email once again in case they press the return key directly
+    userform.validateEmail(userform.state.email, (emailError) => {
+      // making sure the field is not empty and passed the validation field
+      if(userform.state.email  && !emailError) {
+        // check the email with the server for existance
+        userform.checkEmail(userform.state.email, (email) => {
+          if (email.exists) {
+            // if this email is taken report an error and do early return
+            WebmakerActions.displayError([{'field': 'email', 'message': 'Email address already taken!'}]);
+            return;
+          } else if (!email.exists) {
+            WebmakerActions.validField({'field': 'email', 'message': 'Available'});
+          }
+          userform.validatePassword(userform.state.password, (passwordError) => {
+            // there is an error on password validation
+            if(passwordError) {
+              WebmakerActions.displayError(passwordError);
+              return;
+            }
+            // making sure the field is not empty and passed the validation field
+            if(userform.state.password  && !passwordError) {
+              // if there is an error on any field we shouldn't continue
+              if(error) {
+                return;
+              }
+              var csrfToken = cookiejs.parse(document.cookie).crumb;
+              var queryObj = Url.parse(window.location.href, true).query;
+              // fetch the /create-user post request
+              fetch("/create-user", {
+                method: "post",
+                credentials: 'same-origin',
+                headers: {
+                  "Accept": "application/json; charset=utf-8",
+                  "Content-Type": "application/json; charset=utf-8",
+                  "X-CSRF-Token": csrfToken
+                },
+                body: JSON.stringify({
+                  email: user.email,
+                  username: user.username,
+                  password: user.password,
+                  feedback: user.feedback,
+                  client_id: queryObj.client_id
+                })
+              }).then(function(response) {
+                var redirectObj;
+                // if we get status code 200 then everything should be okay
+                if ( response.status === 200 ) {
+                  redirectObj = Url.parse("/login/oauth/authorize", true);
+                  redirectObj.query = queryObj;
+                  ga.event({category: 'Signup', action: 'Successfully created an account'});
+                  window.location = Url.format(redirectObj);
+                }
+                // should we handle anything other than status 200?
+              }).catch(function(ex) {
+                ga.event({category: 'Signup', action: 'Error', label: 'Error parsing response from the server'});
+                console.error("Error parsing response", ex);
+              });
+            }
+          });
+        });
       }
-    }).catch(function(ex) {
-      ga.event({category: 'Signup', action: 'Error', label: 'Error parsing response from the server'});
-      console.error("Error parsing response", ex);
     });
-
   }
 
 });

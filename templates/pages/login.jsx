@@ -1,6 +1,7 @@
 var React = require('react');
 var Router = require('react-router');
 var Link = Router.Link;
+var API = require('../lib/api.jsx');
 
 var Form = require('../components/form/form.jsx');
 var Header = require('../components/header/header.jsx');
@@ -10,45 +11,32 @@ var ga = require('react-ga');
 var cookiejs = require('cookie-js');
 var WebmakerActions = require('../lib/webmaker-actions.jsx');
 
-require('es6-promise').polyfill();
 require('isomorphic-fetch');
 
 var fieldValues = [
   {
     'username': {
       'placeholder': 'Username',
-      'type': 'text',
-      'validator': 'username',
-      'errorMessage': 'Invalid username'
+      'type': 'text'
     }
   },
   {
     'password': {
       'placeholder': 'Password',
-      'type': 'password',
-      'validator': 'password',
-      'errorMessage': 'Invalid password'
+      'type': 'password'
     }
   }
 ];
-
-var validators = require('../lib/validatorset');
-var fieldValidators = validators.getValidatorSet(fieldValues);
 
 // This wraps every view
 var Login = React.createClass({
   componentDidMount: function() {
     document.title = "Webmaker Login - Login";
-    WebmakerActions.addListener('FORM_VALIDATION', this.handleFormData);
   },
-  componentWillUnmount: function() {
-    WebmakerActions.deleteListener('FORM_VALIDATION', this.handleFormData);
-  },
-  getInitialState: function() {
-    return {
-      username: ''
-    };
-  },
+  mixins: [
+    Router.Navigation,
+    Router.State
+  ],
   render: function() {
     // FIXME: totally not localized yet!
     var buttonText = "Log In";
@@ -61,13 +49,13 @@ var Login = React.createClass({
         <div className="loginPage innerForm centerDiv">
           <Form ref="userform"
                 fields={fieldValues}
-                validators={fieldValidators}
                 origin="Login"
                 onInputBlur={this.handleBlur}
                 defaultUsername={this.queryObj.username}
+                handleSubmit={this.processFormData}
           />
           <button onClick={this.processFormData} className="btn btn-awsm">{buttonText}</button>
-          <Link onClick={this.handleGA.bind(this, 'Forgot your password')} to="reset-password" query={this.queryObj} className="need-help">Forgot your password?</Link>
+          <Link onClick={this.handleGA} to="reset-password" query={this.queryObj} className="need-help">Forgot your password?</Link>
         </div>
       </div>
     );
@@ -76,24 +64,99 @@ var Login = React.createClass({
     e.preventDefault();
     var form = this.refs.userform;
     ga.event({category: 'Login', action: 'Start login'});
-    form.processFormData(e);
+    form.processFormData(e, this.handleFormData);
   },
-  handleGA: function(name) {
-    ga.event({category: 'Login', action: 'Clicked on ' + name + ' link.'});
-  },
-  handleBlur: function(fieldName, value) {
-    var userform = this.refs.userform;
-    if ( fieldName === 'username' && value ) {
-      this.queryObj.username = value;
-      userform.checkUsername(value);
+  checkUser: function(user, username, e) {
+    if(e) e.preventDefault();
+    this.queryObj.username = username;
+    if ( user.usePasswordLogin === false && user.statusCode !== 404 ) {
+      this.transitionTo('/migrate', '', this.queryObj);
+    } else if ( user.statusCode === 404 ) {
+      WebmakerActions.displayError([{'field': 'username', 'message': 'Whoops! We can\'t find an account with that username!'}]);
+    } else if (user.exists) {
+      WebmakerActions.validField({'field': 'username', 'message': 'Available'});
+      return true;
+    } else {
+      WebmakerActions.displayError([{'field': 'username', 'message': 'Something went wrong! Please try again later.'}]);
     }
   },
-  handleFormData: function(data) {
-    var data = data.user;
-    var error = data.err
+  handleGA: function(e) {
+    e.preventDefault();
+    var url = Url.parse(e.target.href, true);
+    var pathname = url.pathname;
+    var query = url.query;
+    var userform = this.refs.userform;
+
+    userform.setFormState({field: 'username'});
+    userform.validateUsername(userform.state.username, (error) => {
+      if(!error) {
+        userform.checkUsername(userform.state.username, (json) => {
+          var available = this.checkUser(json, userform.state.username)
+          if(available) {
+            query.username = userform.state.username;
+            this.transitionTo(pathname, '', query);
+          }
+        });
+      } else {
+        WebmakerActions.displayError(error);
+      }
+    });
+    ga.event({category: 'Login', action: 'Clicked on Forgot your password link.'});
+  },
+  handleBlur: function(e) {
+    var fieldName = e.target.id,
+        value = e.target.value,
+        userform = this.refs.userform;
+
+    if( fieldName === 'username' ) {
+      userform.setFormState({field: 'username'});
+      userform.validateUsername(value, (error) => {
+        if(!error) {
+          userform.checkUsername(value, (json) => {
+            this.checkUser(json, value)
+          });
+        } else {
+          WebmakerActions.displayError(error);
+        }
+      });
+    }
+    if( fieldName === 'password' ) {
+      userform.setFormState({field: 'password'});
+      if(!userform.state.username) {
+        WebmakerActions.displayError([{'field': 'username', 'message': 'Please specify a username.'}]);
+      }
+      userform.validatePassword(value, (error) => {
+        if(!error) {
+          userform.setFormState({field: 'password'});
+          return;
+        }
+        if(!value) {
+          WebmakerActions.displayError(error);
+        } else {
+          WebmakerActions.displayError([{'field': 'password', 'message': 'Invalid password.'}]);
+        }
+      });
+    }
+  },
+  handleFormData: function(error, data) {
     if ( error ) {
+      WebmakerActions.displayError(error);
       ga.event({category: 'Login', action: 'Error during form validation'})
       console.error('validation error', error);
+    }
+    var user = data.user;
+    var userform = this.refs.userform;
+
+    if(user.username) {
+      this.checkUser(data.userObj, user.username);
+      return;
+    }
+
+    if(error) {
+      if(error[0][0].field === 'password' && userform.state.password) {
+        WebmakerActions.displayError([{field: 'password', message: 'Invalid password.'}]);
+        return;
+      }
       return;
     }
     var csrfToken = cookiejs.parse(document.cookie).crumb;
@@ -107,8 +170,8 @@ var Login = React.createClass({
         'X-CSRF-Token': csrfToken
       },
       body: JSON.stringify({
-        uid: data.username,
-        password: data.password
+        uid: user.username,
+        password: user.password
       })
     }).then(function(response) {
       var redirectObj;
@@ -120,7 +183,7 @@ var Login = React.createClass({
         window.location = Url.format(redirectObj);
       }
       if( response.status === 401 ) {
-        WebmakerActions.displayError({field: 'password', message: 'Invalid password.'})
+        WebmakerActions.displayError([{field: 'password', message: 'Invalid password.'}]);
       }
       // handle errors!
     }).catch(function(ex) {

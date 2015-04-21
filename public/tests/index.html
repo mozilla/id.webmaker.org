@@ -10,17 +10,8 @@
   <div id="messages"></div>
   <div id="fixtures"></div>
   <script src="mocha.js"></script>
-  <script>
-    mocha.setup('bdd');
-  </script>
+  <script src="mochaSetup.js"></script>
   <script src="../tests.bundle.js"></script>
-  <script>
-    if (window.mochaPhantomJS) {
-      mochaPhantomJS.run();
-    } else {
-      mocha.run();
-    }
-  </script>
+  <script src="mochaRun.js"></script>
 </body>
 </html>
-

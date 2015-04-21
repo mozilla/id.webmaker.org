@@ -41,6 +41,7 @@
   "dependencies": {
     "autoless": "^0.1.6",
     "babel-loader": "^5.0.0",
+    "babel-runtime": "^5.1.11",
     "blankie": "^1.1.0",
     "boom": "^2.6.1",
     "bootstrap": "^3.3.4",
@@ -48,7 +49,6 @@
     "cross-spawn": "^0.2.9",
     "crumb": "^4.0.3",
     "es5-shim": "^4.1.0",
-    "es6-promise": "^2.0.1",
     "flux": "^2.0.1",
     "font-awesome": "^4.3.0",
     "habitat": "^3.1.2",
@@ -66,12 +66,13 @@
     "react-router": "^0.12.4",
     "react-router-stub": "0.0.6",
     "react-router-viewports": "0.0.4",
-    "react-validation-mixin": "^4.0.3",
     "scooter": "^2.0.1",
     "should": "^5.2.0",
     "webpack": "^1.7.3"
   },
   "devDependencies": {
+    "babel-core": "^5.1.11",
+    "babel-loader": "^5.0.0",
     "bulk-require": "^0.2.1",
     "code": "^1.3.0",
     "js-beautify": "^1.5.5",

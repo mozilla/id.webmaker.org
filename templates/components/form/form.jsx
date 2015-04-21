@@ -1,15 +1,13 @@
 var React = require('react/addons');
-var ValidationMixin = require('react-validation-mixin');
 var ga = require('react-ga');
 var ToolTip = require('../tooltip/tooltip.jsx');
 var WebmakerActions = require('../../lib/webmaker-actions.jsx');
 var API = require('../../lib/api.jsx');
-var Router = require('react-router');
+var formValidations = require('../../lib/form-validations/form-validation.jsx');
 
 var Form = React.createClass({
   propTypes: {
     fields: React.PropTypes.array.isRequired,
-    validators: React.PropTypes.object.isRequired,
     origin: React.PropTypes.string.isRequired
   },
   statics: {
@@ -23,15 +21,11 @@ var Form = React.createClass({
       }
   },
   mixins: [
-    ValidationMixin,
     React.addons.LinkedStateMixin,
-    Router.Navigation,
-    Router.State,
-    API
+    API,
+    formValidations
   ],
-  validatorTypes: false,
   componentWillMount: function() {
-    this.validatorTypes = this.props.validators;
     this.errorClass = this.getIconClass('error');
     this.validClass = this.getIconClass('valid');
   },
@@ -45,12 +39,10 @@ var Form = React.createClass({
   },
   getInitialState: function() {
     return {
-      username: this.props.defaultUsername || this.getQuery().username || this.getQuery().uid || '',
+      username: this.props.defaultUsername || '',
       password: '',
       email: '',
       feedback: false,
-      dirty: {},
-      key: '',
       errorMessage: {},
       valid_username: true,
       valid_password: true,
@@ -59,7 +51,8 @@ var Form = React.createClass({
     };
   },
   setFormState: function(data) {
-    var errorMessage = Object.assign({}, this.state.errorMessage);
+    var errorMessage = this.state.errorMessage || {}
+    errorMessage = Object.assign({}, this.state.errorMessage);
     errorMessage[data.field] = null;
     this.setState({
       ['valid_' + data.field]: true,
@@ -67,50 +60,16 @@ var Form = React.createClass({
     });
   },
   formError: function(data) {
-    var errorMessage = Object.assign({}, this.state.errorMessage);
-    errorMessage[data.field] = data.message;
-
-    this.setState({
-      ['valid_' + data.field]: false,
-      errorMessage: errorMessage
+    data.map((err) => {
+      err = err[0] || err;
+      var errorMessage = this.state.errorMessage;
+      errorMessage[err.field] = err.message;
+      errorMessage = Object.assign({}, errorMessage);
+      this.setState({
+        ['valid_' + err.field]: false,
+        errorMessage: errorMessage
+      });
     });
-  },
-  dirty: function(id, origin) {
-    return (err, valid) => {
-      if(err) {
-        if(id === 'username' && this.state[id]) {
-          this.formError({field: 'username', message: 'Must be 1-20 characters long and use only "-" and alphanumeric symbols.'});
-          // preventing any message to override this error message.
-          return;
-        }
-        if(id === 'email') {
-          this.formError({field: 'email', message: 'Please use a valid email address.'});
-        }
-        if(id === 'password' && !this.state[id]) {
-          this.formError({field: 'password', message: 'Please specify a password.'});
-        }
-        ga.event({category: origin, action: 'Validation Error', label: 'Error on ' + id + ' field.'});
-      }
-      if(!err && id === 'email') {
-        this.setFormState({field: 'email'});
-      }
-
-      if(id === 'password' && this.state[id] && err) {
-        this.setFormState({field: 'password'});
-      }
-      this.handleBlur(id, this.state[id])
-    }
-  },
-  handleBlur: function(fieldName, value) {
-   if ( this.props.onInputBlur ) {
-     this.props.onInputBlur(fieldName, value);
-    }
-    var dirty = this.state.dirty;
-    dirty[fieldName] = true;
-    this.setState({
-      dirty: dirty
-    });
-
   },
   buildFormElement: function(key, i) {
     // we always expect this.props.fields[i] to be one object with one property.
@@ -120,7 +79,7 @@ var Form = React.createClass({
     this.beforeLabel = value.label === undefined ? true : value.label;
     var passwordError = 'Invalid password.';
 
-    var isValid = !this.state.errorMessage[id] && this.isValid(id) && this.state['valid_' + id];
+    var isValid = !this.state.errorMessage[id];
 
     var input = (
       <input type={value.type}
@@ -132,7 +91,7 @@ var Form = React.createClass({
              autoComplete={this.props.autoComplete ? this.props.autoComplete : "on"}
              valueLink={this.linkState(id)}
              defaultValue={this.props.defaultUsername}
-             onBlur={this.handleValidation(id, this.dirty(id, this.props.origin))}
+             onBlur={this.props.onInputBlur}
              className={this.getInputClasses(id, isValid)}
              disabled={value.disabled ? "disabled" : false}
              autoFocus={value.focus ? true : false}
@@ -149,18 +108,13 @@ var Form = React.createClass({
                role='checkbox'
                aria-checked='false'
                onChange={this.toggleCheckBox}
-               onBlur={this.handleValidation(id, this.dirty(id, this.props.origin))}
+               onBlur={this.props.onInputBlur}
                className={this.getInputClasses(id, isValid)}
         />
       );
       input = (<span className={value.className}>{input}<span/></span>);
     }
-    var errorMessage;
-    if(id === 'password') {
-      errorMessage = this.state.errorMessage[id] || passwordError;
-    } else {
-      errorMessage = this.state.errorMessage[id] || this.getValidationMessages(id)[0];
-    }
+    var errorMessage = this.state.errorMessage[id];
     var errorTooltip = <ToolTip ref="tooltip" className="warning" message={errorMessage}/>;
 
     return (
@@ -178,7 +132,7 @@ var Form = React.createClass({
         <div role="form">
           <form autoComplete={this.props.autoComplete ? this.props.autoComplete : "on"}
                 action="#"
-                onSubmit={this.processFormData}
+                onSubmit={this.props.handleSubmit}
                 id="form">
             {fields}
             { this.props.autoComplete === 'off' ?
@@ -210,7 +164,7 @@ var Form = React.createClass({
     classes[this.getIconClass(field)] = true;
     classes['hideLabel'] = !this.beforeLabel;
     classes[this.errorClass] = !isValid;
-    classes[this.validClass] = (field !== 'feedback' && (this.state.dirty[field] && isValid) || this.passChecked)
+    classes[this.validClass] = (field !== 'feedback' && (this.state[field] && isValid) || this.passChecked)
     return React.addons.classSet(classes);
   },
   getIconClass: function(field) {
@@ -229,10 +183,23 @@ var Form = React.createClass({
   /**
    * "owner" components call form.processFormData on us
    */
-  processFormData: function(e) {
+  processFormData: function(e, callback) {
     e.preventDefault();
-    this.validate((error, data) => {
-      WebmakerActions.onFormValidation({err: error, user: !!error ? false : JSON.parse(JSON.stringify(this.state))});
+    this.validateAll((result) => {
+      this.checkUsername(this.state.username, (json) => {
+        if(json.statusCode === 500) {
+          this.formError([{'field': 'username', 'message': 'Whoops! Something went wrong. Please try again.'}]);
+          return;
+        }
+        json.username = this.state.username;
+        var obj = {};
+        obj.userObj = json;
+        obj.user = JSON.parse(JSON.stringify(this.state));
+        if(result) {
+          return callback(result.err, obj);
+        }
+        callback(null, obj);
+      });
     });
   }
 });

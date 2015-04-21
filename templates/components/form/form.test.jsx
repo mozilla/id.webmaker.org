@@ -3,27 +3,25 @@ var React = require('react/addons');
 var TestUtils = React.addons.TestUtils;
 var Form = require('./form.jsx');
 var RouterStub = require('react-router-stub');
+var Signup = require('../../pages/signup.jsx');
 
 var fieldValues = [
   {
     'username': {
       'placeholder': 'Username',
-      'type': 'text',
-      'validator': 'username'
+      'type': 'text'
     }
   },
   {
     'password': {
       'placeholder': 'Password',
-      'type': 'password',
-      'validator': 'password'
+      'type': 'password'
     }
   },
   {
     'email': {
       'placeholder': 'Email',
-      'type': 'email',
-      'validator': 'email'
+      'type': 'email'
     }
   }
 ];
@@ -34,7 +32,7 @@ var fixtures = {
     'invalid': ''
   },
   'password': {
-    'valid': 'pas02easdaw',
+    'valid': 'pas02easDaw',
     'invalid': 'f'
   },
   'email': {
@@ -43,33 +41,12 @@ var fixtures = {
   }
 };
 
-var validators = require('../../lib/validatorset');
-
-var fieldValidators = validators.getValidatorSet(fieldValues);
 
 describe('form', function() {
 
-  describe('prop validation', function() {
-    it('should take field and validators props', function () {
-      var instance = RouterStub.render(Form, {'origin': 'test', fields: fieldValues, validators: fieldValidators}, {
-        getCurrentQuery () {
-          return { username: true };
-        },
-        getCurrentPathname () {
-          return 'test';
-        }
-      });
-    });
-
-    it('should not allow an empty fields or validators prop', function () {
-      should.throws(function () {
-        var instance = TestUtils.renderIntoDocument(<Form />);
-      });
-    });
-  });
-
   describe('inputs', function () {
-    var instance = RouterStub.render(Form, {'origin': 'test', fields: fieldValues, validators: fieldValidators}, {
+    var signupInstance = RouterStub.render(Signup);
+    var instance = RouterStub.render(Form, {onInputBlur: signupInstance.handleBlur, 'origin': 'test', fields: fieldValues}, {
       getCurrentQuery () {
         return { username: true };
       },
@@ -77,6 +54,7 @@ describe('form', function() {
         return 'test';
       }
     });
+
     var el = instance.getDOMNode();
 
     fieldValues.forEach(function (set) {
@@ -96,17 +74,49 @@ describe('form', function() {
           it('should accept the valid value', function () {
             TestUtils.Simulate.change(inputEl, {target: {value: fixtures[name].valid}});
             TestUtils.Simulate.blur(inputEl);
-            should(instance.isValid(name)).be.equal(true);
+            should(instance.state['valid_' + name]).be.equal(true);
           });
           it('should not accept an invalid value', function () {
             TestUtils.Simulate.change(inputEl, {target: {value: fixtures[name].invalid}});
             TestUtils.Simulate.blur(inputEl);
-            should(instance.isValid(name)).be.equal(false);
+            should(instance.state['valid_' + name]).be.equal(false);
+          });
+          it('should not pass with empty fields', function () {
+            TestUtils.Simulate.click(inputEl);
+            TestUtils.Simulate.keyDown(inputEl, {key: "Enter"});
+            should(instance.state['valid_' + name]).be.equal(false);
           });
         });
 
       });
     });
+    describe('submit for all fields', function() {
+
+      it('should pass for username valid > invalid > valid', function () {
+        var signupInstance2 = RouterStub.render(Signup);
+        var instance3 = RouterStub.render(Form, {
+          onInputBlur: signupInstance2.handleBlur, 'origin': 'test', fields:
+            [
+              {
+                'username': {
+                  'placeholder': 'Username',
+                  'type': 'text'
+                }
+              }
+            ]
+          });
+        var ref1 = instance3.refs.usernameInput;
+        var usernameInput = ref1.getDOMNode();
+        should(signupInstance2.refs.userform.state.valid_username).be.equal(true);
+        TestUtils.Simulate.change(usernameInput, {target: {value: 'aa@aa'}});
+        TestUtils.Simulate.blur(usernameInput);
+        should(signupInstance2.refs.userform.state.valid_username).be.equal(false);
+        TestUtils.Simulate.change(usernameInput, {target: {value: 'suck221'}});
+        TestUtils.Simulate.blur(usernameInput);
+        should(signupInstance2.refs.userform.state.valid_username).be.equal(true);
+
+      });
+    })
   });
 
 });
