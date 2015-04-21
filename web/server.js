@@ -51,7 +51,7 @@ module.exports = function(options) {
           'https://www.google-analytics.com',
           'http://www.google-analytics.com'
         ],
-        frameSrc: [
+        childSrc: [
           '\'none\''
         ],
         scriptSrc: [
