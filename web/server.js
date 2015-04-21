@@ -39,7 +39,7 @@ module.exports = function(options) {
       register: require('blankie'),
       options: {
         defaultSrc: [
-          '\'self\''
+          '\'none\''
         ],
         styleSrc: [
           '\'self\'',
@@ -50,9 +50,6 @@ module.exports = function(options) {
           'data:',
           'https://www.google-analytics.com',
           'http://www.google-analytics.com'
-        ],
-        childSrc: [
-          '\'none\''
         ],
         scriptSrc: [
           '\'self\'',

@@ -63,8 +63,8 @@ lab.experiment("OAuth", function() {
       Code.expect(response.headers["x-content-type-options"]).to.equal("nosniff");
 
       Code.expect(response.headers["content-security-policy"]).to.equal(
-        "connect-src 'self';default-src 'self';font-src 'self' https://fonts.gstatic.com;frame-src" +
-        " 'none';img-src 'self' data: https://www.google-analytics.com http://www.google-analytics.com;" +
+        "connect-src 'self';default-src 'none';font-src 'self' https://fonts.gstatic.com;" +
+        "img-src 'self' data: https://www.google-analytics.com http://www.google-analytics.com;" +
         "script-src 'self' 'unsafe-eval' https://www.google-analytics.com http://www.google-analytics.com;" +
         "style-src 'self' https://fonts.googleapis.com"
       );
