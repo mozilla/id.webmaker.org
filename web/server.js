@@ -61,7 +61,7 @@ module.exports = function(options) {
           'http://www.google-analytics.com'
         ],
         fontSrc: [
-        '\'self\'',
+          '\'self\'',
           'https://fonts.gstatic.com'
         ]
       }
