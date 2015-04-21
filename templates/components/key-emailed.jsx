@@ -9,7 +9,7 @@ var KeyEmailed = React.createClass({
         className="emailSent centerDiv"
         header="Thanks!"
         headerClass="emailSentHeader">
-          <p>We've just emailed you a link to create your password.</p>
+          <tbody><p>We've just emailed you a link to create your password.</p></tbody>
       </IconText>
     );
   }

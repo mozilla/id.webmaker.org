@@ -31,7 +31,7 @@ var SetPasswordMigration = React.createClass({
           className="emailSent arrow_box"
           headerClass="emailSentHeader"
           header="Set your password">
-            <p>Please create a password for your account.</p>
+            <tbody><p>Please create a password for your account.</p></tbody>
         </IconText>
         <div className="migrateKey innerForm">
           <Form defaultUsername={this.props.username}

@@ -46,8 +46,10 @@ var UserMigration = React.createClass({
           className=""
           headerClass="successBannerHeader"
           header="Success!">
-            <p>Thanks for setting your Webmaker password. From now on, use it to log in to your account.</p>
-            <a className="continueLink" href={url.format(continueLink)}>Continue</a>
+            <tbody>
+              <p>Thanks for setting your Webmaker password. From now on, use it to log in to your account.</p>
+              <a className="continueLink" href={url.format(continueLink)}>Continue</a>
+            </tbody>
         </IconText></div>)
     }
     return (
