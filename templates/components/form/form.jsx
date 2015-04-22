@@ -78,6 +78,11 @@ var Form = React.createClass({
   dirty: function(id, origin) {
     return (err, valid) => {
       if(err) {
+        if(id === 'username' && this.state[id]) {
+          this.formError({field: 'username', message: 'Must be 1-20 characters long and use only "-" and alphanumeric symbols.'});
+          // preventing any message to override this error message.
+          return;
+        }
         if(id === 'email') {
           this.formError({field: 'email', message: 'Please use a valid email address.'});
         }

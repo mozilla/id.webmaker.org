@@ -3,5 +3,6 @@ module.exports = {
   password: {
     bothCases: /^.*(?=.*[a-z])(?=.*[A-Z]).*$/,
     digit: /\d/
-  }
+  },
+  username:  /^[a-zA-Z0-9\-]{1,20}$/
 }
