@@ -64,6 +64,7 @@ var Login = React.createClass({
                 validators={fieldValidators}
                 origin="Login"
                 onInputBlur={this.handleBlur}
+                defaultUsername={this.queryObj.username}
           />
           <button onClick={this.processFormData} className="btn btn-awsm">{buttonText}</button>
           <Link onClick={this.handleGA.bind(this, 'Forgot your password')} to="reset-password" query={this.queryObj} className="need-help">Forgot your password?</Link>
