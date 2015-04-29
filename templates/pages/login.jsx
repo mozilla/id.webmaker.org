@@ -60,7 +60,7 @@ var Login = React.createClass({
       </div>
     );
   },
-  processFormData: function(e) {
+  processFormData: function(e) {console.log('hey')
     e.preventDefault();
     var form = this.refs.userform;
     ga.event({category: 'Login', action: 'Start login'});
@@ -138,7 +138,7 @@ var Login = React.createClass({
       });
     }
   },
-  handleFormData: function(error, data) {
+  handleFormData: function(error, data) {console.log('no way', error)
     if ( error ) {
       WebmakerActions.displayError(error);
       ga.event({category: 'Login', action: 'Error during form validation'})

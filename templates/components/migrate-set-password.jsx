@@ -40,8 +40,7 @@ var SetPasswordMigration = React.createClass({
   },
   processFormData: function(e) {
     var form = this.refs.userform;
-    form.processFormData(e, (error, data) => {console.log(error, data)
-      console.log(error)
+    form.processFormData(e, (error, data) => {
       this.props.submitForm(error, data);
     });
   },

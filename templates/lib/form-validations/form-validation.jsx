@@ -28,12 +28,14 @@ module.exports = {
       } else if (fieldName === 'email') {
         this.validateEmail(this.state.email, (error) => {
           if(error) {
+            errored = true;
             arrayResults.err.push(error);
           }
         });
       } else if (fieldName === 'password') {
         this.validatePassword(this.state.password, (error) => {
           if(error) {
+            errored = true;
             arrayResults.err.push(error);
           }
         });
