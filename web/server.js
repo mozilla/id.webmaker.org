@@ -294,7 +294,7 @@ module.exports = function(options) {
         var responseObj = {
           access_token: request.pre.accessToken.access_token,
           scopes: request.pre.accessToken.scopes,
-          token_type: 'bearer'
+          token_type: 'token'
         };
 
         reply(responseObj);
