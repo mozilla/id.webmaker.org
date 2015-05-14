@@ -843,7 +843,7 @@ lab.experiment("OAuth", function() {
         Code.expect(response.statusCode).to.equal(200);
         Code.expect(response.result.access_token).to.be.a.string();
         Code.expect(response.result.scopes).to.equal("user");
-        Code.expect(response.result.token_type).to.equal("bearer");
+        Code.expect(response.result.token_type).to.equal("token");
         done();
       });
     });
@@ -864,7 +864,7 @@ lab.experiment("OAuth", function() {
         Code.expect(response.statusCode).to.equal(200);
         Code.expect(response.result.access_token).to.be.a.string();
         Code.expect(response.result.scopes).to.equal("user");
-        Code.expect(response.result.token_type).to.equal("bearer");
+        Code.expect(response.result.token_type).to.equal("token");
         done();
       });
     });
@@ -1052,7 +1052,7 @@ lab.experiment("OAuth", function() {
         Code.expect(response.statusCode).to.equal(200);
         Code.expect(response.result.access_token).to.be.a.string();
         Code.expect(response.result.scopes).to.equal("user projects");
-        Code.expect(response.result.token_type).to.equal("bearer");
+        Code.expect(response.result.token_type).to.equal("token");
         done();
       });
     });
