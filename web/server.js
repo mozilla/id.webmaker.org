@@ -194,10 +194,33 @@ module.exports = function(options) {
       config: {
         validate: {
           payload: {
-            code: Joi.string().required(),
+            grant_type: Joi.any().valid('authorization_code', 'password').required(),
+            code: Joi.string().when('grant_type', {
+              is: 'authorization_code',
+              then: Joi.required(),
+              otherwise: Joi.forbidden()
+            }),
+            client_secret: Joi.string().when('grant_type', {
+              is: 'authorization_code',
+              then: Joi.required(),
+              otherwise: Joi.forbidden()
+            }),
             client_id: Joi.string().required(),
-            client_secret: Joi.string().required(),
-            grant_type: Joi.any().valid('authorization_code').required()
+            uid: Joi.string().when('grant_type', {
+              is: 'password',
+              then: Joi.required(),
+              otherwise: Joi.forbidden()
+            }),
+            password: Joi.string().when('grant_type', {
+              is: 'password',
+              then: Joi.required(),
+              otherwise: Joi.forbidden()
+            }),
+            scopes: Joi.string().when('grant_type', {
+              is: 'password',
+              then: Joi.required(),
+              otherwise: Joi.forbidden()
+            })
           },
           failAction: function(request, reply, source, error) {
             reply(Boom.badRequest('invalid ' + source + ': ' + error.data.details[0].path));
@@ -209,13 +232,25 @@ module.exports = function(options) {
         },
         pre: [
           {
+            assign: 'grant_type',
+            method: function (request, reply) {
+              reply(request.payload.grant_type);
+            }
+          },
+          {
             assign: 'client',
             method: function(request, reply) {
               oauthDb.getClient(request.payload.client_id, function(err, client) {
                 if ( err ) {
                   return reply(err);
                 }
-                if ( client.client_secret !== request.payload.client_secret ) {
+                if (
+                  client.allowed_grants.indexOf(request.pre.grant_type) === -1 ||
+                  (
+                    request.pre.grant_type === 'authorization_code' &&
+                    client.client_secret !== request.payload.client_secret
+                  )
+                ) {
                   return reply(Boom.forbidden('Invalid Client Credentials'));
                 }
                 reply(client);
@@ -225,6 +260,19 @@ module.exports = function(options) {
           {
             assign: 'authCode',
             method: function(request, reply) {
+              if ( request.pre.grant_type === 'password' ) {
+                return account.verifyPassword(request, function(err, json) {
+                  if ( err ) {
+                    return reply(err);
+                  }
+
+                  reply({
+                    user_id: json.user.username,
+                    scopes: request.payload.scopes
+                  });
+                });
+              }
+
               oauthDb.verifyAuthCode(request.payload.code, request.pre.client.client_id, reply);
             }
           },
@@ -246,7 +294,7 @@ module.exports = function(options) {
         var responseObj = {
           access_token: request.pre.accessToken.access_token,
           scopes: request.pre.accessToken.scopes,
-          token_type: 'bearer'
+          token_type: 'token'
         };
 
         reply(responseObj);

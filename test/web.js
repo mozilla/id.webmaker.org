@@ -843,7 +843,7 @@ lab.experiment("OAuth", function() {
         Code.expect(response.statusCode).to.equal(200);
         Code.expect(response.result.access_token).to.be.a.string();
         Code.expect(response.result.scopes).to.equal("user");
-        Code.expect(response.result.token_type).to.equal("bearer");
+        Code.expect(response.result.token_type).to.equal("token");
         done();
       });
     });
@@ -864,7 +864,7 @@ lab.experiment("OAuth", function() {
         Code.expect(response.statusCode).to.equal(200);
         Code.expect(response.result.access_token).to.be.a.string();
         Code.expect(response.result.scopes).to.equal("user");
-        Code.expect(response.result.token_type).to.equal("bearer");
+        Code.expect(response.result.token_type).to.equal("token");
         done();
       });
     });
@@ -1004,7 +1004,7 @@ lab.experiment("OAuth", function() {
       var accessTokenRequest = {
         method: "POST",
         url: "/login/oauth/access_token",
-        payload: "client_id=test&grant_type=client_credentials&code=test",
+        payload: "client_id=test&grant_type=authorization_code&code=test",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         }
@@ -1032,6 +1032,255 @@ lab.experiment("OAuth", function() {
       s.inject(accessTokenRequest, function(response) {
         Code.expect(response.statusCode).to.equal(400);
         Code.expect(response.result.message).to.equal("invalid payload: grant_type");
+        done();
+      });
+    });
+  });
+
+  lab.test("POST access_token, password grant", function(done) {
+    ls.start(function(error) {
+      var accessTokenRequest = {
+        method: "POST",
+        url: "/login/oauth/access_token",
+        payload: "uid=webmaker&password=password&scopes=user%20projects&grant_type=password&client_id=test",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        }
+      };
+
+      s.inject(accessTokenRequest, function(response) {
+        Code.expect(response.statusCode).to.equal(200);
+        Code.expect(response.result.access_token).to.be.a.string();
+        Code.expect(response.result.scopes).to.equal("user projects");
+        Code.expect(response.result.token_type).to.equal("token");
+        done();
+      });
+    });
+  });
+
+  lab.test("POST access_token, password grant fails with invalid credentials", function(done) {
+    ls.start(function(error) {
+      var accessTokenRequest = {
+        method: "POST",
+        url: "/login/oauth/access_token",
+        payload: "uid=fail&password=password&scopes=user%20projects&grant_type=password&client_id=test",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        }
+      };
+
+      s.inject(accessTokenRequest, function(response) {
+        Code.expect(response.statusCode).to.equal(401);
+        done();
+      });
+    });
+  });
+
+  lab.test("POST access_token, password grant fails with invalid client_id", function(done) {
+    ls.start(function(error) {
+      var accessTokenRequest = {
+        method: "POST",
+        url: "/login/oauth/access_token",
+        payload: "uid=webmaker&password=password&scopes=user%20projects&grant_type=password&client_id=fake123",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        }
+      };
+
+      s.inject(accessTokenRequest, function(response) {
+        Code.expect(response.statusCode).to.equal(400);
+        Code.expect(response.result.message).to.equal("invalid client_id");
+        done();
+      });
+    });
+  });
+
+  lab.test("POST access_token - no code with password grant", function(done) {
+    ls.start(function(error) {
+      var accessTokenRequest = {
+        method: "POST",
+        url: "/login/oauth/access_token",
+        payload: "uid=webmaker&password=password&scopes=user&client_id=test&code=test&grant_type=password",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        }
+      };
+
+      s.inject(accessTokenRequest, function(response) {
+        Code.expect(response.statusCode).to.equal(400);
+        Code.expect(response.result.message).to.equal("invalid payload: code");
+        done();
+      });
+    });
+  });
+
+  lab.test("POST access_token - no client_secret with password grant", function(done) {
+    ls.start(function(error) {
+      var accessTokenRequest = {
+        method: "POST",
+        url: "/login/oauth/access_token",
+        payload: "uid=webmaker&password=password&scopes=user&client_id=test&client_secret=test&grant_type=password",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        }
+      };
+
+      s.inject(accessTokenRequest, function(response) {
+        Code.expect(response.statusCode).to.equal(400);
+        Code.expect(response.result.message).to.equal("invalid payload: client_secret");
+        done();
+      });
+    });
+  });
+
+  lab.test("POST access_token - uid required with password grant", function(done) {
+    ls.start(function(error) {
+      var accessTokenRequest = {
+        method: "POST",
+        url: "/login/oauth/access_token",
+        payload: "password=password&scopes=user&client_id=test&grant_type=password",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        }
+      };
+
+      s.inject(accessTokenRequest, function(response) {
+        Code.expect(response.statusCode).to.equal(400);
+        Code.expect(response.result.message).to.equal("invalid payload: uid");
+        done();
+      });
+    });
+  });
+
+  lab.test("POST access_token - password required with password grant", function(done) {
+    ls.start(function(error) {
+      var accessTokenRequest = {
+        method: "POST",
+        url: "/login/oauth/access_token",
+        payload: "uid=webmaker&scopes=user&client_id=test&grant_type=password",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        }
+      };
+
+      s.inject(accessTokenRequest, function(response) {
+        Code.expect(response.statusCode).to.equal(400);
+        Code.expect(response.result.message).to.equal("invalid payload: password");
+        done();
+      });
+    });
+  });
+
+  lab.test("POST access_token - no uid with authorization_code grant", function(done) {
+    ls.start(function(error) {
+      var accessTokenRequest = {
+        method: "POST",
+        url: "/login/oauth/access_token",
+        payload: "uid=webmaker&client_id=test&client_secret=test&code=test&grant_type=authorization_code",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        }
+      };
+
+      s.inject(accessTokenRequest, function(response) {
+        Code.expect(response.statusCode).to.equal(400);
+        Code.expect(response.result.message).to.equal("invalid payload: uid");
+        done();
+      });
+    });
+  });
+
+  lab.test("POST access_token - no password with authorization_code grant", function(done) {
+    ls.start(function(error) {
+      var accessTokenRequest = {
+        method: "POST",
+        url: "/login/oauth/access_token",
+        payload: "password=password&scopes=user&client_id=test&" +
+          "client_secret=test&code=test&grant_type=authorization_code",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        }
+      };
+
+      s.inject(accessTokenRequest, function(response) {
+        Code.expect(response.statusCode).to.equal(400);
+        Code.expect(response.result.message).to.equal("invalid payload: password");
+        done();
+      });
+    });
+  });
+
+  lab.test("POST access_token - no scope with authorization_code grant", function(done) {
+    ls.start(function(error) {
+      var accessTokenRequest = {
+        method: "POST",
+        url: "/login/oauth/access_token",
+        payload: "scopes=user&client_id=test&client_secret=test&code=test&grant_type=authorization_code",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        }
+      };
+
+      s.inject(accessTokenRequest, function(response) {
+        Code.expect(response.statusCode).to.equal(400);
+        Code.expect(response.result.message).to.equal("invalid payload: scopes");
+        done();
+      });
+    });
+  });
+
+  lab.test("POST access_token - no uid with authorization_code grant", function(done) {
+    ls.start(function(error) {
+      var accessTokenRequest = {
+        method: "POST",
+        url: "/login/oauth/access_token",
+        payload: "uid=webmaker&password=password&scopes=user&client_id=test&code=test&grant_type=authorization_code",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        }
+      };
+
+      s.inject(accessTokenRequest, function(response) {
+        Code.expect(response.statusCode).to.equal(400);
+        Code.expect(response.result.message).to.equal("invalid payload: client_secret");
+        done();
+      });
+    });
+  });
+
+  lab.test("POST access_token - client not allowed password grant", function(done) {
+    ls.start(function(error) {
+      var accessTokenRequest = {
+        method: "POST",
+        url: "/login/oauth/access_token",
+        payload: "uid=webmaker&password=password&scopes=user&client_id=test2&grant_type=password",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        }
+      };
+
+      s.inject(accessTokenRequest, function(response) {
+        Code.expect(response.statusCode).to.equal(403);
+        Code.expect(response.result.message).to.equal("Invalid Client Credentials");
+        done();
+      });
+    });
+  });
+
+  lab.test("POST access_token - client not allowed authorization_code grant", function(done) {
+    ls.start(function(error) {
+      var accessTokenRequest = {
+        method: "POST",
+        url: "/login/oauth/access_token",
+        payload: "code=test&client_id=test3&client_secret=test3&grant_type=authorization_code",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        }
+      };
+
+      s.inject(accessTokenRequest, function(response) {
+        Code.expect(response.statusCode).to.equal(403);
+        Code.expect(response.result.message).to.equal("Invalid Client Credentials");
         done();
       });
     });

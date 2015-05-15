@@ -3,11 +3,25 @@ module.exports = {
     {
       client_id: 'test',
       client_secret: 'test',
+      allowed_grants: [
+        'password',
+        'authorization_code'
+      ],
       redirect_uri: 'http://example.org/oauth_redirect'
     }, {
       client_id: 'test2',
       client_secret: 'test2',
-      redirect_uri: 'http://example2.org/oauth_redirect'
+      allowed_grants: [
+        'authorization_code'
+      ],
+      redirect_uri: 'http://example.org/2/oauth_redirect'
+    }, {
+      client_id: 'test3',
+      client_secret: 'test3',
+      allowed_grants: [
+        'password'
+      ],
+      redirect_uri: 'http://example.org/3/oauth_redirect'
     }
   ],
 

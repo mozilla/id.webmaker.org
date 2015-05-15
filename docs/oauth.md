@@ -202,6 +202,62 @@ To log out of id.webmaker.org, use the /logout route
 After a successfully clearing the session, you'll be redirected to the redirect_uri of the supplied client_id, with a `logout=true` in the search portion of the redirect URL
 
 e.g `https://example.org/oauth_redirect?logout=true`
+
+## Native Application Flow
+
+Native applications can use the password grant type to authenticate Webmaker users, without compromising their client_secret.
+Clients must be pre-approved to use this grant type.
+
+### 1. Request an access token
+
+Prompt the user to enter their username and password, and craft a request to:
+
+`POST https://id.webmaker.org/login/oauth/access_token`
+
+**Parameters**
+
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>client_id</td>
+    <td>The client ID you received when you registered your application.</td>
+  </tr>
+  <tr>
+    <td>grant_type</td>
+    <td>The grant_type must be set to "password".</td>
+  </tr>
+  <tr>
+    <td>uid</td>
+    <td>The webmaker user's username or email</td>
+  </tr>
+  <tr>
+    <td>password</td>
+    <td>The webmaker user's password</td>
+  </tr>
+  <tr>
+    <td>scopes</td>
+    <td>space delimited list of scopes to associate with the access_token</td>
+  </tr>
+</table>
+
+**Example**
+```
+POST https://id.webmaker.org/login/oauth/access_token
+Content-Type: application/x-www-form-urlencoded
+
+client_id=wm_id_BTQNPABtUqqApaDrcsDa&state=Nvqfc67z&uid=webmakerusername&password=users-pass-phrase&grant_type=password&scopes=required%20scopes
+```
+### 2. Use the access token to access the API
+
+To access the API using your access token, set the `Authorization` header for each request:
+
+```
+Authorization: token wm_token_rizCEigqRefeU8Na9JDmZJkzzQzgVZepHTWjiHbtQKsyotAqGZ
+```
+
 ## Scopes
 
 Scopes let you specify exactly what type of access you need. Scopes limit access for OAuth tokens.
@@ -215,4 +271,9 @@ Scopes let you specify exactly what type of access you need. Scopes limit access
     <td>user</td>
     <td>Grants read-only access to public information.</td>
   </tr>
+  <tr>
+    <td>projects</td>
+    <td>Grants write permissions to Webmaker projects, pages and elements owned by the user</td>
+  </tr>
 </table>
+
