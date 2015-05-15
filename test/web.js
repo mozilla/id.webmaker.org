@@ -1,3 +1,5 @@
+require("habitat").load("tests.env");
+
 var Code = require("code");
 var Lab = require("lab");
 var lab = exports.lab = Lab.script();
@@ -742,6 +744,7 @@ lab.experiment("OAuth", function() {
       url: "/login/oauth/authorize?client_id=test&scopes=user email&state=test",
       credentials: {
         username: "webmaker",
+        id: 1,
         email: "webmaker@example.org"
       }
     };
@@ -842,7 +845,7 @@ lab.experiment("OAuth", function() {
       s.inject(accessTokenRequest, function(response) {
         Code.expect(response.statusCode).to.equal(200);
         Code.expect(response.result.access_token).to.be.a.string();
-        Code.expect(response.result.scopes).to.equal("user");
+        Code.expect(response.result.scopes).to.contain("user");
         Code.expect(response.result.token_type).to.equal("token");
         done();
       });
@@ -854,7 +857,7 @@ lab.experiment("OAuth", function() {
       var accessTokenRequest = {
         method: "POST",
         url: "/login/oauth/access_token",
-        payload: "client_id=test&client_secret=test&grant_type=authorization_code&code=test",
+        payload: "client_id=test&client_secret=test&grant_type=authorization_code&code=test2",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         }
@@ -863,7 +866,7 @@ lab.experiment("OAuth", function() {
       s2.inject(accessTokenRequest, function(response) {
         Code.expect(response.statusCode).to.equal(200);
         Code.expect(response.result.access_token).to.be.a.string();
-        Code.expect(response.result.scopes).to.equal("user");
+        Code.expect(response.result.scopes).to.contain("user");
         Code.expect(response.result.token_type).to.equal("token");
         done();
       });
@@ -1051,7 +1054,7 @@ lab.experiment("OAuth", function() {
       s.inject(accessTokenRequest, function(response) {
         Code.expect(response.statusCode).to.equal(200);
         Code.expect(response.result.access_token).to.be.a.string();
-        Code.expect(response.result.scopes).to.equal("user projects");
+        Code.expect(response.result.scopes).to.contain("user", "projects");
         Code.expect(response.result.token_type).to.equal("token");
         done();
       });
