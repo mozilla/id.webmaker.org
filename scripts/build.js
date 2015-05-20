@@ -8,14 +8,8 @@ if ( process.env.NPM_CONFIG_PRODUCTION === 'true' ) {
   buildCommand = 'build';
 }
 
-var npm = spawn('npm', ['run', buildCommand]);
-
-npm.stdout.on('data', function(data) {
-  console.log( data.toString() );
-});
-
-npm.stderr.on('data', function (data) {
-  console.log( data.toString() );
+var npm = spawn('npm', ['run', buildCommand], {
+  stdio: 'inherit'
 });
 
 npm.on('close', function(code) {

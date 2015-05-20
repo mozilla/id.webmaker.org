@@ -12,7 +12,8 @@ var options = {
   cookieSecret: process.env.COOKIE_SECRET,
   secureCookies: process.env.SECURE_COOKIES === 'true',
   uri: process.env.URI,
-  enableCSRF: process.env.ENABLE_CSRF !== 'false'
+  enableCSRF: process.env.ENABLE_CSRF !== 'false',
+  debug: process.env.DEBUG === 'true' ? { request: ['error'] } : null
 };
 
 var server = require('./server')(options);

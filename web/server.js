@@ -164,11 +164,13 @@ module.exports = function(options) {
             assign: 'auth_code',
             method: function(request, reply) {
               var scopes = request.query.scopes;
-              var expiresAt = Date.now() + 60 * 1000;
+              var expiresAt = new Date(Date.now() + 60 * 1000).toISOString();
+
+              scopes = scopes.split(' ');
 
               oauthDb.generateAuthCode(
                 request.pre.client.client_id,
-                request.pre.user.username,
+                request.pre.user.id,
                 scopes,
                 expiresAt,
                 reply
@@ -253,6 +255,7 @@ module.exports = function(options) {
                 ) {
                   return reply(Boom.forbidden('Invalid Client Credentials'));
                 }
+
                 reply(client);
               });
             }
@@ -267,12 +270,11 @@ module.exports = function(options) {
                   }
 
                   reply({
-                    user_id: json.user.username,
-                    scopes: request.payload.scopes
+                    user_id: json.user.id,
+                    scopes: request.payload.scopes.split(' ')
                   });
                 });
               }
-
               oauthDb.verifyAuthCode(request.payload.code, request.pre.client.client_id, reply);
             }
           },
@@ -283,7 +285,6 @@ module.exports = function(options) {
                 request.pre.client.client_id,
                 request.pre.authCode.user_id,
                 request.pre.authCode.scopes,
-                Date.now() + (1000 * 60 * 60 * 24),
                 reply
               );
             }
@@ -292,8 +293,8 @@ module.exports = function(options) {
       },
       handler: function(request, reply) {
         var responseObj = {
-          access_token: request.pre.accessToken.access_token,
-          scopes: request.pre.accessToken.scopes,
+          access_token: request.pre.accessToken,
+          scopes: request.pre.authCode.scopes,
           token_type: 'token'
         };
 
@@ -485,7 +486,7 @@ module.exports = function(options) {
                   return reply(Boom.unauthorized('Expired token'));
                 }
 
-                var tokenScopes = token.scopes.split(' ');
+                var tokenScopes = token.scopes;
 
                 if ( tokenScopes.indexOf('user') === -1 && tokenScopes.indexOf('email') === -1 ) {
                   reply(Boom.unauthorized('The token does not have the required scopes'));
@@ -511,7 +512,7 @@ module.exports = function(options) {
       handler: function(request, reply) {
         var responseObj = Scopes.filterUserForScopes(
           request.pre.user,
-          request.pre.token.scopes.split(' ')
+          request.pre.token.scopes
         );
 
         reply(responseObj);

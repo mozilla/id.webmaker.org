@@ -18,6 +18,7 @@ module.exports = function() {
           return reply({
             user: {
               username: 'webmaker',
+              id: '1',
               email: 'webmaker@example.com'
             }
           })
@@ -112,20 +113,21 @@ module.exports = function() {
     },
     {
       method: 'GET',
-      path: '/user/username/{username}',
+      path: '/user/id/{id}',
       handler: function(request, reply) {
-        var username = request.params.username;
-        if ( username === 'test') {
+        var id = request.params.id;
+        if ( id === '1') {
           return reply({
             user: {
               username: 'test',
+              id: '1',
               email: 'test@example.com'
             }
           })
           .type('application/json');
         }
 
-        if ( username === 'jsonError' ) {
+        if ( id === 'jsonError' ) {
           return reply({
             error: 'Login API error'
           });
