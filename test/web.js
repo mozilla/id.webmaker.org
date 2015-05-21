@@ -760,6 +760,7 @@ lab.experiment("OAuth", function() {
       Code.expect(redirectUri.pathname).to.equal("/oauth_redirect");
       Code.expect(redirectUri.query.code).to.be.a.string();
       Code.expect(redirectUri.query.state).to.equal("test");
+      Code.expect(redirectUri.query.client_id).to.equal("test");
 
       done();
     });

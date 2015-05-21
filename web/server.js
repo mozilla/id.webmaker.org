@@ -185,6 +185,7 @@ module.exports = function(options) {
         redirectObj.search = null;
         redirectObj.query.code = request.pre.auth_code;
         redirectObj.query.state = state;
+        redirectObj.query.client_id = request.query.client_id;
         var redirectUri = url.format(redirectObj);
 
         reply.redirect(redirectUri);
