@@ -13,7 +13,8 @@ var options = {
   secureCookies: process.env.SECURE_COOKIES === 'true',
   uri: process.env.URI,
   enableCSRF: process.env.ENABLE_CSRF !== 'false',
-  debug: process.env.DEBUG === 'true' ? { request: ['error'] } : null
+  logging: process.env.LOGGING === 'true',
+  logLevel: process.env.LOG_LEVEL ? process.env.LOG_LEVEL : 'info'
 };
 
 var server = require('./server')(options);

@@ -27,10 +27,26 @@ module.exports = function(options) {
       }
     }
   });
+
+
   server.connection({
     host: options.host,
     port: options.port
   });
+
+  if ( options.logging ) {
+    server.register({
+      register: require('hapi-bunyan'),
+      options: {
+        logger: require('bunyan').createLogger({
+          name: 'id-webmaker-org',
+          level: options.logLevel
+        })
+      }
+    }, function(err) {
+      Hoek.assert(!err, err);
+    });
+  }
 
   server.register([
     require('hapi-auth-cookie'),

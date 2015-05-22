@@ -11,7 +11,6 @@ var url = require("url");
 
 lab.experiment("OAuth", function() {
   var s = server({
-    debug: false,
     loginAPI: "http://localhost:3232",
     cookieSecret: "test",
     oauth_clients: testCreds.clients,
@@ -21,7 +20,6 @@ lab.experiment("OAuth", function() {
   });
 
   var s2 = server({
-    debug: false,
     loginAPI: "http://localhost:3232",
     cookieSecret: "test",
     oauth_clients: testCreds.clients,
