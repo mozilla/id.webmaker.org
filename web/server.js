@@ -44,13 +44,7 @@ module.exports = function(options) {
         })
       }
     }, function(err) {
-      if ( err ) {
-        server.log('error', {
-          message: 'Error registering logger',
-          error: err
-        });
-        throw err;
-      }
+      Hoek.assert(!err, err);
     });
   }
 
