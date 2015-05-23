@@ -1303,6 +1303,7 @@ lab.experiment("OAuth", function() {
         Code.expect(response.result.username).to.equal("test");
         Code.expect(response.result.email).to.equal("test@example.com");
         Code.expect(response.result.scope).to.include(["user", "email"]);
+        Code.expect(response.result.client_id).to.equal("test");
         done();
       });
     });
@@ -1323,6 +1324,7 @@ lab.experiment("OAuth", function() {
         Code.expect(response.result.username).to.equal("test");
         Code.expect(response.result.email).to.equal("test@example.com");
         Code.expect(response.result.scope).to.include(["user", "email", "foo"]);
+        Code.expect(response.result.client_id).to.equal("test");
         done();
       });
     });

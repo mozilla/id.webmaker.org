@@ -532,6 +532,8 @@ module.exports = function(options) {
           request.pre.token.scopes
         );
 
+        responseObj.client_id = request.pre.token.client_id;
+
         reply(responseObj);
       }
     },
