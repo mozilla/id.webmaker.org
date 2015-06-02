@@ -379,6 +379,13 @@ module.exports = function(options) {
       path: '/create-user',
       config: {
         auth: false,
+        plugins: {
+          crumb: false
+        },
+        cors: {
+          methods: ['POST'],
+          matchOrigin: true
+        },
         validate: {
           payload: {
             username: Joi.string().regex(/^[a-zA-Z0-9\-]{1,20}$/).required(),

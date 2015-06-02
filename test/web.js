@@ -127,28 +127,6 @@ lab.experiment("OAuth", function() {
     });
   });
 
-  lab.test("POST Create User - without CSRF Token Headers returns 403", function(done) {
-    ls.start(function(error) {
-      Code.expect(error).to.be.undefined();
-      var request = {
-        method: "POST",
-        url: "/create-user",
-        payload: {
-          email: "webmaker@example.com",
-          username: "webmaker",
-          password: "CantGuessThis",
-          feedback: true,
-          client_id: "test"
-        }
-      };
-
-      s2.inject(request, function(response) {
-        Code.expect(response.statusCode).to.equal(403);
-        ls.stop(done);
-      });
-    });
-  });
-
   lab.test("POST Create User (invalid response)", function(done) {
     ls.start(function(error) {
       Code.expect(error).to.be.undefined();
