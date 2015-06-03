@@ -425,12 +425,6 @@ module.exports = function(options) {
             method: function(request, reply) {
               oauthDb.getClient(request.payload.client_id, reply);
             }
-          },
-          {
-            assign: 'isTeach',
-            method: function(request, reply) {
-              reply(!!request.pre.client.isTeach);
-            }
           }
         ]
       },
