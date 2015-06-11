@@ -5,4 +5,4 @@ module.exports = {
     digit: /\d/
   },
   username:  /^[a-zA-Z0-9\-]{1,20}$/
-}
+};

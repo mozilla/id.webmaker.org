@@ -66,7 +66,7 @@
     "isomorphic-fetch": "^2.0.1",
     "joi": "^6.0.8",
     "jsx-loader": "^0.12.2",
-    "pass-test": "0.0.5",
+    "pass-test": "1.0.3",
     "pg": "^4.3.0",
     "react": "^0.12.2",
     "react-ga": "^1.0.10",

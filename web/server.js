@@ -10,12 +10,11 @@ var Scopes = require('../lib/scopes');
 var PassTest = require('pass-test');
 
 var passTest = new PassTest({
-  specialChars: {
-    enabled: false
-  },
-  userValues: {
-    enabled: true
-  }
+  minLength: 8,
+  maxLength: 256,
+  minPhraseLength: 20,
+  minOptionalTestsToPass: 2,
+  allowPassphrases: true
 });
 
 module.exports = function(options) {
@@ -409,9 +408,9 @@ module.exports = function(options) {
             assign: 'password',
             method: function(request, reply) {
               var password = request.payload.password;
-              var result = passTest.test(password, [request.pre.username]);
+              var result = passTest.test(password);
 
-              if ( !result.passed ) {
+              if ( !result.strong ) {
                 var err = Boom.badRequest('Password not strong enough.', result);
                 err.output.payload.details = err.data;
                 return reply(err);
@@ -571,9 +570,9 @@ module.exports = function(options) {
                 return reply(Boom.badRequest('No password provided'));
               }
 
-              var result = passTest.test(password, [request.pre.username]);
+              var result = passTest.test(password);
 
-              if ( !result.passed ) {
+              if ( !result.strong ) {
                 return reply(Boom.badRequest('Password not strong enough'), result);
               }
 
