@@ -433,8 +433,8 @@ module.exports = function(options) {
             err.output.payload.data = err.data;
             return reply(err);
           }
-          if ( json.error ) {
-            return reply(Boom.badRequest(json.error, json.login_error));
+          if ( json.login_error ) {
+            return reply(Boom.badRequest(json.login_error));
           }
           request.auth.session.set(json.user);
           reply(json.user);
