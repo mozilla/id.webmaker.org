@@ -100,6 +100,22 @@ module.exports = function(options) {
     return true;
   }
 
+  function isUniqueError(fieldName, err) {
+    // SQLite and MariaDB/MySQL have conflicting error messages, and we don't know which DB the login server is using
+    if (
+      // SQLite
+      err.indexOf('Users.' + fieldName) !== -1 ||
+      (
+        // MariaDB/MySQL
+        err.indexOf('ER_DUP_ENTRY') !== -1 &&
+        err.indexOf(fieldName) !== -1
+      )
+    ) {
+      return true;
+    }
+    return false;
+  }
+
   server.register({
     register: require('crumb'),
     options: {
@@ -434,9 +450,9 @@ module.exports = function(options) {
             return reply(err);
           }
           if ( json.login_error ) {
-            if ( json.login_error.indexOf('Users.username') !== -1 ) {
+            if ( isUniqueError('username', json.login_error) ) {
               return reply(Boom.badRequest('That username is taken'));
-            } else if ( json.login_error.indexOf('Users.email') !== -1 ) {
+            } else if ( isUniqueError('email', json.login_error) ) {
               return reply(Boom.badRequest('An account exists for that email address'));
             }
             return reply(Boom.badRequest(json.login_error));
