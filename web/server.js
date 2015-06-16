@@ -436,7 +436,7 @@ module.exports = function(options) {
           if ( json.login_error ) {
             if ( json.login_error.indexOf('Users.username') !== -1 ) {
               return reply(Boom.badRequest('That username is taken'));
-            } else if( json.login_error.indexOf('Users.email') !== -1 ) {
+            } else if ( json.login_error.indexOf('Users.email') !== -1 ) {
               return reply(Boom.badRequest('An account exists for that email address'));
             }
             return reply(Boom.badRequest(json.login_error));
