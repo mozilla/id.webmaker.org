@@ -5,3 +5,4 @@ styles.css*
 public/tests/mocha*
 .env
 npm-debug*
+newrelic_agent.log

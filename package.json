@@ -66,6 +66,7 @@
     "isomorphic-fetch": "^2.0.1",
     "joi": "^6.0.8",
     "jsx-loader": "^0.12.2",
+    "newrelic": "^1.20.1",
     "pass-test": "1.0.3",
     "pg": "^4.3.0",
     "react": "^0.12.2",
