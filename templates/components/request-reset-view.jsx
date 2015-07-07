@@ -8,10 +8,10 @@ var API = require('../lib/api.jsx');
 
 var fields = [
   {
-    'username': {
-      'placeholder': 'Username',
+    'email': {
+      'placeholder': 'Email',
       'type': 'text',
-      'validator': 'username'
+      'validator': 'email'
     }
   }
 ];
@@ -31,11 +31,9 @@ var RequestResetPassword = React.createClass({
     WebmakerActions.deleteListener('FORM_VALIDATION', this.handleFormData);
   },
   render: function() {
-    var username = this.getQuery().username;
     return (
       <div className="requestPassword innerForm centerDiv">
-        <Form defaultUsername={username}
-              onInputBlur={this.handleBlur}
+        <Form onInputBlur={this.handleBlur}
               origin="Reset Password"
               ref="userform"
               fields={fields}
@@ -49,7 +47,7 @@ var RequestResetPassword = React.createClass({
     this.props.submitForm(data);
   },
   handleBlur: function(fieldName, value) {
-    if ( fieldName === 'username' && value ) {
+    if ( fieldName === 'email' && value ) {
       this.checkUsername(value);
     }
   },
