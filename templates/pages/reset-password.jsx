@@ -124,7 +124,7 @@ var ResetPassword = React.createClass({
         'X-CSRF-Token': csrfToken
       },
       body: JSON.stringify({
-        uid: data.email,
+        uid: data.username,
         oauth: Url.parse(window.location.href, true).query
       })
     }).then(function(response) {
