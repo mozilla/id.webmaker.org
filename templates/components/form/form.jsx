@@ -48,7 +48,8 @@ var Form = React.createClass({
   },
   getInitialState: function() {
     return {
-      username: this.props.defaultUsername || this.getQuery().username || this.getQuery().uid || '',
+      username: this.props.defaultUsername || this.getQuery().username || '',
+      uid: this.props.defaultUid || this.getQuery().uid || '',
       password: '',
       email: '',
       feedback: false,

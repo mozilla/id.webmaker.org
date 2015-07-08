@@ -34,7 +34,7 @@ var SetPasswordMigration = React.createClass({
             <p>Please create a password for your account.</p>
         </IconText>
         <div className="migrateKey innerForm">
-          <Form defaultUsername={this.props.username}
+          <Form defaultUsername={this.props.uid}
                 origin="Set password migration"
                 ref="userform"
                 fields={fields}

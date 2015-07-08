@@ -32,7 +32,7 @@ var UserMigration = React.createClass({
   },
   render: function() {
     var queryObj = this.getQuery();
-    var content = (<LoginNoPasswordForm ref="LoginNoPasswordForm" submitForm={this.handleSendToken} username={queryObj.username}/>);
+    var content = (<LoginNoPasswordForm ref="LoginNoPasswordForm" submitForm={this.handleSendToken} uid={queryObj.uid}/>);
     var continueLink = url.parse("/login/oauth/authorize");
     continueLink.query = queryObj;
 
@@ -68,7 +68,7 @@ var UserMigration = React.createClass({
     }
     var csrfToken = cookiejs.parse(document.cookie).crumb;
     var query = this.getQuery();
-    delete query.username;
+    delete query.uid;
 
     fetch('/request-migration-email', {
       method: "post",
@@ -79,7 +79,7 @@ var UserMigration = React.createClass({
         'X-CSRF-Token': csrfToken
       },
       body: JSON.stringify({
-        username: data.username,
+        uid: data.uid,
         oauth: query
       })
     }).then((response) => {
@@ -118,7 +118,7 @@ var UserMigration = React.createClass({
       },
       body: JSON.stringify({
         token: query.token,
-        username: query.uid,
+        uid: query.uid,
         password: data.password
       })
     }).then((response) => {

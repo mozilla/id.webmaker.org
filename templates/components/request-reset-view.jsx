@@ -47,7 +47,7 @@ var RequestResetPassword = React.createClass({
   },
   handleBlur: function(fieldName, value) {
     if ( fieldName === 'uid' && value ) {
-      this.checkUsername(value);
+      this.checkUid(value, fieldName);
     }
   },
   processFormData: function(e) {

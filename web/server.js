@@ -578,9 +578,9 @@ module.exports = function(options) {
         auth: false,
         pre: [
           {
-            assign: 'username',
+            assign: 'uid',
             method: function(request, reply) {
-              reply(request.payload.username);
+              reply(request.payload.uid);
             }
           },
           {
@@ -617,7 +617,7 @@ module.exports = function(options) {
             method: function(request, reply) {
               account.setPassword(
                 request,
-                request.pre.username,
+                request.pre.uid,
                 request.pre.password,
                 function(err, json) {
                   if ( err ) {
