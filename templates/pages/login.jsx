@@ -84,8 +84,8 @@ var Login = React.createClass({
   handleBlur: function(fieldName, value) {
     var userform = this.refs.userform;
     if ( fieldName === 'username' && value ) {
-      this.queryObj.username = value;
-      userform.checkUsername(value);
+      this.queryObj.uid = value;
+      userform.checkUid(value, fieldName);
     }
   },
   handleFormData: function(data) {

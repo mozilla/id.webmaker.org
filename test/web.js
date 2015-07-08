@@ -1428,7 +1428,7 @@ lab.experiment("OAuth", function() {
         method: "POST",
         url: "/request-migration-email",
         payload: {
-          username: "test",
+          uid: "test",
           oauth: {
             oauthy: "params"
           }
@@ -1452,7 +1452,7 @@ lab.experiment("OAuth", function() {
           "X-CSRF-Token": "02mke0occKoOiqFkr9MUYo9YnMellJE_0dPD6UowyeJ"
         },
         payload: {
-          username: "test",
+          uid: "test",
           oauth: {
             oauthy: "params"
           }
@@ -1472,7 +1472,7 @@ lab.experiment("OAuth", function() {
         method: "POST",
         url: "/request-migration-email",
         payload: {
-          username: "test",
+          uid: "test",
           oauth: {
             oauthy: "params"
           }
@@ -1492,7 +1492,7 @@ lab.experiment("OAuth", function() {
         method: "POST",
         url: "/request-migration-email",
         payload: {
-          username: "fakeuser",
+          uid: "fakeuser",
           oauth: {
             oauthy: "params"
           }
@@ -1512,7 +1512,7 @@ lab.experiment("OAuth", function() {
         method: "POST",
         url: "/migrate-user",
         payload: {
-          username: "test",
+          uid: "test",
           token: "kakav-nufuk",
           password: "Super-Duper-Strong-Passphrase-9001"
         }
@@ -1535,7 +1535,7 @@ lab.experiment("OAuth", function() {
           "X-CSRF-Token": "02mke0occKoOiqFkr9MUYo9YnMellJE_0dPD6UowyeJ"
         },
         payload: {
-          username: "test",
+          uid: "test",
           token: "kakav-nufuk",
           password: "Super-Duper-Strong-Passphrase-9001"
         }
@@ -1554,7 +1554,7 @@ lab.experiment("OAuth", function() {
         method: "POST",
         url: "/migrate-user",
         payload: {
-          username: "test",
+          uid: "test",
           token: "kakav-nufuk",
           password: "Super-Duper-Strong-Passphrase-9001"
         }
@@ -1573,7 +1573,7 @@ lab.experiment("OAuth", function() {
         method: "POST",
         url: "/migrate-user",
         payload: {
-          username: "fake",
+          uid: "fake",
           token: "kakav-nufuk",
           password: "Super-Duper-Strong-Passphrase-9001"
         }
@@ -1592,7 +1592,7 @@ lab.experiment("OAuth", function() {
         method: "POST",
         url: "/migrate-user",
         payload: {
-          username: "test",
+          uid: "test",
           token: "nufuk-kakav",
           password: "Super-Duper-Strong-Passphrase-9001"
         }
@@ -1611,7 +1611,7 @@ lab.experiment("OAuth", function() {
         method: "POST",
         url: "/migrate-user",
         payload: {
-          username: "test",
+          uid: "test",
           token: "nufuk-kakav"
         }
       };
@@ -1629,7 +1629,7 @@ lab.experiment("OAuth", function() {
         method: "POST",
         url: "/migrate-user",
         payload: {
-          username: "test",
+          uid: "test",
           token: "nufuk-kakav",
           password: "password"
         }
@@ -1648,7 +1648,7 @@ lab.experiment("OAuth", function() {
         method: "POST",
         url: "/migrate-user",
         payload: {
-          username: "test",
+          uid: "test",
           token: "kakav-nufuk",
           password: "Super-Duper-Strong-Passphrase-9002"
         }

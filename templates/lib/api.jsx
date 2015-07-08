@@ -11,7 +11,7 @@ require('isomorphic-fetch');
 
 var csrfToken = cookiejs.parse(document.cookie).crumb;
 module.exports = {
-  checkUsername: function(username) {
+  checkUid: function(uid, fieldName) {
     fetch('/check-username', {
       method: 'post',
       credentials: 'same-origin',
@@ -21,7 +21,7 @@ module.exports = {
         'X-CSRF-Token': csrfToken
       },
       body: JSON.stringify({
-        uid: username
+        uid: uid
       })
     }).then((response) => {
       return response.json();
@@ -29,16 +29,16 @@ module.exports = {
       var query;
       var currentPath = this.getPathname().replace(/\/$/, "");
       query = this.getQuery();
-      query.username = username;
+      query.uid = uid;
       if(json.statusCode === 404 && currentPath !== '/signup') {
         // user not found do something here!
-        WebmakerActions.displayError({'field': 'username', 'message': 'Whoops! We can\'t find an account with that username!'});
+        WebmakerActions.displayError({'field': fieldName, 'message': 'Whoops! We can\'t find an account with that username!'});
 
       } else if (json.exists && currentPath === '/signup') {
-        WebmakerActions.displayError({'field': 'username', 'message': 'Username is taken!'});
+        WebmakerActions.displayError({'field': fieldName, 'message': 'Username is taken!'});
 
       } else if (!json.exists) {
-        WebmakerActions.validField({'field': 'username', 'message': 'Available'});
+        WebmakerActions.validField({'field': fieldName, 'message': 'Available'});
 
       } else if ( json.usePasswordLogin && currentPath !== '/login'
                                         && currentPath !== '/reset-password'
@@ -49,7 +49,7 @@ module.exports = {
         this.transitionTo('/migrate', '', query );
 
       } else if (currentPath === '/login'){
-        WebmakerActions.validField({'field': 'username', 'message': 'Available'});
+        WebmakerActions.validField({'field': fieldName, 'message': 'Available'});
       }
     }).catch((ex) => {
       console.error("Request failed", ex);

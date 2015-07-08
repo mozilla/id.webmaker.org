@@ -93,7 +93,7 @@ var ResetPassword = React.createClass({
         redirectObj = Url.parse('/login', true);
         redirectObj.query.client_id = queryObj.client_id;
         redirectObj.query.state = queryObj.state;
-        redirectObj.query.username = queryObj.username;
+        redirectObj.query.uid = queryObj.username;
         redirectObj.query.response_type = queryObj.response_type;
         redirectObj.query.scopes = queryObj.scopes;
         window.location = Url.format(redirectObj);
@@ -124,7 +124,7 @@ var ResetPassword = React.createClass({
         'X-CSRF-Token': csrfToken
       },
       body: JSON.stringify({
-        uid: data.username,
+        uid: data.uid,
         oauth: Url.parse(window.location.href, true).query
       })
     }).then(function(response) {

@@ -104,7 +104,7 @@ var Signup = React.createClass({
       userform.checkEmail(value);
     }
     if( fieldName === 'username' && value ) {
-      userform.checkUsername(value);
+      userform.checkUid(value, fieldName);
     }
     if( fieldName === 'password' && value ) {
       userform.validatePassword(value);
