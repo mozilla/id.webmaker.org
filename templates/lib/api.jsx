@@ -28,11 +28,12 @@ module.exports = {
     }).then((json) => {
       var query;
       var currentPath = this.getPathname().replace(/\/$/, "");
+      var type = regex.email.test(uid) ? 'email address' : 'username';
       query = this.getQuery();
       query.uid = uid;
       if(json.statusCode === 404 && currentPath !== '/signup') {
         // user not found do something here!
-        WebmakerActions.displayError({'field': fieldName, 'message': 'Whoops! We can\'t find an account with that username!'});
+        WebmakerActions.displayError({'field': fieldName, 'message': 'Whoops! We can\'t find an account with that ' + type + '!'});
 
       } else if (json.exists && currentPath === '/signup') {
         WebmakerActions.displayError({'field': fieldName, 'message': 'Username is taken!'});
