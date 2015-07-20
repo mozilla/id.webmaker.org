@@ -84,7 +84,8 @@ lab.experiment("OAuth", function() {
           username: "webmaker",
           password: "CantGuessThis1234",
           feedback: true,
-          client_id: "test"
+          client_id: "test",
+          lang: "en-US"
         }
       };
 
@@ -113,7 +114,8 @@ lab.experiment("OAuth", function() {
           username: "webmaker",
           password: "CantGuessThis123",
           feedback: true,
-          client_id: "test"
+          client_id: "test",
+          lang: "en-US"
         }
       };
 
@@ -138,7 +140,8 @@ lab.experiment("OAuth", function() {
           username: "invalidResponse",
           password: "CantGuessThis1234",
           feedback: true,
-          client_id: "test"
+          client_id: "test",
+          lang: "en-US"
         }
       };
 
@@ -160,7 +163,8 @@ lab.experiment("OAuth", function() {
           username: "notgonnawork",
           password: "CantGuessThis1234",
           feedback: true,
-          client_id: "test"
+          client_id: "test",
+          lang: "en-US"
         }
       };
 
@@ -184,7 +188,8 @@ lab.experiment("OAuth", function() {
             username: "weakpass",
             password: "password",
             feedback: true,
-            client_id: "test"
+            client_id: "test",
+            lang: "en-US"
           }
         };
 
@@ -209,7 +214,8 @@ lab.experiment("OAuth", function() {
             username: "webmaker",
             password: "CantGuessThis",
             feedback: true,
-            client_id: "test"
+            client_id: "test",
+            lang: "en-US"
           }
         };
 
@@ -233,7 +239,8 @@ lab.experiment("OAuth", function() {
             email: "webmaker@example.com",
             password: "CantGuessThis",
             feedback: true,
-            client_id: "test"
+            client_id: "test",
+            lang: "en-US"
           }
         };
 
@@ -257,7 +264,8 @@ lab.experiment("OAuth", function() {
             email: "webmaker@example.com",
             username: "webmaker",
             feedback: true,
-            client_id: "test"
+            client_id: "test",
+            lang: "en-US"
           }
         };
 
@@ -281,7 +289,8 @@ lab.experiment("OAuth", function() {
             email: "webmaker@example.com",
             username: "webmaker",
             password: "CantGuessThis",
-            client_id: "test"
+            client_id: "test",
+            lang: "en-US"
           }
         };
 

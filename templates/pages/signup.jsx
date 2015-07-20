@@ -137,7 +137,8 @@ var Signup = React.createClass({
         username: data.username,
         password: data.password,
         feedback: data.feedback,
-        client_id: queryObj.client_id
+        client_id: queryObj.client_id,
+        lang: navigator.language
       })
     }).then(function(response) {
       var redirectObj;
