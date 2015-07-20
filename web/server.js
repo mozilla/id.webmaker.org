@@ -407,7 +407,8 @@ module.exports = function(options) {
             email: Joi.string().email().required(),
             password: Joi.string().regex(/^\S{8,128}$/).required(),
             feedback: Joi.boolean().required(),
-            client_id: Joi.string().required()
+            client_id: Joi.string().required(),
+            lang: Joi.string().required()
           },
           failAction: function(request, reply, source, error) {
             reply(Boom.badRequest('invalid ' + source + ': ' + error.data.details[0].path));
