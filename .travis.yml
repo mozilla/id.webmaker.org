@@ -11,12 +11,20 @@ addons:
 before_script:
   - psql -c 'create database webmaker_oauth_test' -U postgres
 deploy:
-  provider: heroku
-  api_key:
-    secure: EHR0LkLGbGQ3mu11uLw16Bugdipjd236Yniw45ibbpdi2XQq0uBz3pX5ufSbh3Sa/yeJNJ1li2u8+yTGHdWBbuTuHTyMkuSqbs8bq1O4viwcCFcpB3tE16hChuvd7S6MFYXhYdjFlPH32tBepaNw+2VNE3eGa016UV2KUEsG+ac=
-  app:
-    develop: id-webmaker-org-staging
-    master: id-webmaker-org-production
-  on:
-    repo: mozilla/id.webmaker.org
-    node: '0.12'
+  - provider: heroku
+    api_key:
+      secure: cHZklHQUmzKbHcegrMPz/j+58mXjDVV2Xm5vTlvwoJyiEmzMg9ZT0U0PB2GJx/iHg+ubPKeKcoUBJavkw2PkgvwdLh5DvAIMyF5TDu2lIBVhLDPjzifkFLb59jUFMtJ5iYSSnilObf4QOqjNFXR8CXXC4YTC5/roE8k8fl+rWzs=
+    app:
+      develop: id-webmaker-org-staging
+      master: id-webmaker-org-production
+    on:
+      repo: mozilla/id.webmaker.org
+      node: '0.12'
+  - provider: heroku
+    api_key:
+      secure: cHZklHQUmzKbHcegrMPz/j+58mXjDVV2Xm5vTlvwoJyiEmzMg9ZT0U0PB2GJx/iHg+ubPKeKcoUBJavkw2PkgvwdLh5DvAIMyF5TDu2lIBVhLDPjzifkFLb59jUFMtJ5iYSSnilObf4QOqjNFXR8CXXC4YTC5/roE8k8fl+rWzs=
+    app:
+      develop: id-webmaker-org-loadtesting
+    on:
+      repo: mozilla/id.webmaker.org
+      node: '0.12'
