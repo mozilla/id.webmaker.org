@@ -87,7 +87,8 @@ module.exports = function() {
           return reply({
             user: {
               username: 'webmaker',
-              email: 'webmaker@example.com'
+              email: 'webmaker@example.com',
+              prefLocale: payload.user.prefLocale || 'en-US'
             }
           })
           .type('application/json');
