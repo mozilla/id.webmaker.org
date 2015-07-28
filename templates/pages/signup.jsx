@@ -104,7 +104,7 @@ var Signup = React.createClass({
       userform.checkEmail(value);
     }
     if( fieldName === 'username' && value ) {
-      userform.checkUsername(value);
+      userform.checkUid(value, fieldName);
     }
     if( fieldName === 'password' && value ) {
       userform.validatePassword(value);
@@ -137,7 +137,8 @@ var Signup = React.createClass({
         username: data.username,
         password: data.password,
         feedback: data.feedback,
-        client_id: queryObj.client_id
+        client_id: queryObj.client_id,
+        lang: navigator.language
       })
     }).then(function(response) {
       var redirectObj;

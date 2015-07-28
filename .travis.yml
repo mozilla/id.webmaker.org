@@ -27,4 +27,3 @@ deploy:
       develop: id-webmaker-org-loadtesting
     on:
       repo: mozilla/id.webmaker.org
-      node: '0.12'

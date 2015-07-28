@@ -8,10 +8,10 @@ var WebmakerActions = require('../lib/webmaker-actions.jsx');
 
 var fields = [
   {
-    'username': {
-      'placeholder': 'Username',
+    'uid': {
+      'placeholder': 'Username or Email',
       'type': 'text',
-      'validator': 'username'
+      'validator': 'uid'
     }
   }
 ];
@@ -45,7 +45,7 @@ var LoginNoPassword = React.createClass({
               ref="userform"
               fields={fields}
               validators={fieldsValidators}
-              defaultUsername={this.props.username}
+              defaultUid={this.props.uid}
         />
         <button type="submit" onClick={this.processFormData} className="btn btn-awsm">Continue</button>
         </div>
@@ -60,8 +60,8 @@ var LoginNoPassword = React.createClass({
     form.processFormData(e);
   },
   handleBlur: function(fieldName, value) {
-    if ( fieldName === 'username' && value ) {
-      this.checkUsername(value);
+    if ( fieldName === 'uid' && value ) {
+      this.checkUid(value, fieldName);
     }
   }
 });

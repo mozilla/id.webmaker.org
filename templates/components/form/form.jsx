@@ -1,3 +1,5 @@
+/* jshint esnext: true */
+
 var React = require('react/addons');
 var ValidationMixin = require('react-validation-mixin');
 var ga = require('react-ga');
@@ -19,7 +21,8 @@ var Form = React.createClass({
         'email':    'icon-label-email',
         'error':    'icon-label-error',
         'valid':    'icon-label-valid',
-        'key':      'icon-label-password'
+        'uid':      'icon-label-username',
+        'key':      'icon-label-password',
       }
   },
   mixins: [
@@ -45,7 +48,8 @@ var Form = React.createClass({
   },
   getInitialState: function() {
     return {
-      username: this.props.defaultUsername || this.getQuery().username || this.getQuery().uid || '',
+      username: this.props.defaultUsername || this.getQuery().username || '',
+      uid: this.props.defaultUid || this.getQuery().uid || '',
       password: '',
       email: '',
       feedback: false,
@@ -55,7 +59,8 @@ var Form = React.createClass({
       valid_username: true,
       valid_password: true,
       valid_feedback: true,
-      valid_email: true
+      valid_email: true,
+      valid_uid: true
     };
   },
   setFormState: function(data) {
@@ -78,25 +83,29 @@ var Form = React.createClass({
   dirty: function(id, origin) {
     return (err, valid) => {
       if(err) {
+        if ( id === 'uid' && this.state[id] ) {
+          this.formError({field: id, message: 'Please enter a valid email address or username'});
+          return;
+        }
         if(id === 'username' && this.state[id]) {
-          this.formError({field: 'username', message: 'Must be 1-20 characters long and use only "-" and alphanumeric symbols.'});
+          this.formError({field: id, message: 'Must be 1-20 characters long and use only "-" and alphanumeric symbols.'});
           // preventing any message to override this error message.
           return;
         }
         if(id === 'email') {
-          this.formError({field: 'email', message: 'Please use a valid email address.'});
+          this.formError({field: id, message: 'Please use a valid email address.'});
         }
         if(id === 'password' && !this.state[id]) {
-          this.formError({field: 'password', message: 'Please specify a password.'});
+          this.formError({field: id, message: 'Please specify a password.'});
         }
         ga.event({category: origin, action: 'Validation Error', label: 'Error on ' + id + ' field.'});
       }
-      if(!err && id === 'email') {
-        this.setFormState({field: 'email'});
+      if(!err && ['email', 'uid'].indexOf(id) >= 0 ) {
+        this.setFormState({field: id});
       }
 
       if(id === 'password' && this.state[id] && err) {
-        this.setFormState({field: 'password'});
+        this.setFormState({field: id});
       }
       this.handleBlur(id, this.state[id])
     }

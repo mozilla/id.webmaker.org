@@ -407,7 +407,8 @@ module.exports = function(options) {
             email: Joi.string().email().required(),
             password: Joi.string().regex(/^\S{8,128}$/).required(),
             feedback: Joi.boolean().required(),
-            client_id: Joi.string().required()
+            client_id: Joi.string().required(),
+            lang: Joi.string().default('en-US')
           },
           failAction: function(request, reply, source, error) {
             reply(Boom.badRequest('invalid ' + source + ': ' + error.data.details[0].path));
@@ -578,9 +579,9 @@ module.exports = function(options) {
         auth: false,
         pre: [
           {
-            assign: 'username',
+            assign: 'uid',
             method: function(request, reply) {
-              reply(request.payload.username);
+              reply(request.payload.uid);
             }
           },
           {
@@ -617,7 +618,7 @@ module.exports = function(options) {
             method: function(request, reply) {
               account.setPassword(
                 request,
-                request.pre.username,
+                request.pre.uid,
                 request.pre.password,
                 function(err, json) {
                   if ( err ) {

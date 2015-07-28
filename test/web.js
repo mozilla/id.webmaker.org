@@ -84,7 +84,8 @@ lab.experiment("OAuth", function() {
           username: "webmaker",
           password: "CantGuessThis1234",
           feedback: true,
-          client_id: "test"
+          client_id: "test",
+          lang: "en-US"
         }
       };
 
@@ -113,6 +114,36 @@ lab.experiment("OAuth", function() {
           username: "webmaker",
           password: "CantGuessThis123",
           feedback: true,
+          client_id: "test",
+          lang: "en-US"
+        }
+      };
+
+      s2.inject(request, function(response) {
+        Code.expect(response.statusCode).to.equal(200);
+        Code.expect(response.headers["set-cookie"]).to.exist();
+        Code.expect(response.result.email).to.equal("webmaker@example.com");
+        Code.expect(response.result.username).to.equal("webmaker");
+        ls.stop(done);
+      });
+    });
+  });
+
+  lab.test("POST Create User without lang attribute defaults to en-US", function(done) {
+    ls.start(function(error) {
+      Code.expect(error).to.be.undefined();
+      var request = {
+        method: "POST",
+        url: "/create-user",
+        headers: {
+          "Cookie": "crumb=02mke0occKoOiqFkr9MUYo9YnMellJE_0dPD6UowyeJ",
+          "X-CSRF-Token": "02mke0occKoOiqFkr9MUYo9YnMellJE_0dPD6UowyeJ"
+        },
+        payload: {
+          email: "webmaker@example.com",
+          username: "webmaker",
+          password: "CantGuessThis123",
+          feedback: true,
           client_id: "test"
         }
       };
@@ -122,6 +153,38 @@ lab.experiment("OAuth", function() {
         Code.expect(response.headers["set-cookie"]).to.exist();
         Code.expect(response.result.email).to.equal("webmaker@example.com");
         Code.expect(response.result.username).to.equal("webmaker");
+        Code.expect(response.result.prefLocale).to.equal("en-US");
+        ls.stop(done);
+      });
+    });
+  });
+
+  lab.test("POST Create User with lang attribute set", function(done) {
+    ls.start(function(error) {
+      Code.expect(error).to.be.undefined();
+      var request = {
+        method: "POST",
+        url: "/create-user",
+        headers: {
+          "Cookie": "crumb=02mke0occKoOiqFkr9MUYo9YnMellJE_0dPD6UowyeJ",
+          "X-CSRF-Token": "02mke0occKoOiqFkr9MUYo9YnMellJE_0dPD6UowyeJ"
+        },
+        payload: {
+          email: "webmaker@example.com",
+          username: "webmaker",
+          password: "CantGuessThis123",
+          feedback: true,
+          client_id: "test",
+          lang: "it-CH"
+        }
+      };
+
+      s2.inject(request, function(response) {
+        Code.expect(response.statusCode).to.equal(200);
+        Code.expect(response.headers["set-cookie"]).to.exist();
+        Code.expect(response.result.email).to.equal("webmaker@example.com");
+        Code.expect(response.result.username).to.equal("webmaker");
+        Code.expect(response.result.prefLocale).to.equal("it-CH");
         ls.stop(done);
       });
     });
@@ -138,7 +201,8 @@ lab.experiment("OAuth", function() {
           username: "invalidResponse",
           password: "CantGuessThis1234",
           feedback: true,
-          client_id: "test"
+          client_id: "test",
+          lang: "en-US"
         }
       };
 
@@ -160,7 +224,8 @@ lab.experiment("OAuth", function() {
           username: "notgonnawork",
           password: "CantGuessThis1234",
           feedback: true,
-          client_id: "test"
+          client_id: "test",
+          lang: "en-US"
         }
       };
 
@@ -184,7 +249,8 @@ lab.experiment("OAuth", function() {
             username: "weakpass",
             password: "password",
             feedback: true,
-            client_id: "test"
+            client_id: "test",
+            lang: "en-US"
           }
         };
 
@@ -209,7 +275,8 @@ lab.experiment("OAuth", function() {
             username: "webmaker",
             password: "CantGuessThis",
             feedback: true,
-            client_id: "test"
+            client_id: "test",
+            lang: "en-US"
           }
         };
 
@@ -233,7 +300,8 @@ lab.experiment("OAuth", function() {
             email: "webmaker@example.com",
             password: "CantGuessThis",
             feedback: true,
-            client_id: "test"
+            client_id: "test",
+            lang: "en-US"
           }
         };
 
@@ -257,7 +325,8 @@ lab.experiment("OAuth", function() {
             email: "webmaker@example.com",
             username: "webmaker",
             feedback: true,
-            client_id: "test"
+            client_id: "test",
+            lang: "en-US"
           }
         };
 
@@ -281,7 +350,8 @@ lab.experiment("OAuth", function() {
             email: "webmaker@example.com",
             username: "webmaker",
             password: "CantGuessThis",
-            client_id: "test"
+            client_id: "test",
+            lang: "en-US"
           }
         };
 
@@ -1428,7 +1498,7 @@ lab.experiment("OAuth", function() {
         method: "POST",
         url: "/request-migration-email",
         payload: {
-          username: "test",
+          uid: "test",
           oauth: {
             oauthy: "params"
           }
@@ -1452,7 +1522,7 @@ lab.experiment("OAuth", function() {
           "X-CSRF-Token": "02mke0occKoOiqFkr9MUYo9YnMellJE_0dPD6UowyeJ"
         },
         payload: {
-          username: "test",
+          uid: "test",
           oauth: {
             oauthy: "params"
           }
@@ -1472,7 +1542,7 @@ lab.experiment("OAuth", function() {
         method: "POST",
         url: "/request-migration-email",
         payload: {
-          username: "test",
+          uid: "test",
           oauth: {
             oauthy: "params"
           }
@@ -1492,7 +1562,7 @@ lab.experiment("OAuth", function() {
         method: "POST",
         url: "/request-migration-email",
         payload: {
-          username: "fakeuser",
+          uid: "fakeuser",
           oauth: {
             oauthy: "params"
           }
@@ -1512,7 +1582,7 @@ lab.experiment("OAuth", function() {
         method: "POST",
         url: "/migrate-user",
         payload: {
-          username: "test",
+          uid: "test",
           token: "kakav-nufuk",
           password: "Super-Duper-Strong-Passphrase-9001"
         }
@@ -1535,7 +1605,7 @@ lab.experiment("OAuth", function() {
           "X-CSRF-Token": "02mke0occKoOiqFkr9MUYo9YnMellJE_0dPD6UowyeJ"
         },
         payload: {
-          username: "test",
+          uid: "test",
           token: "kakav-nufuk",
           password: "Super-Duper-Strong-Passphrase-9001"
         }
@@ -1554,7 +1624,7 @@ lab.experiment("OAuth", function() {
         method: "POST",
         url: "/migrate-user",
         payload: {
-          username: "test",
+          uid: "test",
           token: "kakav-nufuk",
           password: "Super-Duper-Strong-Passphrase-9001"
         }
@@ -1573,7 +1643,7 @@ lab.experiment("OAuth", function() {
         method: "POST",
         url: "/migrate-user",
         payload: {
-          username: "fake",
+          uid: "fake",
           token: "kakav-nufuk",
           password: "Super-Duper-Strong-Passphrase-9001"
         }
@@ -1592,7 +1662,7 @@ lab.experiment("OAuth", function() {
         method: "POST",
         url: "/migrate-user",
         payload: {
-          username: "test",
+          uid: "test",
           token: "nufuk-kakav",
           password: "Super-Duper-Strong-Passphrase-9001"
         }
@@ -1611,7 +1681,7 @@ lab.experiment("OAuth", function() {
         method: "POST",
         url: "/migrate-user",
         payload: {
-          username: "test",
+          uid: "test",
           token: "nufuk-kakav"
         }
       };
@@ -1629,7 +1699,7 @@ lab.experiment("OAuth", function() {
         method: "POST",
         url: "/migrate-user",
         payload: {
-          username: "test",
+          uid: "test",
           token: "nufuk-kakav",
           password: "password"
         }
@@ -1648,7 +1718,7 @@ lab.experiment("OAuth", function() {
         method: "POST",
         url: "/migrate-user",
         payload: {
-          username: "test",
+          uid: "test",
           token: "kakav-nufuk",
           password: "Super-Duper-Strong-Passphrase-9002"
         }
