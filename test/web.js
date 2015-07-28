@@ -129,6 +129,67 @@ lab.experiment("OAuth", function() {
     });
   });
 
+  lab.test("POST Create User without lang attribute defaults to en-US", function(done) {
+    ls.start(function(error) {
+      Code.expect(error).to.be.undefined();
+      var request = {
+        method: "POST",
+        url: "/create-user",
+        headers: {
+          "Cookie": "crumb=02mke0occKoOiqFkr9MUYo9YnMellJE_0dPD6UowyeJ",
+          "X-CSRF-Token": "02mke0occKoOiqFkr9MUYo9YnMellJE_0dPD6UowyeJ"
+        },
+        payload: {
+          email: "webmaker@example.com",
+          username: "webmaker",
+          password: "CantGuessThis123",
+          feedback: true,
+          client_id: "test"
+        }
+      };
+
+      s2.inject(request, function(response) {
+        Code.expect(response.statusCode).to.equal(200);
+        Code.expect(response.headers["set-cookie"]).to.exist();
+        Code.expect(response.result.email).to.equal("webmaker@example.com");
+        Code.expect(response.result.username).to.equal("webmaker");
+        Code.expect(response.result.prefLocale).to.equal("en-US");
+        ls.stop(done);
+      });
+    });
+  });
+
+  lab.test("POST Create User with lang attribute set", function(done) {
+    ls.start(function(error) {
+      Code.expect(error).to.be.undefined();
+      var request = {
+        method: "POST",
+        url: "/create-user",
+        headers: {
+          "Cookie": "crumb=02mke0occKoOiqFkr9MUYo9YnMellJE_0dPD6UowyeJ",
+          "X-CSRF-Token": "02mke0occKoOiqFkr9MUYo9YnMellJE_0dPD6UowyeJ"
+        },
+        payload: {
+          email: "webmaker@example.com",
+          username: "webmaker",
+          password: "CantGuessThis123",
+          feedback: true,
+          client_id: "test",
+          lang: "it-CH"
+        }
+      };
+
+      s2.inject(request, function(response) {
+        Code.expect(response.statusCode).to.equal(200);
+        Code.expect(response.headers["set-cookie"]).to.exist();
+        Code.expect(response.result.email).to.equal("webmaker@example.com");
+        Code.expect(response.result.username).to.equal("webmaker");
+        Code.expect(response.result.prefLocale).to.equal("it-CH");
+        ls.stop(done);
+      });
+    });
+  });
+
   lab.test("POST Create User (invalid response)", function(done) {
     ls.start(function(error) {
       Code.expect(error).to.be.undefined();
