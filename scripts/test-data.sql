@@ -1,7 +1,7 @@
 INSERT INTO clients VALUES
-  ('test', 'test', '["password", "authorization_code"]'::jsonb, 'http://example.org/oauth_redirect' ),
-  ('test2', 'test2', '["authorization_code"]'::jsonb, 'http://example.org/2/oauth_redirect' ),
-  ('test3', 'test3', '["password"]'::jsonb, 'http://example.org/3/oauth_redirect' );
+  ('test', 'test', '["password", "authorization_code"]'::jsonb, '["code", "token"]'::JSONB, 'http://example.org/oauth_redirect' ),
+  ('test2', 'test2', '["authorization_code"]'::jsonb, '["code"]'::JSONB, 'http://example.org/2/oauth_redirect' ),
+  ('test3', 'test3', '["password"]'::jsonb, '["token"]'::JSONB, 'http://example.org/3/oauth_redirect' );
 
 INSERT INTO auth_codes VALUES
   -- 'test'

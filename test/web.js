@@ -784,10 +784,10 @@ lab.experiment("OAuth", function() {
     });
   });
 
-  lab.test("GET authorize", function(done) {
+  lab.test("GET authorize (response_type=code)", function(done) {
     var request = {
       method: "GET",
-      url: "/login/oauth/authorize?client_id=test&scopes=user email&state=test",
+      url: "/login/oauth/authorize?client_id=test&scopes=user email&state=test&response_type=code",
       credentials: {
         username: "webmaker",
         id: 1,
@@ -812,6 +812,68 @@ lab.experiment("OAuth", function() {
     });
   });
 
+  lab.test("GET authorize (response_type=token)", function(done) {
+    var request = {
+      method: "GET",
+      url: "/login/oauth/authorize?client_id=test&scopes=user email&response_type=token&state=test",
+      credentials: {
+        username: "webmaker",
+        id: 1,
+        email: "webmaker@example.org"
+      }
+    };
+
+    s.inject(request, function(response) {
+      Code.expect(response.statusCode).to.equal(302);
+      Code.expect(response.headers.location).to.exist();
+
+      var redirectUri = url.parse(response.headers.location, true);
+
+      Code.expect(redirectUri.protocol).to.equal("http:");
+      Code.expect(redirectUri.host).to.equal("example.org");
+      Code.expect(redirectUri.pathname).to.equal("/oauth_redirect");
+      Code.expect(redirectUri.hash).to.startWith("#token=");
+
+      done();
+    });
+  });
+
+  lab.test("GET authorize (response_type=token), client not allowed to use", function(done) {
+    var request = {
+      method: "GET",
+      url: "/login/oauth/authorize?client_id=test2&scopes=user email&state=test&response_type=token",
+      credentials: {
+        username: "webmaker",
+        id: 1,
+        email: "webmaker@example.org"
+      }
+    };
+
+    s.inject(request, function(response) {
+      Code.expect(response.statusCode).to.equal(403);
+
+      done();
+    });
+  });
+
+  lab.test("GET authorize (response_type=code), client not allowed to use", function(done) {
+    var request = {
+      method: "GET",
+      url: "/login/oauth/authorize?client_id=test3&scopes=user email&state=test&response_type=code",
+      credentials: {
+        username: "webmaker",
+        id: 1,
+        email: "webmaker@example.org"
+      }
+    };
+
+    s.inject(request, function(response) {
+      console.log(response.result);
+      Code.expect(response.statusCode).to.equal(403);
+
+      done();
+    });
+  });
 
   lab.test("GET authorize - no session", function(done) {
     var request = {
@@ -863,7 +925,7 @@ lab.experiment("OAuth", function() {
   lab.test("GET authorize - invalid client_id", function(done) {
     var request = {
       method: "GET",
-      url: "/login/oauth/authorize?uid=webmaker&password=password&client_id=invalid&scopes=user&state=test",
+      url: "/login/oauth/authorize?client_id=invalid&response_type=code&scopes=user&state=test",
       credentials: {
         username: "webmaker",
         email: "webmaker@example.org"

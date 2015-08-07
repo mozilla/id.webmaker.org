@@ -60,7 +60,7 @@ To start the web application flow you need to redirect your users browser to Web
 
 **Example**
 
-`GET https://id.webmaker.org/login/oauth/authorize?client_id=wm_id_BTQNPABtUqqApaDrcsDa&response_type=code&scope=user&state=Nvqfc67z`
+`GET https://id.webmaker.org/login/oauth/authorize?client_id=wm_id_BTQNPABtUqqApaDrcsDa&response_type=code&scopes=user&state=Nvqfc67z`
 
 ### 2. Webmaker redirects back to your application
 
@@ -257,6 +257,55 @@ To access the API using your access token, set the `Authorization` header for ea
 ```
 Authorization: token wm_token_rizCEigqRefeU8Na9JDmZJkzzQzgVZepHTWjiHbtQKsyotAqGZ
 ```
+
+## Single Page Web App Flow
+
+Single page web apps that don't have a web server backing them can make use of this flow.
+
+To start this flow you need to redirect your users browser to Webmaker.
+
+`GET https://id.webmaker.org/login/oauth/authorize`
+
+**Parameters**
+
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>client_id</td>
+    <td>The client ID you received when you registered your application.</td>
+  </tr>
+  <tr>
+    <td>response_type</td>
+    <td>The response_type must be set to "token".</td>
+  </tr>
+  <tr>
+    <td>action</td>
+    <td>Optional. If provided, should be <code>signup</code> or <code>signin</code>. Send to improve the user experience, based on whether the user clicked on a Sign In or Sign Up button. <code>signin</code> is the default.</td>
+  </tr>
+  <tr>
+    <td>scopes</td>
+    <td>A space separated list of scopes.</td>
+  </tr>
+  <tr>
+    <td>state</td>
+    <td>The state value the application sent when starting the login flow.</td>
+  </tr>
+</table>
+
+**Example**
+
+`GET https://id.webmaker.org/login/oauth/authorize?client_id=wm_id_BTQNPABtUqqApaDrcsDa&response_type=token&scopes=user`
+
+### 2. Webmaker redirects back to your application
+
+If the user accepts your request, Webmaker redirects back to your application with the API token in a uri fragment
+
+**example**
+
+`GET https://buckleysbees.ca/webapp#token=wm_token_rizCEigqRefeU8Na9JDmZJkzzQzgVZepHTWjiHbtQKsyotAqGZ`
 
 ## Scopes
 
