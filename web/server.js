@@ -163,6 +163,15 @@ module.exports = function(options) {
       method: 'GET',
       path: '/login/oauth/authorize',
       config: {
+        validate: {
+          query: {
+            client_id: Joi.string().required(),
+            response_type: Joi.string().valid('code', 'token'),
+            scopes: Joi.string().required(),
+            state: Joi.string().required(),
+            action: Joi.string().optional().valid('signup', 'signin').default('signin')
+          }
+        },
         pre: [
           {
             assign: 'user',
@@ -192,18 +201,54 @@ module.exports = function(options) {
             }
           },
           {
+            method: function(request, reply) {
+              if (
+                request.pre.client.allowed_responses.indexOf(request.query.response_type) === -1
+              ) {
+                return reply(Boom.forbidden('Response type forbidden: ' + request.query.response_type));
+              }
+              reply();
+            }
+          },
+          {
+            assign: 'scopes',
+            method: function(request, reply) {
+              reply(request.query.scopes.split(' '));
+            }
+          },
+          {
             assign: 'auth_code',
             method: function(request, reply) {
-              var scopes = request.query.scopes;
-              var expiresAt = new Date(Date.now() + 60 * 1000).toISOString();
-
-              scopes = scopes.split(' ');
+              if (request.query.response_type !== 'code') {
+                return reply(null);
+              }
 
               oauthDb.generateAuthCode(
                 request.pre.client.client_id,
                 request.pre.user.id,
-                scopes,
-                expiresAt,
+                request.pre.scopes,
+                new Date(Date.now() + 60 * 1000).toISOString(),
+                function(err, authCode) {
+                  if (err) {
+                    return reply(Boom.badRequest('An error occurred processing your request', err));
+                  }
+
+                  reply(authCode);
+                }
+              );
+            }
+          },
+          {
+            assign: 'access_token',
+            method: function(request, reply) {
+              if (request.query.response_type !== 'token') {
+                return reply(null);
+              }
+
+              oauthDb.generateAccessToken(
+                request.pre.client.client_id,
+                request.pre.user.id,
+                request.pre.scopes,
                 reply
               );
             }
@@ -211,15 +256,18 @@ module.exports = function(options) {
         ]
       },
       handler: function(request, reply) {
-        var state = request.query.state;
         var redirectObj = url.parse(request.pre.client.redirect_uri, true);
         redirectObj.search = null;
-        redirectObj.query.code = request.pre.auth_code;
-        redirectObj.query.state = state;
-        redirectObj.query.client_id = request.query.client_id;
-        var redirectUri = url.format(redirectObj);
 
-        reply.redirect(redirectUri);
+        if (request.query.response_type === 'token') {
+          redirectObj.hash = 'token=' + request.pre.access_token;
+        } else {
+          redirectObj.query.code = request.pre.auth_code;
+          redirectObj.query.client_id = request.query.client_id;
+        }
+        redirectObj.query.state = request.query.state;
+
+        reply.redirect(url.format(redirectObj));
       }
     },
     {

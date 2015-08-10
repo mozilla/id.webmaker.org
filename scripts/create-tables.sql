@@ -3,6 +3,7 @@ CREATE TABLE IF NOT EXISTS "clients"
   client_id varchar NOT NULL,
   client_secret varchar NOT NULL,
   allowed_grants jsonb NOT NULL,
+  allowed_responses jsonb NOT NULL,
   redirect_uri varchar NOT NULL,
   CONSTRAINT clients_id_pk PRIMARY KEY (client_id)
 );
