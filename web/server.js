@@ -120,7 +120,10 @@ module.exports = function(options) {
     register: require('crumb'),
     options: {
       restful: true,
-      skip: !options.enableCSRF ? skipCSRF : undefined
+      skip: !options.enableCSRF ? skipCSRF : undefined,
+      cookieOptions: {
+        isSecure: options.secureCookies
+      }
     }
   }, function(err) {
     Hoek.assert(!err, err);
