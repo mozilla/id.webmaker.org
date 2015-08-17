@@ -130,9 +130,14 @@ module.exports = function(options) {
     Hoek.assert(!err, err);
   });
 
-  var account = require('../lib/account')({
-    loginAPI: options.loginAPI,
-    uri: options.uri
+  server.register({
+    register: require('../lib/account'),
+    options: {
+      loginAPI: options.loginAPI,
+      uri: options.uri
+    }
+  }, function(err) {
+    Hoek.assert(!err, err);
   });
 
   var oauthDb = new OAuthDB(options.oauth_clients, options.authCodes, options.accessTokens);
@@ -348,7 +353,7 @@ module.exports = function(options) {
             assign: 'authCode',
             method: function(request, reply) {
               if ( request.pre.grant_type === 'password' ) {
-                return account.verifyPassword(request, function(err, json) {
+                return server.methods.account.verifyPassword(request, function(err, json) {
                   if ( err ) {
                     return reply(err);
                   }
@@ -393,7 +398,7 @@ module.exports = function(options) {
           {
             assign: 'user',
             method: function(request, reply) {
-              account.verifyPassword(request, function(err, json) {
+              server.methods.account.verifyPassword(request, function(err, json) {
                 if ( err ) {
                   return reply(err);
                 }
@@ -416,7 +421,7 @@ module.exports = function(options) {
         auth: false
       },
       handler: function(request, reply) {
-        account.requestReset(request, function(err, json) {
+        server.methods.account.requestReset(request, function(err, json) {
           if ( err ) {
             return reply(err);
           }
@@ -432,7 +437,7 @@ module.exports = function(options) {
         auth: false
       },
       handler: function(request, reply) {
-        account.resetPassword(request, function(err, json) {
+        server.methods.account.resetPassword(request, function(err, json) {
           if ( err ) {
             return reply(err);
           }
@@ -497,7 +502,7 @@ module.exports = function(options) {
         ]
       },
       handler: function(request, reply) {
-        account.createUser(request, function(err, json) {
+        server.methods.account.createUser(request, function(err, json) {
           if ( err ) {
             err.output.payload.data = err.data;
             return reply(err);
@@ -590,7 +595,7 @@ module.exports = function(options) {
           {
             assign: 'user',
             method: function(request, reply) {
-              account.getUser(request.pre.token.user_id, function(err, json) {
+              server.methods.account.getUser(request.pre.token.user_id, function(err, json) {
                 if ( err ) {
                   return reply(Boom.badImplementation(err));
                 }
@@ -616,7 +621,7 @@ module.exports = function(options) {
         auth: false
       },
       handler: function(request, reply) {
-        account.requestMigrateEmail(request, function(err, json) {
+        server.methods.account.requestMigrateEmail(request, function(err, json) {
           if ( err ) {
             return reply(Boom.badImplementation(err));
           }
@@ -656,7 +661,7 @@ module.exports = function(options) {
           {
             assign: 'isValidToken',
             method: function(request, reply) {
-              account.verifyToken(request, function(err, json) {
+              server.methods.account.verifyToken(request, function(err, json) {
                 if ( err ) {
                   return reply(err);
                 }
@@ -668,7 +673,7 @@ module.exports = function(options) {
           {
             assign: 'user',
             method: function(request, reply) {
-              account.setPassword(
+              server.methods.account.setPassword(
                 request,
                 request.pre.uid,
                 request.pre.password,
@@ -696,7 +701,7 @@ module.exports = function(options) {
         auth: false
       },
       handler: function(request, reply) {
-        account.checkUsername(request, function(err, json) {
+        server.methods.account.checkUsername(request, function(err, json) {
           if ( err ) {
             return reply(err);
           }
