@@ -103,6 +103,7 @@ module.exports = function(options) {
   function isUniqueError(fieldName, err) {
     // SQLite and MariaDB/MySQL have conflicting error messages, and we don't know which DB the login server is using
     if (
+      err &&
       // SQLite
       err.indexOf('Users.' + fieldName) !== -1 ||
       (
