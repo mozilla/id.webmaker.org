@@ -18,15 +18,26 @@ var passTest = new PassTest({
 });
 
 module.exports = function(options) {
-  var server = new Hapi.Server({
+  var serverConfig = {
     debug: options.debug,
     connections: {
       routes: {
         security: true
       }
     }
-  });
+  };
 
+  if ( options.redisUrl ) {
+    var redisUrl = require('redis-url').parse(options.redisUrl);
+    serverConfig.cache = {
+      engine: require('catbox-redis'),
+      host: redisUrl.hostname,
+      port: redisUrl.port,
+      password: redisUrl.password
+    };
+  }
+
+  var server = new Hapi.Server(serverConfig);
 
   server.connection({
     host: options.host,
