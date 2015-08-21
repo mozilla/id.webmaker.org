@@ -5,6 +5,7 @@ var IconText = require('../components/icontext.jsx');
 var ResetView = require('../components/reset-password-view.jsx');
 var RequestView = require('../components/request-reset-view.jsx');
 var PasswordResetSuccess = require('../components/password-reset-success.jsx');
+var PasswordResetExpired = require('../components/password-reset-expired.jsx');
 var Router = require('react-router');
 var cookiejs = require('cookie-js');
 
@@ -22,6 +23,7 @@ var ResetPassword = React.createClass({
     var queryObj = Url.parse(window.location.href, true).query;
     return {
       submitForm: false,
+      expired: false,
       email: queryObj.resetCode && queryObj.uid,
       queryObj: queryObj
     };
@@ -35,6 +37,38 @@ var ResetPassword = React.createClass({
     linkQuery.state = this.state.queryObj.state;
     linkQuery.scopes = this.state.queryObj.scopes;
     linkQuery.response_type = this.state.queryObj.response_type;
+
+    var wrapperClass = "centerDiv";
+
+    if (this.state.expired) {
+      wrapperClass += " largeWrapper"
+    }
+
+    var content = (
+      <div className="resetPasswordPage">
+        <div className={wrapperClass}>
+          {this.state.expired ?
+            <PasswordResetExpired/> : false
+          }
+
+          {!this.state.submitForm && !this.state.email ?
+            <RequestView submitForm={this.handleResetPassword}/> : false
+          }
+
+          {this.state.submitForm ?
+            <IconText
+              iconClass="emailSentIcon fa fa-envelope-o"
+              className="emailSent"
+              headerClass="emailSentHeader"
+              header="Check your email">
+                <p>{emailText}</p>
+            </IconText> : false}
+          {this.state.email ?
+            <ResetView username={this.state.queryObj.uid} submitForm={this.handleRequestPassword}/> : false
+          }
+        </div>
+      </div>
+    );
 
     if (this.state.resetSuccess) {
       content = (
@@ -121,10 +155,20 @@ var ResetPassword = React.createClass({
         window.location = Url.format(redirectObj);
         return;
       }
-      // handle errors!
+
+      this.setState({
+        expired: true,
+        submitForm: false,
+        email: false
+      });
     }.bind(this)).catch(function(ex) {
       ga.event({category: 'Reset Password', action: 'Error parsing response from the server'});
       console.error('Error parsing response', ex);
+      this.setState({
+        expired: true,
+        submitForm: false,
+        email: false
+      });
     });
   },
   handleResetPassword: function(data) {
@@ -152,7 +196,8 @@ var ResetPassword = React.createClass({
     }).then(function(response) {
       if ( response.status === 200 ) {
         this.setState({
-          submitForm: true
+          submitForm: true,
+          expired: false
         });
         ga.event({category: 'Reset Password', action: 'Successfully request password reset'});
 
