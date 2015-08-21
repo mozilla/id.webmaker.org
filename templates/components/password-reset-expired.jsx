@@ -9,6 +9,9 @@ var PasswordResetExpired = React.createClass({
         iconClass="messageIcon fa fa-exclamation-triangle"
         header="Seems that the link in your email expired."
         headerClass="messageHeader">
+          <p>
+            Request a new reset password link below
+          </p>
       </IconText>
     );
   }
