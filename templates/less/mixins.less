@@ -11,3 +11,28 @@
   display: block;
   font-size: 18px;
 }
+
+.no-flex() {
+  --webkit-flex: none;
+           flex: none;
+}
+
+.flex() {
+  display: -webkit-flex;
+  display:         flex;
+}
+
+.flex-row() {
+  -webkit-direction: row;
+     flex-direction: row;
+}
+
+.flex-col() {
+  -webkit-flex-direction: column;
+          flex-direction: column;
+}
+
+.flex-order(@ord) {
+  -webkit-order: @ord;
+          order: @ord;
+}

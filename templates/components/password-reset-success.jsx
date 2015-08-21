@@ -10,8 +10,10 @@ var PasswordResetSuccess = React.createClass({
     if (this.props.android) {
       header = (
         <p>
-          If you are not automatically sent back to webmaker
-          <a href="webmaker://login?mode=sign-in"> click here</a>
+          <span>
+            If you are not automatically sent back to webmaker
+            <a href="webmaker://login?mode=sign-in"> click here</a>
+          </span>
         </p>
       );
     }
