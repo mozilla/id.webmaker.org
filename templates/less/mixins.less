@@ -17,14 +17,19 @@
   display:         flex;
 }
 
-.flex-row() {
-  -webkit-direction: row;
-     flex-direction: row;
+.flex-shrink(@num) {
+  -webkit-flex-shrink: @num;
+          flex-shrink: @num;
 }
 
-.flex-col() {
-  -webkit-flex-direction: column;
-          flex-direction: column;
+.align-items(@alignment) {
+  -webkit-align-items: @alignment;
+          align-items: @alignment;
+}
+
+.flex-dir(@direction) {
+  -webkit-direction: @direction;
+     flex-direction: @direction;
 }
 
 .flex-order(@ord) {
