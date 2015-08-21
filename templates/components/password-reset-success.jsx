@@ -3,12 +3,12 @@ var IconText = require('./icontext.jsx');
 
 var PasswordResetSuccess = React.createClass({
   render: function() {
-    var header = (
+    var message = (
       <p>Sign in with your password below</p>
     );
 
     if (this.props.android) {
-      header = (
+      message = (
         <p>
           <span>
             If you are not automatically sent back to webmaker
@@ -24,7 +24,7 @@ var PasswordResetSuccess = React.createClass({
         className="passwordResetSuccess"
         header="Success! Your password has been reset."
         headerClass="passwordResetHeader">
-          {header}
+          {message}
       </IconText>
     );
   }
