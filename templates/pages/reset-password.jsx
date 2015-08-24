@@ -87,8 +87,10 @@ var ResetPassword = React.createClass({
         queryObj = Url.parse(window.location.href, true).query;
         ga.event({category: 'Reset Password', action: 'Successfully request new password'});
         if ( queryObj.android === 'true' ) {
-          window.location = "webmaker://login?mode=sign-in";
-          return;
+          if (navigator.userAgent.toLowerCase().indexOf("android") > -1) {
+            window.location = "webmaker://login?mode=sign-in";
+            return;
+          }
         }
         redirectObj = Url.parse('/login', true);
         redirectObj.query.client_id = queryObj.client_id;
