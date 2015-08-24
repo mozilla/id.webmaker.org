@@ -29,30 +29,12 @@ var ResetPassword = React.createClass({
   render: function() {
     var emailText = "We've emailed you instructions for creating a new password.";
     var linkQuery = {};
+    var content;
+
     linkQuery.client_id = this.state.queryObj.client_id;
     linkQuery.state = this.state.queryObj.state;
     linkQuery.scopes = this.state.queryObj.scopes;
     linkQuery.response_type = this.state.queryObj.response_type;
-
-    var content = (
-      <div className="resetPasswordPage">
-        {!this.state.submitForm && !this.state.email ?
-          <RequestView submitForm={this.handleResetPassword}/> : false
-        }
-
-        {this.state.submitForm ?
-          <IconText
-            iconClass="emailSentIcon fa fa-envelope-o"
-            className="emailSent centerDiv"
-            headerClass="emailSentHeader"
-            header="Check your email">
-              <p>{emailText}</p>
-          </IconText> : false}
-        {this.state.email ?
-          <ResetView username={this.state.queryObj.uid} submitForm={this.handleRequestPassword}/> : false
-        }
-      </div>
-    );
 
     if (this.state.resetSuccess) {
       content = (
@@ -60,7 +42,28 @@ var ResetPassword = React.createClass({
           <PasswordResetSuccess android="true"/>
         </div>
       );
+    } else {
+      content = (
+        <div className="resetPasswordPage">
+          {!this.state.submitForm && !this.state.email ?
+            <RequestView submitForm={this.handleResetPassword}/> : false
+          }
+
+          {this.state.submitForm ?
+            <IconText
+              iconClass="emailSentIcon fa fa-envelope-o"
+              className="emailSent centerDiv"
+              headerClass="emailSentHeader"
+              header="Check your email">
+                <p>{emailText}</p>
+            </IconText> : false}
+          {this.state.email ?
+            <ResetView username={this.state.queryObj.uid} submitForm={this.handleRequestPassword}/> : false
+          }
+        </div>
+      );
     }
+
 
     return (
       <div>
