@@ -68,7 +68,7 @@ var Login = React.createClass({
 
         <div className={wrapperClass}>
           {this.queryObj.passwordReset ?
-            <PasswordResetSuccess/> : false
+            <PasswordResetSuccess android={false}/> : false
           }
 
           <div className="loginPage innerForm">

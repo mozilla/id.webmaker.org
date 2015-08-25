@@ -39,7 +39,7 @@ var ResetPassword = React.createClass({
     if (this.state.resetSuccess) {
       content = (
         <div className="centerDiv smallWrapper">
-          <PasswordResetSuccess android="true"/>
+          <PasswordResetSuccess android={true}/>
         </div>
       );
     } else {
