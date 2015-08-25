@@ -4,6 +4,7 @@ var Link = Router.Link;
 
 var Form = require('../components/form/form.jsx');
 var Header = require('../components/header/header.jsx');
+var PasswordResetSuccess = require('../components/password-reset-success.jsx');
 var WebmakerActions = require('../lib/webmaker-actions.jsx');
 var Url = require('url');
 var ga = require('react-ga');
@@ -53,21 +54,34 @@ var Login = React.createClass({
     // FIXME: totally not localized yet!
     var buttonText = "Log In";
     this.queryObj = Url.parse(window.location.href, true).query;
+
+    var wrapperClass = "centerDiv";
+
+    if (this.queryObj.passwordReset) {
+      wrapperClass += " largeWrapper"
+    }
+
     return (
       <div>
         <Header origin="Login" className="desktopHeader" redirectQuery={this.queryObj} />
         <Header origin="Login" className="mobileHeader" redirectLabel="Signup" redirectPage="signup" redirectQuery={this.queryObj} mobile />
 
-        <div className="loginPage innerForm centerDiv">
-          <Form ref="userform"
-                fields={fieldValues}
-                validators={fieldValidators}
-                origin="Login"
-                onInputBlur={this.handleBlur}
-                defaultUsername={this.queryObj.username}
-          />
-          <button onClick={this.processFormData} className="btn btn-awsm">{buttonText}</button>
-          <Link onClick={this.handleGA.bind(this, 'Forgot your password')} to="reset-password" query={this.queryObj} className="need-help">Forgot your password?</Link>
+        <div className={wrapperClass}>
+          {this.queryObj.passwordReset ?
+            <PasswordResetSuccess android={false}/> : false
+          }
+
+          <div className="loginPage innerForm">
+            <Form ref="userform"
+                  fields={fieldValues}
+                  validators={fieldValidators}
+                  origin="Login"
+                  onInputBlur={this.handleBlur}
+                  defaultUsername={this.queryObj.username}
+            />
+            <button onClick={this.processFormData} className="btn btn-awsm">{buttonText}</button>
+            <Link onClick={this.handleGA.bind(this, 'Forgot your password')} to="reset-password" query={this.queryObj} className="need-help">Forgot your password?</Link>
+          </div>
         </div>
       </div>
     );

@@ -4,6 +4,7 @@ var Header = require('../components/header/header.jsx');
 var IconText = require('../components/icontext.jsx');
 var ResetView = require('../components/reset-password-view.jsx');
 var RequestView = require('../components/request-reset-view.jsx');
+var PasswordResetSuccess = require('../components/password-reset-success.jsx');
 var Router = require('react-router');
 var cookiejs = require('cookie-js');
 
@@ -28,32 +29,47 @@ var ResetPassword = React.createClass({
   render: function() {
     var emailText = "We've emailed you instructions for creating a new password.";
     var linkQuery = {};
+    var content;
+
     linkQuery.client_id = this.state.queryObj.client_id;
     linkQuery.state = this.state.queryObj.state;
     linkQuery.scopes = this.state.queryObj.scopes;
     linkQuery.response_type = this.state.queryObj.response_type;
+
+    if (this.state.resetSuccess) {
+      content = (
+        <div className="centerDiv smallWrapper">
+          <PasswordResetSuccess android={true}/>
+        </div>
+      );
+    } else {
+      content = (
+        <div className="resetPasswordPage">
+          {!this.state.submitForm && !this.state.email ?
+            <RequestView submitForm={this.handleResetPassword}/> : false
+          }
+
+          {this.state.submitForm ?
+            <IconText
+              iconClass="emailSentIcon fa fa-envelope-o"
+              className="emailSent centerDiv"
+              headerClass="emailSentHeader"
+              header="Check your email">
+                <p>{emailText}</p>
+            </IconText> : false}
+
+          {this.state.email ?
+            <ResetView username={this.state.queryObj.uid} submitForm={this.handleRequestPassword}/> : false
+          }
+        </div>
+      );
+    }
+
     return (
       <div>
         <Header origin="Reset Password" className="desktopHeader" redirectQuery={linkQuery} />
         <Header origin="Reset Password" className="mobileHeader" redirectLabel="Signup" redirectPage="signup" redirectQuery={linkQuery} mobile />
-
-        <div className="resetPasswordPage">
-            {!this.state.submitForm && !this.state.email ?
-              <RequestView submitForm={this.handleResetPassword}/> : false
-            }
-
-            {this.state.submitForm ?
-              <IconText
-                iconClass="emailSentIcon fa fa-envelope-o"
-                className="emailSent centerDiv"
-                headerClass="emailSentHeader"
-                header="Check your email">
-                  <p>{emailText}</p>
-              </IconText> : false}
-            {this.state.email ?
-              <ResetView username={this.state.queryObj.uid} submitForm={this.handleRequestPassword}/> : false
-            }
-        </div>
+        {content}
       </div>
     );
   },
@@ -87,7 +103,12 @@ var ResetPassword = React.createClass({
         queryObj = Url.parse(window.location.href, true).query;
         ga.event({category: 'Reset Password', action: 'Successfully request new password'});
         if ( queryObj.android === 'true' ) {
-          window.location = "webmaker://login?mode=sign-in";
+          this.setState({
+            resetSuccess: true
+          });
+          window.setTimeout(function() {
+            window.location = "webmaker://login?mode=sign-in";
+          }, 5000);
           return;
         }
         redirectObj = Url.parse('/login', true);
@@ -96,6 +117,7 @@ var ResetPassword = React.createClass({
         redirectObj.query.uid = queryObj.username;
         redirectObj.query.response_type = queryObj.response_type;
         redirectObj.query.scopes = queryObj.scopes;
+        redirectObj.query.passwordReset = true;
         window.location = Url.format(redirectObj);
         return;
       }
