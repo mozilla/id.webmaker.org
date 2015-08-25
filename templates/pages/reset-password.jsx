@@ -57,13 +57,13 @@ var ResetPassword = React.createClass({
               header="Check your email">
                 <p>{emailText}</p>
             </IconText> : false}
+
           {this.state.email ?
             <ResetView username={this.state.queryObj.uid} submitForm={this.handleRequestPassword}/> : false
           }
         </div>
       );
     }
-
 
     return (
       <div>
