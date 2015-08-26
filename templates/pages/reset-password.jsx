@@ -84,6 +84,13 @@ var ResetPassword = React.createClass({
       </div>
     );
   },
+  expire: function() {
+    this.setState({
+      expired: true,
+      submitForm: false,
+      email: false
+    });
+  },
   handleRequestPassword: function(data) {
     var error = data.err;
     var data = data.user;
@@ -133,19 +140,11 @@ var ResetPassword = React.createClass({
         return;
       }
 
-      this.setState({
-        expired: true,
-        submitForm: false,
-        email: false
-      });
+      this.expire();
     }.bind(this)).catch(function(ex) {
       ga.event({category: 'Reset Password', action: 'Error parsing response from the server'});
       console.error('Error parsing response', ex);
-      this.setState({
-        expired: true,
-        submitForm: false,
-        email: false
-      });
+      this.expire();
     });
   },
   handleResetPassword: function(data) {
