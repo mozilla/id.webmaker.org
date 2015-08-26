@@ -5,6 +5,7 @@ var Link = Router.Link;
 var Form = require('../components/form/form.jsx');
 var Header = require('../components/header/header.jsx');
 var PasswordResetSuccess = require('../components/password-reset-success.jsx');
+var utils = require('../lib/utils.js');
 var WebmakerActions = require('../lib/webmaker-actions.jsx');
 var Url = require('url');
 var ga = require('react-ga');
@@ -58,7 +59,7 @@ var Login = React.createClass({
     var wrapperClass = "centerDiv";
 
     if (this.queryObj.passwordReset) {
-      wrapperClass += " largeWrapper"
+      wrapperClass = utils.getClassNameString(wrapperClass, "largeWrapper");
     }
 
     return (

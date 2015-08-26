@@ -6,6 +6,7 @@ var ResetView = require('../components/reset-password-view.jsx');
 var RequestView = require('../components/request-reset-view.jsx');
 var PasswordResetSuccess = require('../components/password-reset-success.jsx');
 var PasswordResetExpired = require('../components/password-reset-expired.jsx');
+var utils = require('../lib/utils.js');
 var Router = require('react-router');
 var cookiejs = require('cookie-js');
 
@@ -31,6 +32,7 @@ var ResetPassword = React.createClass({
   render: function() {
     var emailText = "We've emailed you instructions for creating a new password.";
     var linkQuery = {};
+    var wrapperClass = "resetPasswordPage centerDiv";
     var content;
 
     linkQuery.client_id = this.state.queryObj.client_id;
@@ -38,37 +40,9 @@ var ResetPassword = React.createClass({
     linkQuery.scopes = this.state.queryObj.scopes;
     linkQuery.response_type = this.state.queryObj.response_type;
 
-    var wrapperClass = "centerDiv";
-
     if (this.state.expired) {
-      wrapperClass += " largeWrapper"
+      wrapperClass = utils.getClassNameString(wrapperClass, "largeWrapper");
     }
-
-    var content = (
-      <div className="resetPasswordPage">
-        <div className={wrapperClass}>
-          {this.state.expired ?
-            <PasswordResetExpired/> : false
-          }
-
-          {!this.state.submitForm && !this.state.email ?
-            <RequestView submitForm={this.handleResetPassword}/> : false
-          }
-
-          {this.state.submitForm ?
-            <IconText
-              iconClass="emailSentIcon fa fa-envelope-o"
-              className="emailSent"
-              headerClass="emailSentHeader"
-              header="Check your email">
-                <p>{emailText}</p>
-            </IconText> : false}
-          {this.state.email ?
-            <ResetView username={this.state.queryObj.uid} submitForm={this.handleRequestPassword}/> : false
-          }
-        </div>
-      </div>
-    );
 
     if (this.state.resetSuccess) {
       content = (
@@ -78,7 +52,11 @@ var ResetPassword = React.createClass({
       );
     } else {
       content = (
-        <div className="resetPasswordPage">
+        <div className={wrapperClass}>
+          {this.state.expired ?
+            <PasswordResetExpired/> : false
+          }
+
           {!this.state.submitForm && !this.state.email ?
             <RequestView submitForm={this.handleResetPassword}/> : false
           }
