@@ -7,7 +7,6 @@ var ResetView = require('../components/reset-password-view.jsx');
 var RequestView = require('../components/request-reset-view.jsx');
 var PasswordResetSuccess = require('../components/password-reset-success.jsx');
 var PasswordResetExpired = require('../components/password-reset-expired.jsx');
-var utils = require('../lib/utils.js');
 var Router = require('react-router');
 var cookiejs = require('cookie-js');
 
