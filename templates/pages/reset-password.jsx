@@ -1,4 +1,5 @@
 var React = require('react');
+var classnames = require('classnames');
 
 var Header = require('../components/header/header.jsx');
 var IconText = require('../components/icontext.jsx');
@@ -32,7 +33,6 @@ var ResetPassword = React.createClass({
   render: function() {
     var emailText = "We've emailed you instructions for creating a new password.";
     var linkQuery = {};
-    var wrapperClass = "resetPasswordPage centerDiv";
     var content;
 
     linkQuery.client_id = this.state.queryObj.client_id;
@@ -40,9 +40,9 @@ var ResetPassword = React.createClass({
     linkQuery.scopes = this.state.queryObj.scopes;
     linkQuery.response_type = this.state.queryObj.response_type;
 
-    if (this.state.expired) {
-      wrapperClass = utils.getClassNameString(wrapperClass, "largeWrapper");
-    }
+    var wrapperClass = classnames("resetPasswordPage", "centerDiv", {
+      largeWrapper: !!this.state.expired
+    });
 
     if (this.state.resetSuccess) {
       content = (

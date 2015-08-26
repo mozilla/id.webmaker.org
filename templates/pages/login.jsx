@@ -1,5 +1,6 @@
 var React = require('react');
 var Router = require('react-router');
+var classnames = require('classnames');
 var Link = Router.Link;
 
 var Form = require('../components/form/form.jsx');
@@ -56,11 +57,9 @@ var Login = React.createClass({
     var buttonText = "Log In";
     this.queryObj = Url.parse(window.location.href, true).query;
 
-    var wrapperClass = "centerDiv";
-
-    if (this.queryObj.passwordReset) {
-      wrapperClass = utils.getClassNameString(wrapperClass, "largeWrapper");
-    }
+    var wrapperClass = classnames("centerDiv", {
+      largeWrapper: !!this.queryObj.passwordReset
+    });
 
     return (
       <div>
