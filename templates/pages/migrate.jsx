@@ -34,7 +34,12 @@ var UserMigration = React.createClass({
     var queryObj = this.getQuery();
     var content = (<LoginNoPasswordForm ref="LoginNoPasswordForm" submitForm={this.handleSendToken} uid={queryObj.uid}/>);
     var continueLink = url.parse("/login/oauth/authorize");
-    continueLink.query = queryObj;
+    continueLink.query = {
+      client_id: queryObj.client_id,
+      response_type: queryObj.response_type,
+      state: queryObj.state,
+      scopes: queryObj.scopes
+    };
 
     if(this.state.emailedKey) {
       content = (<KeyEmailed ref="KeyEmailed" />);
