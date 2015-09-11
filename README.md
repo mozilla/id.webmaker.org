@@ -1,24 +1,25 @@
 # id.webmaker.org
+> OAuth 2.0 identity provider for Webmaker
 
 [![Build Status](https://travis-ci.org/mozilla/id.webmaker.org.svg?branch=master)](https://travis-ci.org/mozilla/id.webmaker.org)
+[![Code Climate](https://codeclimate.com/github/mozilla/id.webmaker.org/badges/gpa.svg)](https://codeclimate.com/github/mozilla/id.webmaker.org)
+[![David-DM](https://david-dm.org/mozilla/id.webmaker.org.svg)](https://david-dm.org/mozilla/id.webmaker.org)
 
-OAuth 2.0 identity provider for Webmaker
+`id.webmaker.org` is an application with a [`hapi`](http://hapijs.com) backend and [`react`](http://facebook.github.io/react) frontend that serves as the OAuth 2.0 identity provider for [Webmaker](http://webmaker.org), as well as several other Mozilla Foundation applications.
 
-## To run
+## Prerequisites
 
-```
-npm install
-npm start
-```
+- [Node](https://nodejs.org) and NPM, [installation](https://github.com/nodejs/node-v0.x-archive/wiki/Installing-Node.js-via-package-manager)
+- [Postgres](http://www.postgresql.org/), [installation](http://www.postgresql.org/download/)
 
-Make sure you configure all necessary environment variables (see below) before running. If you simply want the defaults set up for local development, you can use:
+## Up and Running
 
-```
-$> cp sample.env .env
-```
-
-Once, after cloning the repo but before running the code.
-
+1. Fork and clone this repository
+2. Navigate to the directory of the repository, e.g. `cd id.webmaker.org`
+3. `npm install` to install dependencies
+4. Set configuration variables, by default `cp sample.env .env` or `copy sample.env .env` on Windows
+5. `npm start`
+6. Navigate your browser to [`http://localhost:1234`](http://localhost:1234)
 
 ## Tests
 
@@ -39,21 +40,11 @@ Simply add it to the folder containing your component. The browser test command 
 
 ## Environment
 
-We haven't yet added any utilities to help load environment variables; you can do it yourself by typing in the following in your terminal:
+This project requires several environment variables be configured before it is able to run. It uses a library called [`habitat`](https://github.com/brianloveswords/habitat) to load configuration from a `.env` file, as well as process and cli configuration.
 
-e.g.
-```
-export HOST=0.0.0.0
-export PORT=1234
-export LOGINAPI=https://user:password@login.webmaker.org
-export COOKIE_SECRET=topSecretPasswordForEncryptingCookies
-export SECURE_COOKIES=true
-export URI=https://id.webmaker.org
-export GA_TRACKING_ID='UA-000000-01'
-export GA_DEBUG='on'
-export OPTIMIZELY_ID='206878104'
-export OPTIMIZELY_ACTIVE='yes'
-```
+A [`sample.env` file](https://github.com/mozilla/id.webmaker.org/blob/develop/sample.env) is included with this repository. Create a copy of `sample.env` named `.env` to use the default configuration. See the "Up and Running" section above for more instructions on how to do this.
+
+You can customize these variables by editing the `.env` file in the root directory of the repository.
 
 You can configure the following environment variables:
 
