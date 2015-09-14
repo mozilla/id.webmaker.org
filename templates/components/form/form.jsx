@@ -121,6 +121,11 @@ var Form = React.createClass({
     });
 
   },
+  handleKeyUp: function(event) {
+   if ( this.props.onInputKeyUp ) {
+     this.props.onInputKeyUp(event.currentTarget.id, event.currentTarget.value);
+    }
+  },
   buildFormElement: function(key, i) {
     // we always expect this.props.fields[i] to be one object with one property.
     var id = Object.keys(this.props.fields[i])[0];
@@ -142,11 +147,18 @@ var Form = React.createClass({
              valueLink={this.linkState(id)}
              defaultValue={this.props.defaultUsername}
              onBlur={this.handleValidation(id, this.dirty(id, this.props.origin))}
+             onKeyUp={this.handleKeyUp}
              className={this.getInputClasses(id, isValid)}
              disabled={value.disabled ? "disabled" : false}
              autoFocus={value.focus ? true : false}
       />
     );
+
+    if (value.strengthBar === true) {
+        var strengthBar = (
+            <div ref={id+'StrengthBar'} className='password-strength-bar'><div></div></div>
+        );
+    }
 
     if (value.type === 'checkbox') {
       var input = (
@@ -173,12 +185,15 @@ var Form = React.createClass({
     var errorTooltip = <ToolTip ref="tooltip" className="warning" message={errorMessage}/>;
 
     return (
-     <label ref={id+'Label'} className={this.getLabelClasses(id, isValid)} key={id} htmlFor={id}>
-        {!isValid ? errorTooltip : false}
-        {value.label && value.labelPosition==='before' ? value.label : false}
-        {input}
-        {value.label && value.labelPosition==='after' ? value.label : false}
-     </label>
+    <div>
+        <label ref={id+'Label'} className={this.getLabelClasses(id, isValid)} key={id} htmlFor={id}>
+            {!isValid ? errorTooltip : false}
+            {value.label && value.labelPosition==='before' ? value.label : false}
+            {input}
+            {value.label && value.labelPosition==='after' ? value.label : false}
+        </label>
+        {value.strengthBar === true ? strengthBar : false}
+    </div>
     );
   },
   render: function() {
@@ -221,6 +236,9 @@ var Form = React.createClass({
     classes[this.errorClass] = !isValid;
     classes[this.validClass] = (field !== 'feedback' && (this.state.dirty[field] && isValid) || this.passChecked)
     return React.addons.classSet(classes);
+  },
+  getStrengthBar: function(field) {
+    return this.refs[field + "StrengthBar"];
   },
   getIconClass: function(field) {
     return Form.iconLabels[field];

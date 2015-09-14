@@ -36,7 +36,8 @@ var fieldValues = [
       'type': 'password',
       'validator': 'password',
       'label': false,
-      'tabIndex': '3'
+      'tabIndex': '3',
+      'strengthBar': true
     }
   },
   {
@@ -59,11 +60,13 @@ var Signup = React.createClass({
     document.body.className = "signup-bg";
     WebmakerActions.addListener('FORM_ERROR', this.setFormState);
     WebmakerActions.addListener('FORM_VALIDATION', this.handleFormData);
+    WebmakerActions.addListener('FORM_PASSWORD_STRENGTH', this.setFormPasswordStrength);
   },
   componentWillUnmount: function() {
     document.body.className = "";
     WebmakerActions.deleteListener('FORM_ERROR', this.setFormState);
     WebmakerActions.deleteListener('FORM_VALIDATION', this.handleFormData);
+    WebmakerActions.deleteListener('FORM_PASSWORD_STRENGTH', this.setFormPasswordStrength);
   },
   render: function() {
     var queryObj = Url.parse(window.location.href, true).query;
@@ -80,9 +83,11 @@ var Signup = React.createClass({
                 validators={fieldValidators}
                 origin="Signup"
                 onInputBlur={this.handleBlur}
+                onInputKeyUp={this.handleKeyUp}
                 autoComplete="off"
           />
         </div>
+        
         <div className="commit">
           <IconText iconClass="agreement" textClass="eula">
             By signing up, I agree to Webmaker&lsquo;s <a tabIndex="5" href="//webmaker.org/en-US/terms" className="underline">Terms of Service</a> and <a tabIndex="6" href="//webmaker.org/en-US/privacy" className="underline">Privacy Policy</a>.
@@ -95,8 +100,16 @@ var Signup = React.createClass({
   setFormState: function(data) {
     this.refs.userform.setState({['valid_' +data.field]: false});
   },
+  setFormPasswordStrength: function (data) {
+    this.refs.userform.getStrengthBar("password").getDOMNode().dataset.strength = data.percent;
+  },
   processSignup: function(evt) {
     this.refs.userform.processFormData(evt);
+  },
+  handleKeyUp: function(fieldName, value) {
+    if (fieldName === 'password') {
+      this.refs.userform.validatePassword(value, true);
+    }
   },
   handleBlur: function(fieldName, value) {
     var userform = this.refs.userform;

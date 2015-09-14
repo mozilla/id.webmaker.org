@@ -17,6 +17,53 @@
       max-width: 170px;
     }
   }
+  
+  .password-strength-bar {
+    height: 20px;
+    background-color: #fff;
+    width: 100%;
+    color: #000;
+    border: 1px solid currentColor;
+    border-radius: 3px;
+    margin-bottom: 10px;
+  }
+    .password-strength-bar > div {
+        background-color: currentColor;
+        width: 0;
+        height: 18px;
+        float: left;
+    }
+        .password-strength-bar[data-strength="0"],
+        .password-strength-bar[data-strength="25"] {
+          color: red;
+        }
+          .password-strength-bar[data-strength="0"] > div {
+            width: 0;
+          }
+          .password-strength-bar[data-strength="25"] > div {
+            width: 25%;
+          }
+        
+        .password-strength-bar[data-strength="50"] {
+          color: yellow;
+        }
+            .password-strength-bar[data-strength="50"] > div {
+              width: 50%;
+            }
+
+        .password-strength-bar[data-strength="75"] {
+          color: #39A9E7;
+        }
+            .password-strength-bar[data-strength="75"] > div {
+              width: 75%;
+            }
+
+        .password-strength-bar[data-strength="100"] {
+          color: #53C0A3;
+        }
+            .password-strength-bar[data-strength="100"] > div {
+              width: 100%;
+            }
 
 
   .inputBox {
