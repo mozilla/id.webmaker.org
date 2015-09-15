@@ -88,6 +88,7 @@ module.exports = {
     var strength = zxcvbn(password);
 
     var tooLong = password.length > MAX_PASSWORD_LEN,
+        tooShort = password.length < MIN_PASSWORD_LEN,
         strengthValid = strength.score > 2;
 
     WebmakerActions.setPasswordStrength({ 'percent': (strength.score / 4) * 100 });
@@ -96,6 +97,9 @@ module.exports = {
     }
     if (strength.score <= 2) {
       WebmakerActions.displayError({ 'field': 'password', 'message': 'Your password would only take ' + strength.crack_time_display + ' to crack. Please pick a stronger password.' });
+    }
+    if (tooShort) {
+      WebmakerActions.displayError({'field': 'password', 'message': 'Password must be at least 8 characters long.'});
     }
     if (tooLong) {
       WebmakerActions.displayError({'field': 'password', 'message': 'Password cannot be more than 128 characters long.'});
@@ -108,7 +112,7 @@ module.exports = {
     } else if (!username) {
       WebmakerActions.displayError({'field': 'username', 'message': 'Please specify a username.'});
     }
-    if (strengthValid && containUserValid && !tooLong) {
+    if (strengthValid && containUserValid && !tooShort && !tooLong) {
       this.setFormState({field: 'password'});
     }
   }
