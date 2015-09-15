@@ -112,12 +112,14 @@ var ResetPassword = React.createClass({
           return;
         }
         redirectObj = Url.parse('/login', true);
-        redirectObj.query.client_id = queryObj.client_id;
-        redirectObj.query.state = queryObj.state;
-        redirectObj.query.uid = queryObj.username;
-        redirectObj.query.response_type = queryObj.response_type;
-        redirectObj.query.scopes = queryObj.scopes;
-        redirectObj.query.passwordReset = true;
+        redirectObj.query = {
+          client_id: queryObj.client_id,
+          state: queryObj.state,
+          uid: queryObj.username,
+          response_type: queryObj.response_type,
+          scopes: queryObj.scopes,
+          passwordReset: true
+        };
         window.location = Url.format(redirectObj);
         return;
       }

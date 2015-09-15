@@ -33,7 +33,7 @@ var UserMigration = React.createClass({
   render: function() {
     var queryObj = this.getQuery();
     var content = (<LoginNoPasswordForm ref="LoginNoPasswordForm" submitForm={this.handleSendToken} uid={queryObj.uid}/>);
-    var continueLink = url.parse("/login/oauth/authorize");
+    var continueLink = url.parse('/login/oauth/authorize', true);
     continueLink.query = {
       client_id: queryObj.client_id,
       response_type: queryObj.response_type,
@@ -134,10 +134,13 @@ var UserMigration = React.createClass({
         });
         ga.event({category: 'Migration', action: 'Set new password'});
         window.setTimeout(() => {
-          var redirectObj = url.parse(window.location.href);
-          redirectObj.pathname = '/login/oauth/authorize';
-          redirectObj.search = redirectObj.path = null;
-          redirectObj.query = this.getQuery();
+          var redirectObj = Url.parse('/login/oauth/authorize', true);
+          redirectObj.query = {
+            client_id: this.getQuery().client_id,
+            response_type: this.getQuery().response_type,
+            state: this.getQuery().state,
+            scopes: this.getQuery().scopes
+          };
 
           window.location = url.format(redirectObj);
         }, 5000);

@@ -125,11 +125,16 @@ var Login = React.createClass({
         password: data.password
       })
     }).then(function(response) {
-      var redirectObj;
       if ( response.status === 200 ) {
         WebmakerActions.validField({field: 'password'})
-        redirectObj = Url.parse('/login/oauth/authorize', true);
-        redirectObj.query = queryObj;
+        var redirectObj = Url.parse('/login/oauth/authorize', true);
+        redirectObj.query = {
+          client_id: queryObj.client_id,
+          response_type: queryObj.response_type,
+          state: queryObj.state,
+          scopes: queryObj.scopes
+        };
+
         ga.event({category: 'Login', action: 'Logged in'});
         window.location = Url.format(redirectObj);
       }
