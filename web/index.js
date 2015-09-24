@@ -15,7 +15,8 @@ var options = {
   uri: process.env.URI,
   enableCSRF: process.env.ENABLE_CSRF !== 'false',
   logging: process.env.LOGGING === 'true',
-  logLevel: process.env.LOG_LEVEL ? process.env.LOG_LEVEL : 'info'
+  logLevel: process.env.LOG_LEVEL ? process.env.LOG_LEVEL : 'info',
+  redisUrl: process.env.REDIS_URL
 };
 
 var server = require('./server')(options);

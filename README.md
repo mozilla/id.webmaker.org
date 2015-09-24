@@ -63,6 +63,7 @@ You can configure the following environment variables:
 | GA_DEBUG | if set to 'on' will enable debug logging to the console in `react-ga` |
 | OPTIMIZELY_ID | Optimizely Project ID (not a secret) e.g. '206878104' |
 | OPTIMIZELY_ACTIVE | If set to 'yes' (String) the project will include Optimizely snippet in the page load |
+| REDIS_URL | URL of a redis server to use for caching. If unset, an in-memory cache will be used instead. |
 
 ## Using OAuth2
 
