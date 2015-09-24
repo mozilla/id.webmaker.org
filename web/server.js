@@ -580,7 +580,7 @@ module.exports = function(options) {
                 var tokenScopes = token.scopes;
 
                 if ( tokenScopes.indexOf('user') === -1 && tokenScopes.indexOf('email') === -1 ) {
-                  reply(Boom.unauthorized('The token does not have the required scopes'));
+                  return reply(Boom.unauthorized('The token does not have the required scopes'));
                 }
 
                 reply(token);
