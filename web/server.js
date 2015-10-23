@@ -60,6 +60,7 @@ module.exports = function(options) {
 
   server.register([
     require('hapi-auth-cookie'),
+    require('inert'),
     require('scooter'),
     {
       register: require('blankie'),
@@ -465,10 +466,7 @@ module.exports = function(options) {
         plugins: {
           crumb: false
         },
-        cors: {
-          methods: ['POST'],
-          matchOrigin: true
-        },
+        cors: true,
         validate: {
           payload: {
             username: Joi.string().regex(/^[a-zA-Z0-9\-]{1,20}$/).required(),

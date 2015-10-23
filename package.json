@@ -58,12 +58,13 @@
     "flux": "^2.0.1",
     "font-awesome": "^4.3.0",
     "habitat": "^3.1.2",
-    "hapi": "^8.4.0",
+    "hapi": "^11.0.2",
     "hapi-auth-cookie": "^2.0.0",
     "hapi-bunyan": "^0.6.0",
     "hoek": "^2.11.1",
     "hyperquest": "^1.0.1",
     "imports-loader": "^0.6.3",
+    "inert": "^3.1.0",
     "isomorphic-fetch": "^2.0.1",
     "joi": "^6.0.8",
     "jsx-loader": "^0.12.2",
@@ -98,7 +99,6 @@
     "phantomjs": "1.9.7-15"
   },
   "engines": {
-    "npm": "^2.5.1",
-    "node": "^0.12.1"
+    "node": "^4.2.1"
   }
 }
