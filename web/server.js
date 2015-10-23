@@ -1,10 +1,11 @@
+/* jshint esnext: true */
+
 var Boom = require('boom');
 var Hapi = require('hapi');
 var Hoek = require('hoek');
 var Joi = require('joi');
 var Path = require('path');
 var url = require('url');
-var OAuthDB = require('../lib/oauth-db');
 var Scopes = require('../lib/scopes');
 
 var PassTest = require('pass-test');
@@ -89,6 +90,17 @@ module.exports = function(options) {
           'https://fonts.gstatic.com'
         ]
       }
+    },
+    {
+      register:require('../lib/OAuthDB'),
+      options: {
+        POSTGRE_CONNECTION_STRING: process.env.POSTGRE_CONNECTION_STRING,
+        POSTGRE_POOL_MIN: process.env.POSTGRE_POOL_MIN,
+        POSTGRE_POOL_MAX: process.env.POSTGRE_POOL_MAX,
+        BCRYPT_ROUNDS: process.env.BCRYPT_ROUNDS,
+        TOKEN_SALT: process.env.TOKEN_SALT,
+        RANDOM_BYTE_COUNT: process.env.RANDOM_BYTE_COUNT
+      }
     }
   ], function(err) {
     // MAYDAY, MAYDAY, MAYDAY!
@@ -112,23 +124,6 @@ module.exports = function(options) {
     return true;
   }
 
-  function isUniqueError(fieldName, err) {
-    // SQLite and MariaDB/MySQL have conflicting error messages, and we don't know which DB the login server is using
-    if (
-      err &&
-      // SQLite
-      err.indexOf('Users.' + fieldName) !== -1 ||
-      (
-        // MariaDB/MySQL
-        err.indexOf('ER_DUP_ENTRY') !== -1 &&
-        err.indexOf(fieldName) !== -1
-      )
-    ) {
-      return true;
-    }
-    return false;
-  }
-
   server.register({
     register: require('crumb'),
     options: {
@@ -141,18 +136,6 @@ module.exports = function(options) {
   }, function(err) {
     Hoek.assert(!err, err);
   });
-
-  server.register({
-    register: require('../lib/account'),
-    options: {
-      loginAPI: options.loginAPI,
-      uri: options.uri
-    }
-  }, function(err) {
-    Hoek.assert(!err, err);
-  });
-
-  var oauthDb = new OAuthDB(options.oauth_clients, options.authCodes, options.accessTokens);
 
   server.route([
     {
@@ -218,7 +201,7 @@ module.exports = function(options) {
           {
             assign: 'client',
             method: function(request, reply) {
-              oauthDb.getClient(request.query.client_id, reply);
+              server.methods.OAuthDB.getClient(request.query.client_id, reply);
             }
           },
           {
@@ -244,7 +227,7 @@ module.exports = function(options) {
                 return reply(null);
               }
 
-              oauthDb.generateAuthCode(
+              server.methods.OAuthDB.generateAuthCode(
                 request.pre.client.client_id,
                 request.pre.user.id,
                 request.pre.scopes,
@@ -266,7 +249,7 @@ module.exports = function(options) {
                 return reply(null);
               }
 
-              oauthDb.generateAccessToken(
+              server.methods.OAuthDB.generateAccessToken(
                 request.pre.client.client_id,
                 request.pre.user.id,
                 request.pre.scopes,
@@ -343,7 +326,7 @@ module.exports = function(options) {
           {
             assign: 'client',
             method: function(request, reply) {
-              oauthDb.getClient(request.payload.client_id, function(err, client) {
+              server.methods.OAuthDB.getClient(request.payload.client_id, function(err, client) {
                 if ( err ) {
                   return reply(err);
                 }
@@ -365,24 +348,28 @@ module.exports = function(options) {
             assign: 'authCode',
             method: function(request, reply) {
               if ( request.pre.grant_type === 'password' ) {
-                return server.methods.account.verifyPassword(request, function(err, json) {
-                  if ( err ) {
-                    return reply(err);
-                  }
+                return server.methods.OAuthDB.verifyPassword(
+                  request.payload.password,
+                  request.payload.uid,
+                  function(err, json) {
+                    if ( err ) {
+                      return reply(err);
+                    }
 
-                  reply({
-                    user_id: json.user.id,
-                    scopes: request.payload.scopes.split(' ')
-                  });
-                });
+                    reply({
+                      user_id: json.user.id,
+                      scopes: request.payload.scopes.split(' ')
+                    });
+                  }
+                );
               }
-              oauthDb.verifyAuthCode(request.payload.code, request.pre.client.client_id, reply);
+              server.methods.OAuthDB.verifyAuthCode(request.payload.code, request.pre.client.client_id, reply);
             }
           },
           {
             assign: 'accessToken',
             method: function(request, reply) {
-              oauthDb.generateAccessToken(
+              server.methods.OAuthDB.generateAccessToken(
                 request.pre.client.client_id,
                 request.pre.authCode.user_id,
                 request.pre.authCode.scopes,
@@ -410,7 +397,7 @@ module.exports = function(options) {
           {
             assign: 'user',
             method: function(request, reply) {
-              server.methods.account.verifyPassword(request, function(err, json) {
+              server.methods.OAuthDB.verifyPassword(request, function(err, json) {
                 if ( err ) {
                   return reply(err);
                 }
@@ -433,7 +420,7 @@ module.exports = function(options) {
         auth: false
       },
       handler: function(request, reply) {
-        server.methods.account.requestReset(request, function(err, json) {
+        server.methods.OAuthDB.requestPasswordResetEmail(request.payload.uid, function(err, json) {
           if ( err ) {
             return reply(err);
           }
@@ -449,7 +436,7 @@ module.exports = function(options) {
         auth: false
       },
       handler: function(request, reply) {
-        server.methods.account.resetPassword(request, function(err, json) {
+        server.methods.OAuthDB.resetPassword(request, function(err, json) {
           if ( err ) {
             return reply(err);
           }
@@ -505,28 +492,35 @@ module.exports = function(options) {
           {
             assign: 'client',
             method: function(request, reply) {
-              oauthDb.getClient(request.payload.client_id, reply);
+              server.methods.OAuthDB.getClient(request.payload.client_id, reply);
             }
           }
         ]
       },
       handler: function(request, reply) {
-        server.methods.account.createUser(request, function(err, json) {
-          if ( err ) {
-            err.output.payload.data = err.data;
-            return reply(err);
-          }
-          if ( json.login_error ) {
-            if ( isUniqueError('username', json.login_error) ) {
-              return reply(Boom.badRequest('That username is taken'));
-            } else if ( isUniqueError('email', json.login_error) ) {
-              return reply(Boom.badRequest('An account exists for that email address'));
+        var payload = request.payload;
+        server.methods.OAuthDB.createUser(
+          payload.email,
+          payload.username,
+          payload.lang,
+          payload.password,
+          function(err, user) {
+            if ( err ) {
+              // TODO fix error handling
+              return reply(err);
             }
-            return reply(Boom.badRequest(json.login_error));
+            // if ( json.login_error ) {
+            //   if ( isUniqueError('username', json.login_error) ) {
+            //     return reply(Boom.badRequest('That username is taken'));
+            //   } else if ( isUniqueError('email', json.login_error) ) {
+            //     return reply(Boom.badRequest('An account exists for that email address'));
+            //   }
+            //   return reply(Boom.badRequest(json.login_error));
+            // }
+            request.auth.session.set(user);
+            reply(user);
           }
-          request.auth.session.set(json.user);
-          reply(json.user);
-        });
+        );
       }
     },
     {
@@ -541,7 +535,7 @@ module.exports = function(options) {
               if ( !request.query.client_id ) {
                 return reply('https://webmaker.org');
               }
-              oauthDb.getClient(request.query.client_id, function(err, client) {
+              server.methods.OAuthDB.getClient(request.query.client_id, function(err, client) {
                 if ( err ) {
                   return reply(err);
                 }
@@ -583,7 +577,7 @@ module.exports = function(options) {
           {
             assign: 'token',
             method: function(request, reply) {
-              oauthDb.lookupAccessToken(request.pre.requestToken, function(err, token) {
+              server.methods.OAuthDB.lookupAccessToken(request.pre.requestToken, function(err, token) {
                 if ( err ) {
                   return reply(err);
                 }
@@ -605,7 +599,7 @@ module.exports = function(options) {
           {
             assign: 'user',
             method: function(request, reply) {
-              server.methods.account.getUser(request.pre.token.user_id, function(err, json) {
+              server.methods.OAuthDB.getUserById(request.pre.token.user_id, function(err, json) {
                 if ( err ) {
                   return reply(Boom.badImplementation(err));
                 }
@@ -631,7 +625,7 @@ module.exports = function(options) {
         auth: false
       },
       handler: function(request, reply) {
-        server.methods.account.requestMigrateEmail(request, function(err, json) {
+        server.methods.OAuthDB.requestMigrateEmail(request, function(err, json) {
           if ( err ) {
             return reply(Boom.badImplementation(err));
           }
@@ -671,7 +665,7 @@ module.exports = function(options) {
           {
             assign: 'isValidToken',
             method: function(request, reply) {
-              server.methods.account.verifyToken(request, function(err, json) {
+              server.methods.OAuthDB.verifyToken(request, function(err, json) {
                 if ( err ) {
                   return reply(err);
                 }
@@ -683,7 +677,7 @@ module.exports = function(options) {
           {
             assign: 'user',
             method: function(request, reply) {
-              server.methods.account.setPassword(
+              server.methods.OAuthDB.setPassword(
                 request,
                 request.pre.uid,
                 request.pre.password,
@@ -711,7 +705,7 @@ module.exports = function(options) {
         auth: false
       },
       handler: function(request, reply) {
-        server.methods.account.checkUsername(request, function(err, json) {
+        server.methods.OAuthDB.checkUsername(request, function(err, json) {
           if ( err ) {
             return reply(err);
           }
