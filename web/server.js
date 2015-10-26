@@ -99,7 +99,8 @@ module.exports = function(options) {
         POSTGRE_POOL_MAX: process.env.POSTGRE_POOL_MAX,
         BCRYPT_ROUNDS: process.env.BCRYPT_ROUNDS,
         TOKEN_SALT: process.env.TOKEN_SALT,
-        RANDOM_BYTE_COUNT: process.env.RANDOM_BYTE_COUNT
+        RANDOM_BYTE_COUNT: process.env.RANDOM_BYTE_COUNT,
+        RESET_EXPIRY_TIME: process.env.RESET_EXPIRY_TIME
       }
     }
   ], function(err) {
