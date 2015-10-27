@@ -31,7 +31,7 @@ module.exports = {
       var type = regex.email.test(uid) ? 'email address' : 'username';
       query = this.getQuery();
       query.uid = uid;
-      if(json.statusCode === 404 && currentPath !== '/signup') {
+      if(!json.exists && currentPath !== '/signup') {
         // user not found do something here!
         WebmakerActions.displayError({'field': fieldName, 'message': 'Whoops! We can\'t find an account with that ' + type + '!'});
 
@@ -41,12 +41,12 @@ module.exports = {
       } else if (!json.exists) {
         WebmakerActions.validField({'field': fieldName, 'message': 'Available'});
 
-      } else if ( json.usePasswordLogin && currentPath !== '/login'
+      } else if ( !json.mustMigrate && currentPath !== '/login'
                                         && currentPath !== '/reset-password'
                                         && currentPath !== '/signup') {
         this.transitionTo('/login', '', query );
 
-      } else if ( !json.usePasswordLogin ) {
+      } else if ( json.mustMigrate ) {
         this.transitionTo('/migrate', '', query );
 
       } else if (currentPath === '/login'){

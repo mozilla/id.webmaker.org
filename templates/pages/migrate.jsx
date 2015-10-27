@@ -25,7 +25,7 @@ var UserMigration = React.createClass({
     return {
       login: false,
       emailedKey: false,
-      setPass: !!this.getQuery().token,
+      setPass: !!this.getQuery().resetCode,
       success: false,
       errorMessage: null
     };
@@ -113,7 +113,7 @@ var UserMigration = React.createClass({
     var csrfToken = cookiejs.parse(document.cookie).crumb;
     var query = this.getQuery();
 
-    fetch('/migrate-user', {
+    fetch('/reset-password', {
       method: "post",
       credentials: 'same-origin',
       headers: {
@@ -122,7 +122,7 @@ var UserMigration = React.createClass({
         'X-CSRF-Token': csrfToken
       },
       body: JSON.stringify({
-        token: query.token,
+        resetCode: query.resetCode,
         uid: query.uid,
         password: data.password
       })
