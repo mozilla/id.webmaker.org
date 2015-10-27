@@ -2,10 +2,12 @@
 -- webmaker - top-secret
 -- webmaker2 - mozilla
 -- webmaker3 - dontusepasswordasyourpassword
+-- webmaker4 = top-secret
 INSERT INTO users VALUES
  (1, 'webmaker@example.com', 'webmaker', 'en_US', '$2a$10$IylFUlgN/EiRVJaPEt3nVee401A9c2xz9fiRm8PpL5brvqTHybg5e' ),
  (2, 'webmaker2@example.com', 'webmaker2', 'en_US', '$2a$10$pIE9CHWnn/xYMURAqHtC6Od0XMzMGWKNCRIkvo2zlwV9GD0uUw0re' ),
- (3, 'webmaker3@example.com', 'webmaker3', 'en_US', '$2a$10$20XFnj6Xj6k5Nff57LHzauoGx.liRyjMVlAESu7aQjgqk7fQI4A9m' );
+ (3, 'webmaker3@example.com', 'webmaker3', 'en_US', '$2a$10$20XFnj6Xj6k5Nff57LHzauoGx.liRyjMVlAESu7aQjgqk7fQI4A9m' ),
+ (4, 'webmaker4@example.com', 'webmaker4', 'en_US', '$2a$10$IylFUlgN/EiRVJaPEt3nVee401A9c2xz9fiRm8PpL5brvqTHybg5e' );
 
 INSERT INTO clients VALUES
   ('test', 'test', '["password", "authorization_code"]'::jsonb, '["code", "token"]'::JSONB, 'http://example.org/oauth_redirect' ),

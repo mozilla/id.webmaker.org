@@ -1,3 +1,7 @@
+/* jshint esnext: true */
+
+"use strict";
+
 require("habitat").load("tests.env");
 
 var Code = require("code");
@@ -10,7 +14,6 @@ var url = require("url");
 
 lab.experiment("OAuth", function() {
   var s = server({
-    loginAPI: "http://localhost:3232",
     cookieSecret: "test",
     oauth_clients: testCreds.clients,
     authCodes: testCreds.authCodes,
@@ -19,7 +22,6 @@ lab.experiment("OAuth", function() {
   });
 
   var s2 = server({
-    loginAPI: "http://localhost:3232",
     cookieSecret: "test",
     oauth_clients: testCreds.clients,
     authCodes: testCreds.authCodes,
@@ -87,6 +89,7 @@ lab.experiment("OAuth", function() {
       Code.expect(response.headers["set-cookie"]).to.exist();
       Code.expect(response.result.email).to.equal("webmaker+create-user@example.com");
       Code.expect(response.result.username).to.equal("create-user");
+      done();
     });
   });
 
@@ -113,6 +116,7 @@ lab.experiment("OAuth", function() {
       Code.expect(response.headers["set-cookie"]).to.exist();
       Code.expect(response.result.email).to.equal("webmaker+create-user2@example.com");
       Code.expect(response.result.username).to.equal("create-user-2");
+      done();
     });
   });
 
@@ -138,7 +142,8 @@ lab.experiment("OAuth", function() {
       Code.expect(response.headers["set-cookie"]).to.exist();
       Code.expect(response.result.email).to.equal("webmaker+default-lang@example.com");
       Code.expect(response.result.username).to.equal("default-lang");
-      Code.expect(response.result.prefLocale).to.equal("en-US");
+      Code.expect(response.result.pref_locale).to.equal("en-US");
+      done();
     });
   });
 
@@ -165,7 +170,8 @@ lab.experiment("OAuth", function() {
       Code.expect(response.headers["set-cookie"]).to.exist();
       Code.expect(response.result.email).to.equal("webmaker+lang-provided@example.com");
       Code.expect(response.result.username).to.equal("lang-provided");
-      Code.expect(response.result.prefLocale).to.equal("it-CH");
+      Code.expect(response.result.pref_locale).to.equal("it-CH");
+      done();
     });
   });
 
@@ -185,25 +191,7 @@ lab.experiment("OAuth", function() {
 
     s.inject(request, function(response) {
       Code.expect(response.statusCode).to.equal(500);
-    });
-  });
-
-  lab.test("POST Create User (login API failure)", function(done) {
-    var request = {
-      method: "POST",
-      url: "/create-user",
-      payload: {
-        email: "webmaker@example.com",
-        username: "notgonnawork",
-        password: "CantGuessThis1234",
-        feedback: true,
-        client_id: "test",
-        lang: "en-US"
-      }
-    };
-
-    s.inject(request, function(response) {
-      Code.expect(response.statusCode).to.equal(500);
+      done();
     });
   });
 
@@ -226,6 +214,7 @@ lab.experiment("OAuth", function() {
       s.inject(request, function(response) {
         Code.expect(response.statusCode).to.equal(400);
         Code.expect(response.result.message).to.equal("Password not strong enough.");
+        done();
       });
     }
   );
@@ -247,6 +236,7 @@ lab.experiment("OAuth", function() {
 
       s.inject(request, function(response) {
         Code.expect(response.statusCode).to.equal(400);
+        done();
       });
     }
   );
@@ -268,6 +258,7 @@ lab.experiment("OAuth", function() {
 
       s.inject(request, function(response) {
         Code.expect(response.statusCode).to.equal(400);
+        done();
       });
     }
   );
@@ -289,6 +280,7 @@ lab.experiment("OAuth", function() {
 
       s.inject(request, function(response) {
         Code.expect(response.statusCode).to.equal(400);
+        done();
       });
     }
   );
@@ -310,6 +302,7 @@ lab.experiment("OAuth", function() {
 
       s.inject(request, function(response) {
         Code.expect(response.statusCode).to.equal(400);
+        done();
       });
     }
   );
@@ -319,13 +312,15 @@ lab.experiment("OAuth", function() {
       method: "POST",
       url: "/request-reset",
       payload: {
-        uid: "webmaker"
+        uid: "webmaker",
+        oauth: {}
       }
     };
 
     s.inject(request, function(response) {
       Code.expect(response.statusCode).to.equal(200);
-      Code.expect(response.result.status).to.equal("created");
+      Code.expect(response.result.status).to.equal("success");
+      done();
     });
   });
 
@@ -338,13 +333,15 @@ lab.experiment("OAuth", function() {
         "X-CSRF-Token": "02mke0occKoOiqFkr9MUYo9YnMellJE_0dPD6UowyeJ"
       },
       payload: {
-        uid: "webmaker"
+        uid: "webmaker",
+        oauth: {}
       }
     };
 
     s2.inject(request, function(response) {
       Code.expect(response.statusCode).to.equal(200);
-      Code.expect(response.result.status).to.equal("created");
+      Code.expect(response.result.status).to.equal("success");
+      done();
     });
   });
 
@@ -353,40 +350,30 @@ lab.experiment("OAuth", function() {
       method: "POST",
       url: "/request-reset",
       payload: {
-        uid: "webmaker"
+        uid: "webmaker",
+        oauth: {}
       }
     };
 
     s2.inject(request, function(response) {
       Code.expect(response.statusCode).to.equal(403);
+      done();
     });
   });
 
-  lab.test("POST Request Reset (failure)", function(done) {
+  lab.test("POST Request Reset (user doesn't exist)", function(done) {
     var request = {
       method: "POST",
       url: "/request-reset",
       payload: {
-        uid: "fail"
+        uid: "fail",
+        oauth: {}
       }
     };
 
     s.inject(request, function(response) {
-      Code.expect(response.statusCode).to.equal(500);
-    });
-  });
-
-  lab.test("POST Request Reset (invalid response)", function(done) {
-    var request = {
-      method: "POST",
-      url: "/request-reset",
-      payload: {
-        uid: "invalidResponse"
-      }
-    };
-
-    s.inject(request, function(response) {
-      Code.expect(response.statusCode).to.equal(500);
+      Code.expect(response.statusCode).to.equal(401);
+      done();
     });
   });
 
@@ -396,15 +383,24 @@ lab.experiment("OAuth", function() {
       url: "/reset-password",
       payload: {
         uid: "webmaker",
-        resetCode: "resetCode",
+        resetCode: "TestResetCode_1",
         password: "UnguessablePassword"
       }
     };
 
-    s.inject(request, function(response) {
-      Code.expect(response.statusCode).to.equal(200);
-      Code.expect(response.result.status).to.equal("success");
-    });
+    var idDB = s.plugins.oauthDB.identityDatabase;
+
+    idDB.insertResetCode(
+      "b41a35d3237ce9b7024eb17a2330bfa83c889eae3f5620ac75a513697a654d0b",
+      1
+    )
+    .then(function() {
+      s.inject(request, function(response) {
+        Code.expect(response.statusCode).to.equal(200);
+        Code.expect(response.result.status).to.equal("success");
+        done();
+      });
+    }).catch((err) => { throw err; });
   });
 
   lab.test("POST Reset Password - With CSRF Token Headers succeeds", function(done) {
@@ -417,14 +413,23 @@ lab.experiment("OAuth", function() {
       },
       payload: {
         uid: "webmaker",
-        resetCode: "resetCode",
+        resetCode: "TestResetCode_2",
         password: "UnguessablePassword"
       }
     };
 
-    s2.inject(request, function(response) {
-      Code.expect(response.statusCode).to.equal(200);
-      Code.expect(response.result.status).to.equal("success");
+    var idDB = s.plugins.oauthDB.identityDatabase;
+
+    idDB.insertResetCode(
+      "3ceff27404fd1faff6c46ebced5797285b62412662809873a4a60788570c416b",
+      1
+    )
+    .then(function() {
+      s2.inject(request, function(response) {
+        Code.expect(response.statusCode).to.equal(200);
+        Code.expect(response.result.status).to.equal("success");
+        done();
+      });
     });
   });
 
@@ -434,13 +439,22 @@ lab.experiment("OAuth", function() {
       url: "/reset-password",
       payload: {
         uid: "webmaker",
-        resetCode: "resetCode",
+        resetCode: "TestResetCode_3",
         password: "UnguessablePassword"
       }
     };
 
-    s2.inject(request, function(response) {
-      Code.expect(response.statusCode).to.equal(403);
+    var idDB = s.plugins.oauthDB.identityDatabase;
+
+    idDB.insertResetCode(
+      "10233207d50dc989d4332c762e1e6f463b6f6608b18805342680d8f229b83ec5",
+      1
+    )
+    .then(function() {
+      s2.inject(request, function(response) {
+        Code.expect(response.statusCode).to.equal(403);
+        done();
+      });
     });
   });
 
@@ -450,47 +464,24 @@ lab.experiment("OAuth", function() {
       url: "/reset-password",
       payload: {
         uid: "webmaker",
-        resetCode: "invalid",
+        resetCode: "TestResetCode_Invalid",
         password: "UnguessablePassword"
       }
     };
 
-    s.inject(request, function(response) {
-      Code.expect(response.statusCode).to.equal(401);
-      Code.expect(response.result.error).to.equal("Unauthorized");
-    });
-  });
+    var idDB = s.plugins.oauthDB.identityDatabase;
 
-  lab.test("POST Reset Password (bad request)", function(done) {
-    var request = {
-      method: "POST",
-      url: "/reset-password",
-      payload: {
-        uid: "badRequest",
-        resetCode: "resetCode",
-        password: "UnguessablePassword"
-      }
-    };
-
-    s.inject(request, function(response) {
-      Code.expect(response.statusCode).to.equal(400);
-      Code.expect(response.result.error).to.equal("Bad Request");
-    });
-  });
-
-  lab.test("POST Reset Password (invalid response)", function(done) {
-    var request = {
-      method: "POST",
-      url: "/reset-password",
-      payload: {
-        uid: "invalidResponse",
-        resetCode: "resetCode",
-        password: "UnguessablePassword"
-      }
-    };
-
-    s.inject(request, function(response) {
-      Code.expect(response.statusCode).to.equal(500);
+    idDB.insertResetCode(
+      // hmac('sha256', 'takeThingsWithAGrainOfSalt').update('TestResetCode_3').digest('hex')
+      "fcae98a0e4649f55d9a4705e68e15ec90c27ce65aacccc94b23c95c1ff9cfbc9",
+      1
+    )
+    .then(function() {
+      s.inject(request, function(response) {
+        Code.expect(response.statusCode).to.equal(401);
+        Code.expect(response.result.error).to.equal("Unauthorized");
+        done();
+      });
     });
   });
 
@@ -499,14 +490,15 @@ lab.experiment("OAuth", function() {
       method: "POST",
       url: "/login",
       payload: {
-        uid: "webmaker",
-        password: "password"
+        uid: "webmaker4",
+        password: "top-secret"
       }
     };
 
     s.inject(request, function(response) {
       Code.expect(response.statusCode).to.equal(200);
       Code.expect(response.headers["set-cookie"]).to.exist();
+      done();
     });
   });
 
@@ -519,14 +511,15 @@ lab.experiment("OAuth", function() {
         "X-CSRF-Token": "02mke0occKoOiqFkr9MUYo9YnMellJE_0dPD6UowyeJ"
       },
       payload: {
-        uid: "webmaker",
-        password: "password"
+        uid: "webmaker4",
+        password: "top-secret"
       }
     };
 
     s2.inject(request, function(response) {
       Code.expect(response.statusCode).to.equal(200);
       Code.expect(response.headers["set-cookie"]).to.exist();
+      done();
     });
   });
 
@@ -536,63 +529,30 @@ lab.experiment("OAuth", function() {
       url: "/login",
       payload: {
         uid: "webmaker",
-        password: "password"
+        password: "top-secret"
       }
     };
 
     s2.inject(request, function(response) {
       Code.expect(response.statusCode).to.equal(403);
+      done();
     });
   });
 
-  lab.test("POST login - x-forwarded-for", function(done) {
-    var request = {
-      method: "POST",
-      url: "/login",
-      headers: {
-        "x-forwarded-for": "192.168.1.1"
-      },
-      payload: {
-        uid: "webmaker",
-        password: "password"
-      }
-    };
-
-    s.inject(request, function(response) {
-      Code.expect(response.statusCode).to.equal(200);
-      Code.expect(response.headers["set-cookie"]).to.exist();
-    });
-  });
-
-  lab.test("POST login - invalid json response", function(done) {
-    var request = {
-      method: "POST",
-      url: "/login",
-      payload: {
-        uid: "invalidResponse",
-        password: "password"
-      }
-    };
-
-    s.inject(request, function(response) {
-      Code.expect(response.statusCode).to.equal(500);
-      Code.expect(response.headers["set-cookie"]).to.be.undefined();
-    });
-  });
-
-  lab.test("POST login - unauthorized", function(done) {
+  lab.test("POST login - Unauthorized", function(done) {
     var request = {
       method: "POST",
       url: "/login",
       payload: {
         uid: "webmaker",
-        password: "fake"
+        password: "invalid_password"
       }
     };
 
     s.inject(request, function(response) {
       Code.expect(response.statusCode).to.equal(401);
       Code.expect(response.headers["set-cookie"]).to.be.undefined();
+      done();
     });
   });
 
@@ -620,6 +580,7 @@ lab.experiment("OAuth", function() {
       Code.expect(redirectUri.host).to.equal("example.org");
       Code.expect(redirectUri.pathname).to.equal("/oauth_redirect");
       Code.expect(redirectUri.query.logout).to.equal("true");
+      done();
     });
   });
 
@@ -645,6 +606,7 @@ lab.experiment("OAuth", function() {
       Code.expect(redirectUri.protocol).to.equal("https:");
       Code.expect(redirectUri.host).to.equal("webmaker.org");
       Code.expect(redirectUri.query.logout).to.equal("true");
+      done();
     });
   });
 
@@ -659,6 +621,7 @@ lab.experiment("OAuth", function() {
 
     s.inject(request, function(response) {
       Code.expect(response.statusCode).to.equal(400);
+      done();
     });
   });
 
@@ -882,7 +845,7 @@ lab.experiment("OAuth", function() {
     };
 
     s.inject(accessTokenRequest, function(response) {
-      Code.expect(response.statusCode).to.equal(403);
+      Code.expect(response.statusCode).to.equal(401);
       done();
     });
   });
@@ -914,7 +877,7 @@ lab.experiment("OAuth", function() {
     };
 
     s.inject(accessTokenRequest, function(response) {
-      Code.expect(response.statusCode).to.equal(403);
+      Code.expect(response.statusCode).to.equal(401);
       done();
     });
   });
@@ -930,7 +893,7 @@ lab.experiment("OAuth", function() {
     };
 
     s.inject(accessTokenRequest, function(response) {
-      Code.expect(response.statusCode).to.equal(403);
+      Code.expect(response.statusCode).to.equal(401);
       done();
     });
   });
@@ -1008,7 +971,7 @@ lab.experiment("OAuth", function() {
     var accessTokenRequest = {
       method: "POST",
       url: "/login/oauth/access_token",
-      payload: "uid=webmaker&password=password&scopes=user%20projects&grant_type=password&client_id=test",
+      payload: "uid=webmaker4&password=top-secret&scopes=user%20projects&grant_type=password&client_id=test",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded"
       }
@@ -1023,11 +986,27 @@ lab.experiment("OAuth", function() {
     });
   });
 
-  lab.test("POST access_token, password grant fails with invalid credentials", function(done) {
+  lab.test("POST access_token, password grant fails with invalid username", function(done) {
     var accessTokenRequest = {
       method: "POST",
       url: "/login/oauth/access_token",
       payload: "uid=fail&password=password&scopes=user%20projects&grant_type=password&client_id=test",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      }
+    };
+
+    s.inject(accessTokenRequest, function(response) {
+      Code.expect(response.statusCode).to.equal(401);
+      done();
+    });
+  });
+
+  lab.test("POST access_token, password grant fails with invalid password", function(done) {
+    var accessTokenRequest = {
+      method: "POST",
+      url: "/login/oauth/access_token",
+      payload: "uid=webmaker4&password=notthepassword&scopes=user%20projects&grant_type=password&client_id=test",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded"
       }
@@ -1238,8 +1217,8 @@ lab.experiment("OAuth", function() {
 
     s.inject(getUserRequest, function(response) {
       Code.expect(response.statusCode).to.equal(200);
-      Code.expect(response.result.username).to.equal("test");
-      Code.expect(response.result.email).to.equal("test@example.com");
+      Code.expect(response.result.username).to.equal("webmaker");
+      Code.expect(response.result.email).to.equal("webmaker@example.com");
       Code.expect(response.result.scope).to.include(["user", "email"]);
       done();
     });
@@ -1256,8 +1235,8 @@ lab.experiment("OAuth", function() {
 
     s.inject(getUserRequest, function(response) {
       Code.expect(response.statusCode).to.equal(200);
-      Code.expect(response.result.username).to.equal("test");
-      Code.expect(response.result.email).to.equal("test@example.com");
+      Code.expect(response.result.username).to.equal("webmaker");
+      Code.expect(response.result.email).to.equal("webmaker@example.com");
       Code.expect(response.result.scope).to.include(["user", "email", "foo"]);
       done();
     });
@@ -1350,27 +1329,12 @@ lab.experiment("OAuth", function() {
     });
   });
 
-  lab.test("GET /user returns 500 when loginAPI fails", function(done) {
-    var getUserRequest = {
-      method: "GET",
-      url: "/user",
-      headers: {
-        "authorization": "token getUserFail"
-      }
-    };
-
-    s.inject(getUserRequest, function(response) {
-      Code.expect(response.statusCode).to.equal(500);
-      done();
-    });
-  });
-
   lab.test("POST /request-migration-email succeeds", function(done) {
     var migrationEmailRequest = {
       method: "POST",
       url: "/request-migration-email",
       payload: {
-        uid: "test",
+        uid: "webmaker",
         oauth: {
           oauthy: "params"
         }
@@ -1392,7 +1356,7 @@ lab.experiment("OAuth", function() {
         "X-CSRF-Token": "02mke0occKoOiqFkr9MUYo9YnMellJE_0dPD6UowyeJ"
       },
       payload: {
-        uid: "test",
+        uid: "webmaker",
         oauth: {
           oauthy: "params"
         }
@@ -1423,7 +1387,7 @@ lab.experiment("OAuth", function() {
     });
   });
 
-  lab.test("POST /request-migration-email fails if user not found on loginapi", function(done) {
+  lab.test("POST /request-migration-email fails if user not found", function(done) {
     var migrationEmailRequest = {
       method: "POST",
       url: "/request-migration-email",
@@ -1436,146 +1400,7 @@ lab.experiment("OAuth", function() {
     };
 
     s.inject(migrationEmailRequest, function(response) {
-      Code.expect(response.statusCode).to.equal(500);
-      done();
-    });
-  });
-
-  lab.test("POST /migrate-user", function(done) {
-    var migrateUserRequest = {
-      method: "POST",
-      url: "/migrate-user",
-      payload: {
-        uid: "test",
-        token: "kakav-nufuk",
-        password: "Super-Duper-Strong-Passphrase-9001"
-      }
-    };
-
-    s.inject(migrateUserRequest, function(response) {
-      Code.expect(response.statusCode).to.equal(200);
-      done();
-    });
-  });
-
-  lab.test("POST /migrate-user - With CSRF Token Headers succeeds", function(done) {
-    var migrateUserRequest = {
-      method: "POST",
-      url: "/migrate-user",
-      headers: {
-        "Cookie": "crumb=02mke0occKoOiqFkr9MUYo9YnMellJE_0dPD6UowyeJ",
-        "X-CSRF-Token": "02mke0occKoOiqFkr9MUYo9YnMellJE_0dPD6UowyeJ"
-      },
-      payload: {
-        uid: "test",
-        token: "kakav-nufuk",
-        password: "Super-Duper-Strong-Passphrase-9001"
-      }
-    };
-
-    s2.inject(migrateUserRequest, function(response) {
-      Code.expect(response.statusCode).to.equal(200);
-      done();
-    });
-  });
-
-  lab.test("POST /migrate-user - Without CSRF Token Headers returns 403", function(done) {
-    var migrateUserRequest = {
-      method: "POST",
-      url: "/migrate-user",
-      payload: {
-        uid: "test",
-        token: "kakav-nufuk",
-        password: "Super-Duper-Strong-Passphrase-9001"
-      }
-    };
-
-    s2.inject(migrateUserRequest, function(response) {
-      Code.expect(response.statusCode).to.equal(403);
-      done();
-    });
-  });
-
-  lab.test("POST /migrate-user returns 401 if using invalid username", function(done) {
-    var migrateUserRequest = {
-      method: "POST",
-      url: "/migrate-user",
-      payload: {
-        uid: "fake",
-        token: "kakav-nufuk",
-        password: "Super-Duper-Strong-Passphrase-9001"
-      }
-    };
-
-    s.inject(migrateUserRequest, function(response) {
       Code.expect(response.statusCode).to.equal(401);
-      done();
-    });
-  });
-
-  lab.test("POST /migrate-user returns 401 if using bad token", function(done) {
-    var migrateUserRequest = {
-      method: "POST",
-      url: "/migrate-user",
-      payload: {
-        uid: "test",
-        token: "nufuk-kakav",
-        password: "Super-Duper-Strong-Passphrase-9001"
-      }
-    };
-
-    s.inject(migrateUserRequest, function(response) {
-      Code.expect(response.statusCode).to.equal(401);
-      done();
-    });
-  });
-
-  lab.test("POST /migrate-user returns 400 if sent no password", function(done) {
-    var migrateUserRequest = {
-      method: "POST",
-      url: "/migrate-user",
-      payload: {
-        uid: "test",
-        token: "nufuk-kakav"
-      }
-    };
-
-    s.inject(migrateUserRequest, function(response) {
-      Code.expect(response.statusCode).to.equal(400);
-      done();
-    });
-  });
-
-  lab.test("POST /migrate-user returns 400 if sent a weak password", function(done) {
-    var migrateUserRequest = {
-      method: "POST",
-      url: "/migrate-user",
-      payload: {
-        uid: "test",
-        token: "nufuk-kakav",
-        password: "password"
-      }
-    };
-
-    s.inject(migrateUserRequest, function(response) {
-      Code.expect(response.statusCode).to.equal(400);
-      done();
-    });
-  });
-
-  lab.test("POST /migrate-user returns 500 if set password fails on login", function(done) {
-    var migrateUserRequest = {
-      method: "POST",
-      url: "/migrate-user",
-      payload: {
-        uid: "test",
-        token: "kakav-nufuk",
-        password: "Super-Duper-Strong-Passphrase-9002"
-      }
-    };
-
-    s.inject(migrateUserRequest, function(response) {
-      Code.expect(response.statusCode).to.equal(500);
       done();
     });
   });
@@ -1585,14 +1410,14 @@ lab.experiment("OAuth", function() {
       method: "POST",
       url: "/check-username",
       payload: {
-        uid: "test"
+        uid: "webmaker"
       }
     };
 
     s.inject(checkUsernameRequest, function(response) {
       Code.expect(response.statusCode).to.equal(200);
       Code.expect(response.result.exists).to.equal(true);
-      Code.expect(response.result.usePasswordLogin).to.equal(true);
+      Code.expect(response.result.mustMigrate).to.equal(false);
       done();
     });
   });
@@ -1606,14 +1431,14 @@ lab.experiment("OAuth", function() {
         "X-CSRF-Token": "02mke0occKoOiqFkr9MUYo9YnMellJE_0dPD6UowyeJ"
       },
       payload: {
-        uid: "test"
+        uid: "webmaker"
       }
     };
 
     s2.inject(checkUsernameRequest, function(response) {
       Code.expect(response.statusCode).to.equal(200);
       Code.expect(response.result.exists).to.equal(true);
-      Code.expect(response.result.usePasswordLogin).to.equal(true);
+      Code.expect(response.result.mustMigrate).to.equal(false);
       done();
     });
   });
@@ -1623,7 +1448,7 @@ lab.experiment("OAuth", function() {
       method: "POST",
       url: "/check-username",
       payload: {
-        uid: "test"
+        uid: "webmaker"
       }
     };
 
@@ -1634,7 +1459,7 @@ lab.experiment("OAuth", function() {
   });
 
 
-  lab.test("POST /check-username returns 404 for non-existent user", function(done) {
+  lab.test("POST /check-username returns 200 for non-existent user", function(done) {
     var checkUsernameRequest = {
       method: "POST",
       url: "/check-username",
@@ -1644,7 +1469,8 @@ lab.experiment("OAuth", function() {
     };
 
     s.inject(checkUsernameRequest, function(response) {
-      Code.expect(response.statusCode).to.equal(404);
+      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(response.result.exists).to.be.false();
       done();
     });
   });

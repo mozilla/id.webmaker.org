@@ -352,19 +352,24 @@ module.exports = function(options) {
                 return server.methods.OAuthDB.verifyPassword(
                   request.payload.password,
                   request.payload.uid,
-                  function(err, json) {
+                  function(err, user) {
                     if ( err ) {
                       return reply(err);
                     }
 
                     reply({
-                      user_id: json.user.id,
+                      user_id: user.id,
                       scopes: request.payload.scopes.split(' ')
                     });
                   }
                 );
               }
-              server.methods.OAuthDB.verifyAuthCode(request.payload.code, request.pre.client.client_id, reply);
+
+              server.methods.OAuthDB.verifyAuthCode(
+                request.payload.code,
+                request.pre.client.client_id,
+                reply
+              );
             }
           },
           {
@@ -398,13 +403,17 @@ module.exports = function(options) {
           {
             assign: 'user',
             method: function(request, reply) {
-              server.methods.OAuthDB.verifyPassword(request, function(err, json) {
-                if ( err ) {
-                  return reply(err);
-                }
+              server.methods.OAuthDB.verifyPassword(
+                request.payload.password,
+                request.payload.uid,
+                function(err, user) {
+                  if ( err ) {
+                    return reply(err);
+                  }
 
-                reply(json.user);
-              });
+                  reply(user);
+                }
+              );
             }
           }
         ]
@@ -418,16 +427,28 @@ module.exports = function(options) {
       method: 'POST',
       path: '/request-reset',
       config:{
-        auth: false
+        auth: false,
+        validate: {
+          payload: {
+            uid: Joi.required(),
+            oauth: Joi.object().required()
+          }
+        }
       },
       handler: function(request, reply) {
-        server.methods.OAuthDB.requestPasswordResetEmail(request.payload.uid, function(err, json) {
-          if ( err ) {
-            return reply(err);
+        server.methods.OAuthDB.requestPasswordResetEmail(
+          request.payload.uid,
+          request.payload.oauth,
+          '/reset-password',
+          function(err, json) {
+            if ( err ) {
+              return reply(err);
+            }
+            reply({
+              status: 'success'
+            });
           }
-
-          reply(json);
-        });
+        );
       }
     },
     {
@@ -437,13 +458,20 @@ module.exports = function(options) {
         auth: false
       },
       handler: function(request, reply) {
-        server.methods.OAuthDB.resetPassword(request, function(err, json) {
-          if ( err ) {
-            return reply(err);
-          }
+        server.methods.OAuthDB.resetPassword(
+          request.payload.resetCode,
+          request.payload.uid,
+          request.payload.password,
+          function(err) {
+            if ( err ) {
+              return reply(err);
+            }
 
-          reply(json);
-        });
+            reply({
+              status: 'success'
+            });
+          }
+        );
       }
     },
     {
@@ -507,17 +535,9 @@ module.exports = function(options) {
           payload.password,
           function(err, user) {
             if ( err ) {
-              // TODO fix error handling
+              // TODO verify error handling works properly
               return reply(err);
             }
-            // if ( json.login_error ) {
-            //   if ( isUniqueError('username', json.login_error) ) {
-            //     return reply(Boom.badRequest('That username is taken'));
-            //   } else if ( isUniqueError('email', json.login_error) ) {
-            //     return reply(Boom.badRequest('An account exists for that email address'));
-            //   }
-            //   return reply(Boom.badRequest(json.login_error));
-            // }
             request.auth.session.set(user);
             reply(user);
           }
@@ -600,11 +620,11 @@ module.exports = function(options) {
           {
             assign: 'user',
             method: function(request, reply) {
-              server.methods.OAuthDB.getUserById(request.pre.token.user_id, function(err, json) {
+              server.methods.OAuthDB.getUser(request.pre.token.user_id, function(err, user) {
                 if ( err ) {
                   return reply(Boom.badImplementation(err));
                 }
-                reply(json.user);
+                reply(user);
               });
             }
           }
@@ -626,77 +646,18 @@ module.exports = function(options) {
         auth: false
       },
       handler: function(request, reply) {
-        server.methods.OAuthDB.requestMigrateEmail(request, function(err, json) {
-          if ( err ) {
-            return reply(Boom.badImplementation(err));
+        server.methods.OAuthDB.requestPasswordResetEmail(
+          request.payload.uid,
+          request.payload.oauth,
+          '/migrate',
+          function(err, json) {
+            if ( err ) {
+              return reply(err);
+            }
+
+            reply({ status: 'migration email sent' });
           }
-          reply({ status: 'migration email sent' });
-        });
-      }
-    },
-    {
-      method: 'POST',
-      path: '/migrate-user',
-      config: {
-        auth: false,
-        pre: [
-          {
-            assign: 'uid',
-            method: function(request, reply) {
-              reply(request.payload.uid);
-            }
-          },
-          {
-            assign: 'password',
-            method: function(request, reply) {
-              var password = request.payload.password;
-              if ( !password ) {
-                return reply(Boom.badRequest('No password provided'));
-              }
-
-              var result = passTest.test(password);
-
-              if ( !result.strong ) {
-                return reply(Boom.badRequest('Password not strong enough'), result);
-              }
-
-              reply(password);
-            }
-          },
-          {
-            assign: 'isValidToken',
-            method: function(request, reply) {
-              server.methods.OAuthDB.verifyToken(request, function(err, json) {
-                if ( err ) {
-                  return reply(err);
-                }
-
-                reply(true);
-              });
-            }
-          },
-          {
-            assign: 'user',
-            method: function(request, reply) {
-              server.methods.OAuthDB.setPassword(
-                request,
-                request.pre.uid,
-                request.pre.password,
-                function(err, json) {
-                  if ( err ) {
-                    return reply(err);
-                  }
-
-                  reply(json.user);
-                }
-              );
-            }
-          }
-        ]
-      },
-      handler: function(request, reply) {
-        request.auth.session.set(request.pre.user);
-        reply({ status: 'Logged in' });
+        );
       }
     },
     {
@@ -706,13 +667,16 @@ module.exports = function(options) {
         auth: false
       },
       handler: function(request, reply) {
-        server.methods.OAuthDB.checkUsername(request, function(err, json) {
-          if ( err ) {
-            return reply(err);
-          }
+        server.methods.OAuthDB.checkUsername(
+          request.payload.uid,
+          function(err, result) {
+            if ( err ) {
+              return reply(err);
+            }
 
-          reply(json);
-        });
+            reply(result);
+          }
+        );
       }
     }
   ]);

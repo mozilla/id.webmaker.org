@@ -16,10 +16,9 @@ CREATE TABLE IF NOT EXISTS "reset_codes"
   code varchar NOT NULL,
   valid boolean NOT NULL DEFAULT TRUE,
   user_id bigint NOT NULL REFERENCES users(id),
-  created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+  created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT reset_codes_pk PRIMARY KEY (code)
 );
-
-CREATE INDEX reset_codes_idx ON reset_codes (code);
 
 CREATE TABLE IF NOT EXISTS "clients"
 (
@@ -51,16 +50,3 @@ CREATE TABLE IF NOT EXISTS "access_tokens"
   created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT salted_token_pk PRIMARY KEY (access_token)
 );
-
-CREATE EXTENSION IF NOT EXISTS pgcrypto;
-
-CREATE OR REPLACE FUNCTION generate_reset_code()
-RETURNS TRIGGER AS $$
-BEGIN
-  NEW.code = gen_random_uuid();
-  RETURN NEW;
-END;
-$$ language 'plpgsql';
-
-CREATE TRIGGER trigger_generate_reset_code BEFORE INSERT ON reset_codes
-FOR EACH ROW EXECUTE PROCEDURE generate_reset_code();
