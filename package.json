@@ -45,7 +45,7 @@
   "dependencies": {
     "autoless": "^0.1.6",
     "babel-loader": "^5.0.0",
-    "bcrypt": "^0.8.5",
+    "bcryptjs": "^2.3.0",
     "blankie": "^1.1.0",
     "boom": "^2.6.1",
     "bootstrap": "^3.3.4",
