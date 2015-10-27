@@ -10,6 +10,9 @@ CREATE TABLE IF NOT EXISTS "users"
   CONSTRAINT users_id_pk PRIMARY KEY (id)
 );
 
+CREATE INDEX users_email_idx ON users(email);
+CREATE INDEX users_username_idx ON users(username);
+
 -- bump the nextval in the sequence to 1m, to avoid collisions with old user ids
 SELECT setval('users_id_seq', 1000000, true);
 
