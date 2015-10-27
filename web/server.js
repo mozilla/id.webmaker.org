@@ -94,13 +94,13 @@ module.exports = function(options) {
     {
       register:require('../lib/OAuthDB'),
       options: {
-        POSTGRE_CONNECTION_STRING: process.env.POSTGRE_CONNECTION_STRING,
-        POSTGRE_POOL_MIN: process.env.POSTGRE_POOL_MIN,
-        POSTGRE_POOL_MAX: process.env.POSTGRE_POOL_MAX,
-        BCRYPT_ROUNDS: process.env.BCRYPT_ROUNDS,
-        TOKEN_SALT: process.env.TOKEN_SALT,
-        RANDOM_BYTE_COUNT: process.env.RANDOM_BYTE_COUNT,
-        RESET_EXPIRY_TIME: process.env.RESET_EXPIRY_TIME
+        POSTGRE_CONNECTION_STRING: options.pgConnString,
+        POSTGRE_POOL_MIN: options.pgPoolMin,
+        POSTGRE_POOL_MAX: options.pgPoolMax,
+        BCRYPT_ROUNDS: options.bcryptRounds,
+        TOKEN_SALT: options.tokenSalt,
+        RANDOM_BYTE_COUNT: options.randomByteCount,
+        RESET_EXPIRY_TIME: options.resetExpiryTime
       }
     }
   ], function(err) {

@@ -18,7 +18,14 @@ lab.experiment("OAuth", function() {
     oauth_clients: testCreds.clients,
     authCodes: testCreds.authCodes,
     accessTokens: testCreds.accessTokens,
-    enableCSRF: false
+    enableCSRF: false,
+    pgConnString: process.env.POSTGRE_CONNECTION_STRING,
+    pgPoolMin: process.env.POSTGRE_POOL_MIN,
+    pgPoolMax: process.env.POSTGRE_POOL_MAX,
+    bcryptRounds: process.env.BCRYPT_ROUNDS,
+    tokenSalt: process.env.TOKEN_SALT,
+    randomByteCount: process.env.RANDOM_BYTE_COUNT,
+    resetExpiryTime: process.env.RESET_EXPIRY_TIME
   });
 
   var s2 = server({
@@ -26,7 +33,14 @@ lab.experiment("OAuth", function() {
     oauth_clients: testCreds.clients,
     authCodes: testCreds.authCodes,
     accessTokens: testCreds.accessTokens,
-    enableCSRF: true
+    enableCSRF: true,
+    pgConnString: process.env.POSTGRE_CONNECTION_STRING,
+    pgPoolMin: process.env.POSTGRE_POOL_MIN,
+    pgPoolMax: process.env.POSTGRE_POOL_MAX,
+    bcryptRounds: process.env.BCRYPT_ROUNDS,
+    tokenSalt: process.env.TOKEN_SALT,
+    randomByteCount: process.env.RANDOM_BYTE_COUNT,
+    resetExpiryTime: process.env.RESET_EXPIRY_TIME
   });
 
   lab.test("GET / Redirects to /signup", function(done) {
