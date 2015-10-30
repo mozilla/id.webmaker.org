@@ -561,16 +561,6 @@ module.exports = function(options) {
       }
     },
     {
-      method: 'OPTIONS',
-      path: '/user',
-      config: {
-        cors: true
-      },
-      handler: function(request, reply) {
-        reply();
-      }
-    },
-    {
       method: 'GET',
       path: '/user',
       config: {
