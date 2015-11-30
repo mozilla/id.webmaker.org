@@ -9,15 +9,11 @@ var Lab = require("lab");
 var lab = exports.lab = Lab.script();
 
 var server = require("../web/server");
-var testCreds = require("./testCredentials");
 var url = require("url");
 
 lab.experiment("OAuth", function() {
   var s = server({
     cookieSecret: "test",
-    oauth_clients: testCreds.clients,
-    authCodes: testCreds.authCodes,
-    accessTokens: testCreds.accessTokens,
     enableCSRF: false,
     pgConnString: process.env.POSTGRE_CONNECTION_STRING,
     pgPoolMin: process.env.POSTGRE_POOL_MIN,
@@ -30,9 +26,6 @@ lab.experiment("OAuth", function() {
 
   var s2 = server({
     cookieSecret: "test",
-    oauth_clients: testCreds.clients,
-    authCodes: testCreds.authCodes,
-    accessTokens: testCreds.accessTokens,
     enableCSRF: true,
     pgConnString: process.env.POSTGRE_CONNECTION_STRING,
     pgPoolMin: process.env.POSTGRE_POOL_MIN,
