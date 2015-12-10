@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "npm-run-all --parallel server watch:css watch:js ",
-    "test": "npm run test:server && npm run test:browser && npm run lint",
+    "test": "npm run lint && npm run test:server && npm run test:browser",
     "build": "npm run build:css && npm run build:js",
     "build:production": "npm run build:css && npm run build:js -- --optimize-minimize --optimize-dedupe",
     "build:css": "npm run watch:css -- --no-watch",
