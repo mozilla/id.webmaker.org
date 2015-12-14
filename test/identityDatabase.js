@@ -175,7 +175,7 @@ experiment('IdentityDatabase class', function() {
     expect(identityDatabase.getUserById).to.be.a.function();
     expect(identityDatabase.getUser).to.be.a.function();
     expect(identityDatabase.getResetCode).to.be.a.function();
-    expect(identityDatabase.invalidateUserResetCodes).to.be.a.function();
+    expect(identityDatabase.invalidateResetCode).to.be.a.function();
     expect(identityDatabase.setPassword).to.be.a.function();
     done();
   });

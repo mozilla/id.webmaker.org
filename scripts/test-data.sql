@@ -31,3 +31,7 @@ INSERT INTO access_tokens VALUES
   ('742cf9c20f0a32ebd50ebe5fe43df1c1779825b9ca30deab8d581a6b19929805', 'test', 1, '["user", "email", "foo"]'),
   -- 'invalidScope'
   ('7fab08b70b1d912f93282bb3ca9e37ab79b81a2102c6b5a06e3d75bababe4564', 'test', 1, '["avatar"]');
+
+INSERT INTO reset_codes VALUES -- (code, valid, user_id, created_at)
+ -- 'TestResetCode_expired'
+ ('f9854317a476953a0dcbf4b2f26d826d92dc587d060f6c884855ed3438e99b3c', 't', 1, '1990-01-28 22:30:00');

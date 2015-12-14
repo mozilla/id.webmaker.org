@@ -7,6 +7,7 @@ require("habitat").load("tests.env");
 var Code = require("code");
 var Lab = require("lab");
 var lab = exports.lab = Lab.script();
+var sinon = require("sinon");
 
 var server = require("../web/server");
 var url = require("url");
@@ -410,6 +411,23 @@ lab.experiment("OAuth", function() {
     }).catch((err) => { throw err; });
   });
 
+  lab.test("POST Reset Password - can't use it twice", function(done) {
+    var request = {
+      method: "POST",
+      url: "/reset-password",
+      payload: {
+        uid: "webmaker",
+        resetCode: "TestResetCode_1",
+        password: "UnguessablePassword"
+      }
+    };
+
+    s.inject(request, function(response) {
+      Code.expect(response.statusCode).to.equal(401);
+      done();
+    });
+  });
+
   lab.test("POST Reset Password - With CSRF Token Headers succeeds", function(done) {
     var request = {
       method: "POST",
@@ -479,7 +497,7 @@ lab.experiment("OAuth", function() {
     var idDB = s.plugins.oauthDB.identityDatabase;
 
     idDB.insertResetCode(
-      // hmac('sha256', 'takeThingsWithAGrainOfSalt').update('TestResetCode_3').digest('hex')
+      // hmac('sha256', 'takeThingsWithAGrainOfSalt').update('TestResetCode_4').digest('hex')
       "fcae98a0e4649f55d9a4705e68e15ec90c27ce65aacccc94b23c95c1ff9cfbc9",
       1
     )
@@ -489,6 +507,78 @@ lab.experiment("OAuth", function() {
         Code.expect(response.result.error).to.equal("Unauthorized");
         done();
       });
+    });
+  });
+
+  lab.test("POST Reset Password - catches error if no user returned from DB", function(done) {
+    var request = {
+      method: "POST",
+      url: "/reset-password",
+      payload: {
+        uid: "webmaker",
+        resetCode: "TestResetCode_1",
+        password: "UnguessablePassword"
+      }
+    };
+
+    sinon.stub(s.plugins.oauthDB.identityDatabase, "getUser")
+    .returns(Promise.resolve([]));
+
+    var idDB = s.plugins.oauthDB.identityDatabase;
+
+    idDB.insertResetCode(
+      // createHmac('sha256', 'takeThingsWithAGrainOfSalt').update('TestResetCode_5').digest('hex')
+      "c3357f5b94c4ee25afa47526b180ef0d2ad78052e4edfd55a11519ca5234acf9",
+      1
+    )
+    .then(function() {
+      s.inject(request, function(response) {
+        s.plugins.oauthDB.identityDatabase.getUser.restore();
+        Code.expect(response.statusCode).to.equal(401);
+        done();
+      });
+    }).catch((err) => { throw err; });
+  });
+
+  lab.test("POST Reset Password - fails if valid code, but uid doesn't match token", function(done) {
+    var request = {
+      method: "POST",
+      url: "/reset-password",
+      payload: {
+        uid: "webmaker2",
+        resetCode: "TestResetCode_6",
+        password: "UnguessablePassword"
+      }
+    };
+
+    var idDB = s.plugins.oauthDB.identityDatabase;
+
+    idDB.insertResetCode(
+      "b23706b77345e6e2da358c71efae1c20fe223b37b21f83d8dbf794a57bf8d1fb",
+      1
+    )
+    .then(function() {
+      s.inject(request, function(response) {
+        Code.expect(response.statusCode).to.equal(401);
+        done();
+      });
+    }).catch((err) => { throw err; });
+  });
+
+  lab.test("POST Reset Password - can't use expired code", function(done) {
+    var request = {
+      method: "POST",
+      url: "/reset-password",
+      payload: {
+        uid: "webmaker",
+        resetCode: "TestResetCode_expired",
+        password: "UnguessablePassword"
+      }
+    };
+
+    s.inject(request, function(response) {
+      Code.expect(response.statusCode).to.equal(401);
+      done();
     });
   });
 
