@@ -85,7 +85,7 @@ var Signup = React.createClass({
         </div>
         <div className="commit">
           <IconText iconClass="agreement" textClass="eula">
-            By signing up, I agree to Webmaker&lsquo;s <a tabIndex="5" href="//webmaker.org/en-US/terms" className="underline">Terms of Service</a> and <a tabIndex="6" href="//webmaker.org/en-US/privacy" className="underline">Privacy Policy</a>.
+            By signing up, I agree to Webmaker&lsquo;s <a tabIndex="5" href="//beta.webmaker.org/#/legal" className="underline">Terms of Service</a> and <a tabIndex="6" href="//www.mozilla.org/privacy/websites" className="underline">Privacy Policy</a>.
           </IconText>
           <div className="signup-button"><button type="submit" tabIndex="7" className="btn btn-awsm" onClick={this.processSignup}>SIGN UP</button></div>
         </div>
