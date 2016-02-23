@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "npm-run-all --parallel server watch:css watch:js ",
-    "test": "npm run test:server && npm run test:browser && npm run lint",
+    "test": "npm run lint && npm run test:server && npm run test:browser",
     "build": "npm run build:css && npm run build:js",
     "build:production": "npm run build:css && npm run build:js -- --optimize-minimize --optimize-dedupe",
     "build:css": "npm run watch:css -- --no-watch",
@@ -93,7 +93,7 @@
     "less": "^2.4.0",
     "mocha": "^2.2.1",
     "mocha-phantomjs": "^3.5.3",
-    "mofo-style": "latest",
+    "mofo-style": "1.1.0",
     "ncp": "^2.0.0",
     "npm-run-all": "^1.1.3",
     "phantomjs": "1.9.7-14"
