@@ -92,7 +92,7 @@
     "lab": "5.5.0",
     "less": "2.4.0",
     "mocha": "2.2.1",
-    "mocha-phantomjs": "3.5.3",
+    "mocha-phantomjs": "3.6.0",
     "mofo-style": "1.1.0",
     "ncp": "2.0.0",
     "npm-run-all": "1.1.3",
