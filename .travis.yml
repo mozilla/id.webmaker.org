@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-- '4.2.1'
+- '4.3.1'
 sudo: false
 cache:
   directories:
@@ -18,7 +18,7 @@ deploy:
       master: id-webmaker-org-production
     on:
       repo: mozilla/id.webmaker.org
-      node: '4.2.1'
+      node: '4.3.1'
   - provider: heroku
     api_key:
       secure: cHZklHQUmzKbHcegrMPz/j+58mXjDVV2Xm5vTlvwoJyiEmzMg9ZT0U0PB2GJx/iHg+ubPKeKcoUBJavkw2PkgvwdLh5DvAIMyF5TDu2lIBVhLDPjzifkFLb59jUFMtJ5iYSSnilObf4QOqjNFXR8CXXC4YTC5/roE8k8fl+rWzs=
@@ -26,4 +26,4 @@ deploy:
       develop: id-webmaker-org-loadtesting
     on:
       repo: mozilla/id.webmaker.org
-      node: '4.2.1'
+      node: '4.3.1'
