@@ -17,7 +17,6 @@
 1. Fork and clone this repository
 2. Navigate to the directory of the repository, e.g. `cd id.webmaker.org`
 3. `npm install` to install dependencies
-4. Set configuration variables, by default `cp sample.env .env` or `copy sample.env .env` on Windows
 5. `npm start`
 6. Navigate your browser to [`http://localhost:1234`](http://localhost:1234)
 
