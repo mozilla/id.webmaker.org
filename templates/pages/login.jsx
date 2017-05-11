@@ -84,7 +84,7 @@ var Login = React.createClass({
                   onInputBlur={this.handleBlur}
                   defaultUsername={this.queryObj.username}
             />
-            <button ref="abcd" onClick={this.processFormData} className="login-button btn btn-awsm">{buttonText}</button>
+            <button onClick={this.processFormData} className="login-button btn btn-awsm">{buttonText}</button>
             <Link onClick={this.handleGA.bind(this, 'Forgot your password')} to="reset-password" query={this.queryObj} className="need-help">Forgot your password?</Link>
           </div>
         </div>
