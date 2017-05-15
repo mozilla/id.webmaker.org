@@ -9,7 +9,7 @@ var Constants = {
 };
 function dispatchWhenReady(data, fn) {
   if (WebmakerDispatcher.isDispatching()) {
-    return setTimeout(function retry() => {
+    return setTimeout(function retry() {
       dispatchWhenReady(data, fn);
     }, 200);
   }
