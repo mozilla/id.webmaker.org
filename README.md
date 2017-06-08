@@ -66,4 +66,4 @@ You can configure the following environment variables:
 
 ## Using OAuth2
 
-For information on creating an OAuth2 application that relies on this server, see [`docs/oauth.md`](https://github.com/mozilla/id.webmaker.org/blob/develop/docs/oauth.md).
+For information on creating an OAuth2 application that relies on this server, see [`docs/oauth.md`](docs/oauth.md).
