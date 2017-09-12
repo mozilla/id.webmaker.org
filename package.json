@@ -80,7 +80,6 @@
     "react-validation-mixin": "4.0.3",
     "redis-url": "1.2.1",
     "scooter": "2.0.1",
-    "serve-favicon": "^2.4.1",
     "should": "5.2.0",
     "webpack": "1.7.3"
   },
