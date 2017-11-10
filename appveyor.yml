@@ -1,7 +1,7 @@
 version: "{build}"
 
 environment:
-  nodejs_version: "4"
+  nodejs_version: "4.7"
   DATABASE_URL: postgres://postgres:Password12!@localhost:5432/webmaker_oauth_test
 
 services:
