@@ -1,6 +1,5 @@
 var Boom = require('boom');
 var Hapi = require('hapi');
-var Hoek = require('hoek');
 var Joi = require('joi');
 var Path = require('path');
 var url = require('url');
@@ -17,14 +16,14 @@ var passTest = new PassTest({
   allowPassphrases: true
 });
 
-module.exports = function(options) {
+module.exports = async function server(options) {
   var serverConfig = {
     debug: options.debug,
-    connections: {
-      routes: {
-        security: true
-      }
-    }
+    routes: {
+      security: true
+    },
+    host: options.host,
+    port: options.port
   };
 
   if ( options.redisUrl ) {
@@ -39,31 +38,24 @@ module.exports = function(options) {
 
   var server = new Hapi.Server(serverConfig);
 
-  server.connection({
-    host: options.host,
-    port: options.port
-  });
-
   if ( options.logging ) {
-    server.register({
-      register: require('hapi-bunyan'),
+    await server.register({
+      plugin: require('hapi-bunyan'),
       options: {
         logger: require('bunyan').createLogger({
           name: 'id-webmaker-org',
           level: options.logLevel
         })
       }
-    }, function(err) {
-      Hoek.assert(!err, err);
     });
   }
 
-  server.register([
+  await server.register([
     require('hapi-auth-cookie'),
     require('inert'),
     require('scooter'),
     {
-      register: require('blankie'),
+      plugin: require('blankie'),
       options: {
         defaultSrc: [
           '\'none\''
@@ -87,28 +79,26 @@ module.exports = function(options) {
         fontSrc: [
           '\'self\'',
           'https://fonts.gstatic.com'
-        ]
+        ],
+        generateNonces: false
       }
     }
-  ], function(err) {
-    // MAYDAY, MAYDAY, MAYDAY!
-    Hoek.assert(!err, err);
+  ]);
 
-    server.auth.strategy('session', 'cookie', {
-      password: options.cookieSecret,
-      cookie: 'webmaker',
-      ttl: 1000 * 60 * 60 * 24,
-      isSecure: options.secureCookies,
-      isHttpOnly: true
-    });
-
-    server.auth.default({
-      strategy: 'session',
-      mode: 'try'
-    });
+  server.auth.strategy('session', 'cookie', {
+    password: options.cookieSecret,
+    cookie: 'webmaker',
+    ttl: 1000 * 60 * 60 * 24,
+    isSecure: options.secureCookies,
+    isHttpOnly: true
   });
 
-  function skipCSRF(request, reply) {
+  server.auth.default({
+    strategy: 'session',
+    mode: 'try'
+  });
+
+  function skipCSRF(request, h) { // eslint-disable-line no-unused-vars
     return true;
   }
 
@@ -129,27 +119,25 @@ module.exports = function(options) {
     return false;
   }
 
-  server.register({
-    register: require('crumb'),
+  await server.register({
+    plugin: require('crumb'),
     options: {
       restful: true,
       skip: !options.enableCSRF ? skipCSRF : undefined,
       cookieOptions: {
-        isSecure: options.secureCookies
+        isSecure: options.secureCookies,
+        isSameSite: false,
+        isHttpOnly: false
       }
     }
-  }, function(err) {
-    Hoek.assert(!err, err);
   });
 
-  server.register({
-    register: require('../lib/account'),
+  await server.register({
+    plugin: require('../lib/account'),
     options: {
       loginAPI: options.loginAPI,
       uri: options.uri
     }
-  }, function(err) {
-    Hoek.assert(!err, err);
   });
 
   var oauthDb = new OAuthDB(options.oauth_clients, options.authCodes, options.accessTokens);
@@ -158,8 +146,8 @@ module.exports = function(options) {
     {
       method: 'GET',
       path: '/',
-      handler: function(request, reply) {
-        reply.redirect('/signup');
+      handler(request, h) {
+        return h.redirect('/signup');
       }
     },
     {
@@ -183,7 +171,7 @@ module.exports = function(options) {
     {
       method: 'GET',
       path: '/login/oauth/authorize',
-      config: {
+      options: {
         validate: {
           query: {
             client_id: Joi.string().required(),
@@ -196,9 +184,9 @@ module.exports = function(options) {
         pre: [
           {
             assign: 'user',
-            method: function(request, reply) {
+            method(request, h) {
               if (request.auth.isAuthenticated) {
-                return reply(request.auth.credentials);
+                return request.auth.credentials;
               }
 
               var redirectUrl = '/login';
@@ -212,71 +200,68 @@ module.exports = function(options) {
               redirect.query.state = request.query.state;
               redirect.query.scopes = request.query.scopes;
 
-              reply().takeover().redirect(url.format(redirect));
+              return h.redirect(url.format(redirect)).takeover();
             }
           },
           {
             assign: 'client',
-            method: function(request, reply) {
-              oauthDb.getClient(request.query.client_id, reply);
+            async method(request, h) {
+              return await oauthDb.getClient(request.query.client_id, h);
             }
           },
           {
-            method: function(request, reply) {
+            method(request, h) {
               if (
                 request.pre.client.allowed_responses.indexOf(request.query.response_type) === -1
               ) {
-                return reply(Boom.forbidden('Response type forbidden: ' + request.query.response_type));
+                throw Boom.forbidden('Response type forbidden: ' + request.query.response_type);
               }
-              reply();
+
+              return h.continue;
             }
           },
           {
             assign: 'scopes',
-            method: function(request, reply) {
-              reply(request.query.scopes.split(' '));
+            method(request) {
+              return request.query.scopes.split(' ');
             }
           },
           {
             assign: 'auth_code',
-            method: function(request, reply) {
+            async method(request, h) {
               if (request.query.response_type !== 'code') {
-                return reply(null);
+                return h.response();
               }
 
-              oauthDb.generateAuthCode(
-                request.pre.client.client_id,
-                request.pre.user.id,
-                request.pre.scopes,
-                new Date(Date.now() + 60 * 1000).toISOString(),
-                function(err, authCode) {
-                  if (err) {
-                    return reply(Boom.badRequest('An error occurred processing your request', err));
-                  }
-
-                  reply(authCode);
-                }
-              );
+              try {
+                return await oauthDb.generateAuthCode(
+                  request.pre.client.client_id,
+                  request.pre.user.id,
+                  request.pre.scopes,
+                  new Date(Date.now() + 60 * 1000).toISOString()
+                );
+              } catch (err) {
+                throw Boom.badRequest('An error occurred processing your request', err);
+              }
             }
           },
           {
             assign: 'access_token',
-            method: function(request, reply) {
+            async method(request, h) {
               if (request.query.response_type !== 'token') {
-                return reply(null);
+                return h.response();
               }
 
-              oauthDb.generateAccessToken(
+              return await oauthDb.generateAccessToken(
                 request.pre.client.client_id,
                 request.pre.user.id,
-                request.pre.scopes,
-                reply
+                request.pre.scopes
               );
             }
           }
         ]
       },
-      handler: function(request, reply) {
+      handler(request, h) {
         var redirectObj = url.parse(request.pre.client.redirect_uri, true);
         redirectObj.search = null;
 
@@ -288,13 +273,13 @@ module.exports = function(options) {
         }
         redirectObj.query.state = request.query.state;
 
-        reply.redirect(url.format(redirectObj));
+        return h.redirect(url.format(redirectObj));
       }
     },
     {
       method: 'POST',
       path: '/login/oauth/access_token',
-      config: {
+      options: {
         validate: {
           payload: {
             grant_type: Joi.any().valid('authorization_code', 'password').required(),
@@ -325,8 +310,9 @@ module.exports = function(options) {
               otherwise: Joi.forbidden()
             })
           },
-          failAction: function(request, reply, source, error) {
-            reply(Boom.badRequest('invalid ' + source + ': ' + error.data.details[0].path));
+          failAction(request, h, error) {
+            const { source , keys: [ key ] } = error.output.payload.validation;
+            throw Boom.badRequest('invalid ' + source + ': ' + key);
           }
         },
         auth: false,
@@ -336,132 +322,107 @@ module.exports = function(options) {
         pre: [
           {
             assign: 'grant_type',
-            method: function (request, reply) {
-              reply(request.payload.grant_type);
+            method(request) {
+              return request.payload.grant_type;
             }
           },
           {
             assign: 'client',
-            method: function(request, reply) {
-              oauthDb.getClient(request.payload.client_id, function(err, client) {
-                if ( err ) {
-                  return reply(err);
-                }
-                if (
-                  client.allowed_grants.indexOf(request.pre.grant_type) === -1 ||
-                  (
-                    request.pre.grant_type === 'authorization_code' &&
-                    client.client_secret !== request.payload.client_secret
-                  )
-                ) {
-                  return reply(Boom.forbidden('Invalid Client Credentials'));
-                }
+            async method(request) {
+              const client = await oauthDb.getClient(request.payload.client_id);
 
-                reply(client);
-              });
+              if (
+                client.allowed_grants.indexOf(request.pre.grant_type) === -1 ||
+                (
+                  request.pre.grant_type === 'authorization_code' &&
+                  client.client_secret !== request.payload.client_secret
+                )
+              ) {
+                throw Boom.forbidden('Invalid Client Credentials');
+              }
+
+              return client;
             }
           },
           {
             assign: 'authCode',
-            method: function(request, reply) {
+            async method(request) {
               if ( request.pre.grant_type === 'password' ) {
-                return server.methods.account.verifyPassword(request, function(err, json) {
-                  if ( err ) {
-                    return reply(err);
-                  }
+                const json = await server.methods.account.verifyPassword(request);
 
-                  reply({
-                    user_id: json.user.id,
-                    scopes: request.payload.scopes.split(' ')
-                  });
-                });
+                return {
+                  user_id: json.user.id,
+                  scopes: request.payload.scopes.split(' ')
+                };
               }
-              oauthDb.verifyAuthCode(request.payload.code, request.pre.client.client_id, reply);
+
+              return await oauthDb.verifyAuthCode(request.payload.code, request.pre.client.client_id);
             }
           },
           {
             assign: 'accessToken',
-            method: function(request, reply) {
-              oauthDb.generateAccessToken(
+            async method(request) {
+              return await oauthDb.generateAccessToken(
                 request.pre.client.client_id,
                 request.pre.authCode.user_id,
-                request.pre.authCode.scopes,
-                reply
+                request.pre.authCode.scopes
               );
             }
           }
         ]
       },
-      handler: function(request, reply) {
-        var responseObj = {
+      handler(request) {
+        return {
           access_token: request.pre.accessToken,
           scopes: request.pre.authCode.scopes,
           token_type: 'token'
         };
-
-        reply(responseObj);
       }
     },
     {
       method: 'POST',
       path: '/login',
-      config: {
+      options: {
         pre: [
           {
             assign: 'user',
-            method: function(request, reply) {
-              server.methods.account.verifyPassword(request, function(err, json) {
-                if ( err ) {
-                  return reply(err);
-                }
+            async method(request) {
+              const json = await server.methods.account.verifyPassword(request);
 
-                reply(json.user);
-              });
+              return json.user;
             }
           }
         ]
       },
-      handler: function(request, reply) {
-        request.auth.session.set(request.pre.user);
-        reply({ status: 'Logged In' });
+      handler(request) {
+        request.cookieAuth.set(request.pre.user);
+        return { status: 'Logged In' };
       }
     },
     {
       method: 'POST',
       path: '/request-reset',
-      config:{
+      options:{
         auth: false
       },
-      handler: function(request, reply) {
-        server.methods.account.requestReset(request, function(err, json) {
-          if ( err ) {
-            return reply(err);
-          }
-
-          reply(json);
-        });
+      async handler(request) {
+        return await server.methods.account.requestReset(request);
       }
     },
     {
       method: 'POST',
       path: '/reset-password',
-      config:{
+      options:{
         auth: false
       },
-      handler: function(request, reply) {
-        server.methods.account.resetPassword(request, function(err, json) {
-          if ( err ) {
-            return reply(err);
-          }
-
-          reply(json);
-        });
+      async handler(request) {
+        return await server.methods.account.resetPassword(request);
       }
     },
     {
       method: 'POST',
       path: '/create-user',
-      config: {
+      options: {
         auth: false,
         plugins: {
           crumb: false
@@ -469,255 +430,237 @@ module.exports = function(options) {
         cors: true,
         validate: {
           payload: {
-            username: Joi.string().regex(/^[a-zA-Z0-9\-]{1,20}$/).required(),
+            username: Joi.string().regex(/^[a-zA-Z0-9\-]{1,20}$/).required(), // eslint-disable-line no-useless-escape
             email: Joi.string().email().required(),
             password: Joi.string().regex(/^\S{8,128}$/).required(),
             feedback: Joi.boolean().required(),
             client_id: Joi.string().required(),
             lang: Joi.string().default('en-US')
           },
-          failAction: function(request, reply, source, error) {
-            reply(Boom.badRequest('invalid ' + source + ': ' + error.data.details[0].path));
+          failAction(request, h, error) {
+            const { source , keys: [ key ] } = error.output.payload.validation;
+            throw Boom.badRequest('invalid ' + source + ': ' + key);
           }
         },
         pre: [
           {
             assign: 'username',
-            method: function(request, reply) {
-              reply(request.payload.username);
+            method(request) {
+              return request.payload.username;
             }
           },
           {
             assign: 'password',
-            method: function(request, reply) {
+            method(request) {
               var password = request.payload.password;
               var result = passTest.test(password);
 
               if ( !result.strong ) {
                 var err = Boom.badRequest('Password not strong enough.', result);
                 err.output.payload.details = err.data;
-                return reply(err);
+                throw err;
               }
 
-              reply(password);
+              return password;
             }
           },
           {
             assign: 'client',
-            method: function(request, reply) {
-              oauthDb.getClient(request.payload.client_id, reply);
+            async method(request) {
+              return await oauthDb.getClient(request.payload.client_id);
             }
           }
         ]
       },
-      handler: function(request, reply) {
-        server.methods.account.createUser(request, function(err, json) {
-          if ( err ) {
-            err.output.payload.data = err.data;
-            return reply(err);
+      async handler(request) {
+        let json;
+
+        try {
+          json = await server.methods.account.createUser(request);
+        } catch (err) {
+          err.output.payload.data = err.data;
+          throw err;
+        }
+
+        if ( json.login_error ) {
+          if ( isUniqueError('username', json.login_error) ) {
+            throw Boom.badRequest('That username is taken');
+          } else if ( isUniqueError('email', json.login_error) ) {
+            throw Boom.badRequest('An account exists for that email address');
           }
-          if ( json.login_error ) {
-            if ( isUniqueError('username', json.login_error) ) {
-              return reply(Boom.badRequest('That username is taken'));
-            } else if ( isUniqueError('email', json.login_error) ) {
-              return reply(Boom.badRequest('An account exists for that email address'));
-            }
-            return reply(Boom.badRequest(json.login_error));
-          }
-          request.auth.session.set(json.user);
-          reply(json.user);
-        });
+
+          throw Boom.badRequest(json.login_error);
+        }
+
+        request.cookieAuth.set(json.user);
+        return json.user;
       }
     },
     {
       method: 'GET',
       path: '/logout',
-      config: {
+      options: {
         auth: false,
         pre: [
           {
             assign: 'redirectUri',
-            method: function(request, reply) {
+            async method(request) {
               if ( !request.query.client_id ) {
-                return reply('https://webmaker.org');
+                return 'https://webmaker.org';
               }
-              oauthDb.getClient(request.query.client_id, function(err, client) {
-                if ( err ) {
-                  return reply(err);
-                }
-                reply(client.redirect_uri);
-              });
+
+              const client = await oauthDb.getClient(request.query.client_id);
+
+              return client.redirect_uri;
             }
           }
         ]
       },
-      handler: function(request, reply) {
-        request.auth.session.clear();
+      handler(request, h) {
+        request.cookieAuth.clear();
 
         var redirectObj = url.parse(request.pre.redirectUri, true);
         redirectObj.query.logout = true;
-        reply.redirect(url.format(redirectObj))
+        return h.redirect(url.format(redirectObj))
           .header('cache-control', 'no-cache');
       }
     },
     {
       method: 'GET',
       path: '/user',
-      config: {
+      options: {
         auth: false,
         cors: true,
         pre: [
           {
             assign: 'requestToken',
-            method: function(request, reply) {
+            method(request) {
               var tokenHeader = request.headers.authorization || '';
               tokenHeader = tokenHeader.split(' ');
 
               if ( tokenHeader[0] !== 'token' || !tokenHeader[1] ) {
-                return reply(Boom.unauthorized('Missing or invalid authorization header'));
+                throw Boom.unauthorized('Missing or invalid authorization header');
               }
 
-              reply(tokenHeader[1]);
+              return tokenHeader[1];
             }
           },
           {
             assign: 'token',
-            method: function(request, reply) {
-              oauthDb.lookupAccessToken(request.pre.requestToken, function(err, token) {
-                if ( err ) {
-                  return reply(err);
-                }
+            async method(request) {
+              const token = await oauthDb.lookupAccessToken(request.pre.requestToken);
 
-                if ( token.expires_at <= Date.now() ) {
-                  return reply(Boom.unauthorized('Expired token'));
-                }
+              if ( token.expires_at <= Date.now() ) {
+                throw Boom.unauthorized('Expired token');
+              }
 
-                var tokenScopes = token.scopes;
+              var tokenScopes = token.scopes;
 
-                if ( tokenScopes.indexOf('user') === -1 && tokenScopes.indexOf('email') === -1 ) {
-                  return reply(Boom.unauthorized('The token does not have the required scopes'));
-                }
+              if ( tokenScopes.indexOf('user') === -1 && tokenScopes.indexOf('email') === -1 ) {
+                throw Boom.unauthorized('The token does not have the required scopes');
+              }
 
-                reply(token);
-              });
+              return token;
             }
           },
           {
             assign: 'user',
-            method: function(request, reply) {
-              server.methods.account.getUser(request.pre.token.user_id, function(err, json) {
-                if ( err ) {
-                  return reply(Boom.badImplementation(err));
-                }
-                reply(json.user);
-              });
+            async method(request) {
+              try {
+                const json = await server.methods.account.getUser(request.pre.token.user_id);
+                return json.user;
+              } catch (err) {
+                throw Boom.badImplementation(err);
+              }
             }
           }
         ]
       },
-      handler: function(request, reply) {
-        var responseObj = Scopes.filterUserForScopes(
+      handler(request) {
+        return Scopes.filterUserForScopes(
           request.pre.user,
           request.pre.token.scopes
         );
-
-        reply(responseObj);
       }
     },
     {
       method: 'POST',
       path: '/request-migration-email',
-      config: {
+      options: {
         auth: false
       },
-      handler: function(request, reply) {
-        server.methods.account.requestMigrateEmail(request, function(err, json) {
-          if ( err ) {
-            return reply(Boom.badImplementation(err));
-          }
-          reply({ status: 'migration email sent' });
-        });
+      async handler(request) {
+        try {
+          await server.methods.account.requestMigrateEmail(request);
+          return { status: 'migration email sent' };
+        } catch (err) {
+          throw Boom.badImplementation(err);
+        }
       }
     },
     {
       method: 'POST',
       path: '/migrate-user',
-      config: {
+      options: {
         auth: false,
         pre: [
           {
             assign: 'uid',
-            method: function(request, reply) {
-              reply(request.payload.uid);
+            method(request) {
+              return request.payload.uid;
             }
           },
           {
             assign: 'password',
-            method: function(request, reply) {
+            method(request) {
               var password = request.payload.password;
               if ( !password ) {
-                return reply(Boom.badRequest('No password provided'));
+                throw Boom.badRequest('No password provided');
               }
 
               var result = passTest.test(password);
 
               if ( !result.strong ) {
-                return reply(Boom.badRequest('Password not strong enough'), result);
+                throw Boom.badRequest('Password not strong enough');
               }
 
-              reply(password);
+              return password;
             }
           },
           {
             assign: 'isValidToken',
-            method: function(request, reply) {
-              server.methods.account.verifyToken(request, function(err, json) {
-                if ( err ) {
-                  return reply(err);
-                }
-
-                reply(true);
-              });
+            async method(request) {
+              await server.methods.account.verifyToken(request);
+              return true;
             }
           },
           {
             assign: 'user',
-            method: function(request, reply) {
-              server.methods.account.setPassword(
+            async method(request) {
+              const json = await server.methods.account.setPassword(
                 request,
                 request.pre.uid,
-                request.pre.password,
-                function(err, json) {
-                  if ( err ) {
-                    return reply(err);
-                  }
-
-                  reply(json.user);
-                }
+                request.pre.password
               );
+
+              return json.user;
             }
           }
         ]
       },
-      handler: function(request, reply) {
-        request.auth.session.set(request.pre.user);
-        reply({ status: 'Logged in' });
+      handler(request) {
+        request.cookieAuth.set(request.pre.user);
+        return { status: 'Logged in' };
       }
     },
     {
       method: 'POST',
       path: '/check-username',
-      config: {
+      options: {
         auth: false
       },
-      handler: function(request, reply) {
-        server.methods.account.checkUsername(request, function(err, json) {
-          if ( err ) {
-            return reply(err);
-          }
-
-          reply(json);
-        });
+      async handler(request) {
+        return await server.methods.account.checkUsername(request);
       }
     }
   ]);

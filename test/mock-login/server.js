@@ -2,8 +2,8 @@ var Boom = require('boom');
 var Hapi = require('hapi');
 
 module.exports = function() {
-  var server = new Hapi.Server({ debug: false });
-  server.connection({
+  var server = new Hapi.Server({
+    debug: false,
     host: 'localhost',
     port: 3232
   });
@@ -12,10 +12,10 @@ module.exports = function() {
     {
       method: 'POST',
       path: '/api/v2/user/verify-password',
-      handler: function(request, reply) {
+      handler(request, h) {
         var payload = request.payload;
         if ( payload.uid === 'webmaker' && payload.password === 'password' ) {
-          return reply({
+          return h.response({
             user: {
               username: 'webmaker',
               id: '1',
@@ -26,65 +26,65 @@ module.exports = function() {
         }
 
         if ( payload.uid === 'invalidResponse' ) {
-          return reply('not json');
+          return 'not json';
         }
 
-        reply(Boom.unauthorized('Invalid username/email or password'));
+        throw Boom.unauthorized('Invalid username/email or password');
       }
     },
     {
       method: 'POST',
       path: '/api/v2/user/request-reset-code',
-      handler: function(request, reply) {
+      handler(request, h) {
         var payload = request.payload;
         if ( payload.uid === 'webmaker') {
-          return reply({
+          return h.response({
             status: 'created'
           })
           .type('application/json');
         }
 
         if ( payload.uid === 'invalidResponse' ) {
-          return reply('not json');
+          return 'not json';
         }
 
-        reply(Boom.badImplementation('Login API failure'));
+        throw Boom.badImplementation('Login API failure');
       }
     },
     {
       method: 'POST',
       path: '/api/v2/user/reset-password',
-      handler: function(request, reply) {
+      handler(request, h) {
         var payload = request.payload;
         if ( payload.uid === 'webmaker' ) {
           if ( payload.resetCode !== 'resetCode' ) {
-            return reply(Boom.unauthorized('invalid code'));
+            throw Boom.unauthorized('invalid code');
           }
 
-          return reply({
+          return h.response({
             status: 'success'
           })
           .type('application/json');
         }
 
         if ( payload.uid === 'badRequest' ) {
-          return reply(Boom.badRequest('bad request'));
+          throw Boom.badRequest('bad request');
         }
 
         if ( payload.uid === 'invalidResponse' ) {
-          return reply('not json');
+          return 'not json';
         }
 
-        reply(Boom.badImplementation('Login API failure'));
+        throw Boom.badImplementation('Login API failure');
       }
     },
     {
       method: 'POST',
       path: '/api/v2/user/create',
-      handler: function(request, reply) {
+      handler(request, h) {
         var payload = request.payload;
         if ( payload.user.username === 'webmaker') {
-          return reply({
+          return h.response({
             user: {
               username: 'webmaker',
               email: 'webmaker@example.com',
@@ -95,30 +95,30 @@ module.exports = function() {
         }
 
         if ( payload.user.username === 'invalidResponse' ) {
-          return reply('not json');
+          return 'not json';
         }
 
         if ( payload.user.username === 'jsonError' ) {
-          return reply({
+          return {
             error: 'LoginAPI error'
-          }).code(200);
+          };
         }
 
         if ( payload.user.username === 'weakpass' ) {
-          return reply()
+          return h.response()
             .code(400);
         }
 
-        reply(Boom.badImplementation('login API failure'));
+        throw Boom.badImplementation('login API failure');
       }
     },
     {
       method: 'GET',
       path: '/user/id/{id}',
-      handler: function(request, reply) {
+      handler(request, h) {
         var id = request.params.id;
         if ( id === '1') {
-          return reply({
+          return h.response({
             user: {
               username: 'test',
               id: '1',
@@ -129,75 +129,75 @@ module.exports = function() {
         }
 
         if ( id === 'jsonError' ) {
-          return reply({
+          return {
             error: 'Login API error'
-          });
+          };
         }
 
-        reply(Boom.badImplementation('login API failure'));
+        throw Boom.badImplementation('login API failure');
       }
     },
     {
       method: 'post',
       path: '/api/v2/user/request',
-      handler: function(request, reply) {
+      handler(request) {
         var username = request.payload.uid;
         if ( username === 'test' ) {
-          return reply({
+          return {
             status: 'Login Token Sent'
-          });
+          };
         }
 
-        reply(Boom.badImplementation('Login Database error'));
+        throw Boom.badImplementation('Login Database error');
       }
     },
     {
       method: 'post',
       path: '/api/v2/user/authenticateToken',
-      handler: function(request, reply) {
+      handler(request) {
         var username = request.payload.uid;
         var token = request.payload.token;
         if ( username === 'test' ) {
           if ( token === 'kakav-nufuk' ) {
-            return reply(true);
+            return true;
           }
         }
 
-        reply(Boom.unauthorized('invalid username/password combination'));
+        throw Boom.unauthorized('invalid username/password combination');
       }
     },
     {
       method: 'post',
       path: '/api/v2/user/enable-passwords',
-      handler: function(request, reply) {
+      handler(request) {
         var username = request.payload.uid;
         var password = request.payload.password;
         if ( username === 'test' ) {
           if ( password === 'Super-Duper-Strong-Passphrase-9001' ) {
             // success
-            return reply({
+            return {
               user: {
                 username: 'test'
               }
-            });
+            };
           }
         }
 
-        reply(Boom.badImplementation('Error setting password'));
+        throw Boom.badImplementation('Error setting password');
       }
     },
     {
       method: 'post',
       path: '/api/v2/user/exists',
-      handler: function(request, reply) {
+      handler(request) {
         if ( request.payload.uid === 'test' ) {
-          return reply({
+          return {
             exists: true,
             usePasswordLogin: true
-          });
+          };
         }
 
-        reply(Boom.notFound('user does not exist'));
+        throw Boom.notFound('user does not exist');
       }
     }
   ]);
