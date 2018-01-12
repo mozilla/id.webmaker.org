@@ -1,7 +1,7 @@
 /* jshint esnext: true */
 
 var React = require('react/addons');
-var ValidationMixin = require('react-validation-mixin');
+var ValidationMixin = require('../validation-mixin.jsx');
 var ga = require('react-ga');
 var ToolTip = require('../tooltip/tooltip.jsx');
 var WebmakerActions = require('../../lib/webmaker-actions.jsx');
