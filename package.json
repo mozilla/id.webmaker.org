@@ -44,6 +44,7 @@
   "dependencies": {
     "autoless": "0.1.7",
     "babel-loader": "5.0.0",
+    "babel-plugin-object-assign": "^1.2.1",
     "blankie": "^4.0.0",
     "boom": "^7.1.1",
     "bootstrap": "3.3.4",
@@ -68,6 +69,7 @@
     "joi": "^13.1.0",
     "json-schema-validation-strategy": "^1.1.2",
     "jsx-loader": "0.12.2",
+    "less": "2.4.0",
     "pass-test": "1.0.3",
     "pg": "4.3.0",
     "react": "0.12.2",
@@ -89,7 +91,6 @@
     "js-beautify": "1.5.5",
     "json-loader": "0.5.1",
     "lab": "13.1.0",
-    "less": "2.4.0",
     "mocha": "2.2.1",
     "mocha-phantomjs": "3.6.0",
     "ncp": "2.0.0",

@@ -29,6 +29,8 @@ module.exports = {
   module: {
     loaders: [
       { test: /\.jsx$/, loaders: ['babel', 'jsx-loader'] },
+      { test: require.resolve('json-schema-validation-strategy'), loader: 'babel?plugins=babel-plugin-object-assign' },
+      { test: require.resolve('react-validation-mixin/lib/validationFactory'), loader: 'babel?plugins=babel-plugin-object-assign' },
       // https://github.com/webpack/webpack/issues/558#issuecomment-60889168
       { test: require.resolve('react'), loader: IMPORT_ES5_SHIM },
       { test: require.resolve('react/addons'), loader: IMPORT_ES5_SHIM },
