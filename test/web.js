@@ -14,8 +14,10 @@ lab.experiment("OAuth", function() {
   const cookieSecret = "test".padEnd(32, "test");
 
   lab.before(async () => {
+    const loginAPI = `http://${process.env.HOST}:3232`;
+
     s = await server({
-      loginAPI: "http://localhost:3232",
+      loginAPI: loginAPI,
       cookieSecret,
       oauth_clients: testCreds.clients,
       authCodes: testCreds.authCodes,
@@ -24,7 +26,7 @@ lab.experiment("OAuth", function() {
     });
 
     s2 = await server({
-      loginAPI: "http://localhost:3232",
+      loginAPI: loginAPI,
       cookieSecret,
       oauth_clients: testCreds.clients,
       authCodes: testCreds.authCodes,
@@ -32,9 +34,7 @@ lab.experiment("OAuth", function() {
       enableCSRF: true
     });
 
-    ls = loginServer({
-      loginAPI: "http://localhost:3232"
-    });
+    ls = loginServer();
   });
 
   lab.beforeEach(async () => {

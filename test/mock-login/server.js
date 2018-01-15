@@ -4,7 +4,7 @@ var Hapi = require('hapi');
 module.exports = function() {
   var server = new Hapi.Server({
     debug: false,
-    host: 'localhost',
+    host: process.env.HOST,
     port: 3232
   });
 
