@@ -438,6 +438,7 @@ module.exports = async function server(options) {
             lang: Joi.string().default('en-US')
           },
           failAction(request, h, error) {
+            console.log('error 1'); // eslint-disable-line no-console
             const { source , keys: [ key ] } = error.output.payload.validation;
             throw Boom.badRequest('invalid ' + source + ': ' + key);
           }
@@ -446,18 +447,21 @@ module.exports = async function server(options) {
           {
             assign: 'username',
             method(request) {
+              console.log('here 1'); // eslint-disable-line no-console
               return request.payload.username;
             }
           },
           {
             assign: 'password',
             method(request) {
+              console.log('here 2'); // eslint-disable-line no-console
               var password = request.payload.password;
               var result = passTest.test(password);
 
               if ( !result.strong ) {
                 var err = Boom.badRequest('Password not strong enough.', result);
                 err.output.payload.details = err.data;
+                console.log('error 2'); // eslint-disable-line no-console
                 throw err;
               }
 
@@ -467,6 +471,7 @@ module.exports = async function server(options) {
           {
             assign: 'client',
             async method(request) {
+              console.log('here 3'); // eslint-disable-line no-console
               return await oauthDb.getClient(request.payload.client_id);
             }
           }
@@ -479,6 +484,7 @@ module.exports = async function server(options) {
           json = await server.methods.account.createUser(request);
         } catch (err) {
           err.output.payload.data = err.data;
+          console.log('error 3'); // eslint-disable-line no-console
           throw err;
         }
 
