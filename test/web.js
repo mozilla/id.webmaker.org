@@ -100,7 +100,7 @@ lab.experiment("OAuth", function() {
     Code.expect(response.result.email).to.equal("webmaker@example.com");
     Code.expect(response.result.username).to.equal("webmaker");
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST Create User - with CSRF Token Headers succeeds", async () => {
@@ -133,7 +133,7 @@ lab.experiment("OAuth", function() {
     Code.expect(response.result.email).to.equal("webmaker@example.com");
     Code.expect(response.result.username).to.equal("webmaker");
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST Create User without lang attribute defaults to en-US", async () => {
@@ -166,7 +166,7 @@ lab.experiment("OAuth", function() {
     Code.expect(response.result.username).to.equal("webmaker");
     Code.expect(response.result.prefLocale).to.equal("en-US");
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST Create User with lang attribute set", async () => {
@@ -200,7 +200,7 @@ lab.experiment("OAuth", function() {
     Code.expect(response.result.username).to.equal("webmaker");
     Code.expect(response.result.prefLocale).to.equal("it-CH");
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST Create User (invalid response)", async () => {
@@ -226,7 +226,7 @@ lab.experiment("OAuth", function() {
     const response = await s.inject(request);
     Code.expect(response.statusCode).to.equal(500);
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST Create User (login API failure)", async () => {
@@ -252,7 +252,7 @@ lab.experiment("OAuth", function() {
     const response = await s.inject(request);
     Code.expect(response.statusCode).to.equal(500);
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test(
@@ -281,7 +281,7 @@ lab.experiment("OAuth", function() {
       Code.expect(response.statusCode).to.equal(400);
       Code.expect(response.result.message).to.equal("Password not strong enough.");
 
-      await ls.stop();
+      return await ls.stop();
     }
   );
 
@@ -309,7 +309,7 @@ lab.experiment("OAuth", function() {
       const response = await s.inject(request);
       Code.expect(response.statusCode).to.equal(400);
 
-      await ls.stop();
+      return await ls.stop();
     }
   );
 
@@ -337,7 +337,7 @@ lab.experiment("OAuth", function() {
       const response = await s.inject(request);
       Code.expect(response.statusCode).to.equal(400);
 
-      await ls.stop();
+      return await ls.stop();
     }
   );
 
@@ -365,7 +365,7 @@ lab.experiment("OAuth", function() {
       const response = await s.inject(request);
       Code.expect(response.statusCode).to.equal(400);
 
-      await ls.stop();
+      return await ls.stop();
     }
   );
 
@@ -393,7 +393,7 @@ lab.experiment("OAuth", function() {
       const response = await s.inject(request);
       Code.expect(response.statusCode).to.equal(400);
 
-      await ls.stop();
+      return await ls.stop();
     }
   );
 
@@ -416,7 +416,7 @@ lab.experiment("OAuth", function() {
     Code.expect(response.statusCode).to.equal(200);
     Code.expect(response.result.status).to.equal("created");
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST Request Reset - with CSRF Token Headers succeeds", async () => {
@@ -442,7 +442,7 @@ lab.experiment("OAuth", function() {
     Code.expect(response.statusCode).to.equal(200);
     Code.expect(response.result.status).to.equal("created");
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST Request Reset - without CSRF Token Headers returns 403", async () => {
@@ -463,7 +463,7 @@ lab.experiment("OAuth", function() {
     const response = await s2.inject(request);
     Code.expect(response.statusCode).to.equal(403);
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST Request Reset (failure)", async () => {
@@ -484,7 +484,7 @@ lab.experiment("OAuth", function() {
     const response = await s.inject(request);
     Code.expect(response.statusCode).to.equal(500);
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST Request Reset (invalid response)", async () => {
@@ -505,7 +505,7 @@ lab.experiment("OAuth", function() {
     const response = await s.inject(request);
     Code.expect(response.statusCode).to.equal(500);
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST Reset Password", async () => {
@@ -529,7 +529,7 @@ lab.experiment("OAuth", function() {
     Code.expect(response.statusCode).to.equal(200);
     Code.expect(response.result.status).to.equal("success");
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST Reset Password - With CSRF Token Headers succeeds", async () => {
@@ -557,7 +557,7 @@ lab.experiment("OAuth", function() {
     Code.expect(response.statusCode).to.equal(200);
     Code.expect(response.result.status).to.equal("success");
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST Reset Password - Without CSRF Token Headers returns 403", async () => {
@@ -580,7 +580,7 @@ lab.experiment("OAuth", function() {
     const response = await s2.inject(request);
     Code.expect(response.statusCode).to.equal(403);
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST Reset Password (bad code)", async () => {
@@ -604,7 +604,7 @@ lab.experiment("OAuth", function() {
     Code.expect(response.statusCode).to.equal(401);
     Code.expect(response.result.error).to.equal("Unauthorized");
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST Reset Password (bad request)", async () => {
@@ -628,7 +628,7 @@ lab.experiment("OAuth", function() {
     Code.expect(response.statusCode).to.equal(400);
     Code.expect(response.result.error).to.equal("Bad Request");
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST Reset Password (invalid response)", async () => {
@@ -651,7 +651,7 @@ lab.experiment("OAuth", function() {
     const response = await s.inject(request);
     Code.expect(response.statusCode).to.equal(500);
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST login", async () => {
@@ -674,7 +674,7 @@ lab.experiment("OAuth", function() {
     Code.expect(response.statusCode).to.equal(200);
     Code.expect(response.headers["set-cookie"]).to.exist();
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST login - With CSRF Token Headers succeeds", async () => {
@@ -701,7 +701,7 @@ lab.experiment("OAuth", function() {
     Code.expect(response.statusCode).to.equal(200);
     Code.expect(response.headers["set-cookie"]).to.exist();
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST login - without CSRF Token headers returns 403", async () => {
@@ -723,7 +723,7 @@ lab.experiment("OAuth", function() {
     const response = await s2.inject(request);
     Code.expect(response.statusCode).to.equal(403);
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST login - x-forwarded-for", async () => {
@@ -749,7 +749,7 @@ lab.experiment("OAuth", function() {
     Code.expect(response.statusCode).to.equal(200);
     Code.expect(response.headers["set-cookie"]).to.exist();
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST login - invalid json response", async () => {
@@ -772,7 +772,7 @@ lab.experiment("OAuth", function() {
     Code.expect(response.statusCode).to.equal(500);
     Code.expect(response.headers["set-cookie"]).to.be.undefined();
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST login - unauthorized", async () => {
@@ -795,7 +795,7 @@ lab.experiment("OAuth", function() {
     Code.expect(response.statusCode).to.equal(401);
     Code.expect(response.headers["set-cookie"]).to.be.undefined();
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("GET logout", async () => {
@@ -829,7 +829,7 @@ lab.experiment("OAuth", function() {
     Code.expect(redirectUri.pathname).to.equal("/oauth_redirect");
     Code.expect(redirectUri.query.logout).to.equal("true");
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("GET logout - no client_id", async () => {
@@ -861,7 +861,7 @@ lab.experiment("OAuth", function() {
     Code.expect(redirectUri.host).to.equal("webmaker.org");
     Code.expect(redirectUri.query.logout).to.equal("true");
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("GET logout - invalid client_id", async () => {
@@ -882,7 +882,7 @@ lab.experiment("OAuth", function() {
     const response = await s.inject(request);
     Code.expect(response.statusCode).to.equal(400);
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("GET authorize (response_type=code)", async () => {
@@ -1041,7 +1041,7 @@ lab.experiment("OAuth", function() {
     Code.expect(response.result.scopes).to.contain("user");
     Code.expect(response.result.token_type).to.equal("token");
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST access_token - Without CSRF Token succeeds", async () => {
@@ -1066,7 +1066,7 @@ lab.experiment("OAuth", function() {
     Code.expect(response.result.scopes).to.contain("user");
     Code.expect(response.result.token_type).to.equal("token");
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST access_token - unknown client_id", async () => {
@@ -1088,7 +1088,7 @@ lab.experiment("OAuth", function() {
     const response = await s.inject(accessTokenRequest);
     Code.expect(response.statusCode).to.equal(400);
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST access_token - mismatched client_id", async () => {
@@ -1110,7 +1110,7 @@ lab.experiment("OAuth", function() {
     const response = await s.inject(accessTokenRequest);
     Code.expect(response.statusCode).to.equal(403);
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST access_token - invalid client_secret", async () => {
@@ -1132,7 +1132,7 @@ lab.experiment("OAuth", function() {
     const response = await s.inject(accessTokenRequest);
     Code.expect(response.statusCode).to.equal(403);
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST access_token - invalid auth code", async () => {
@@ -1154,7 +1154,7 @@ lab.experiment("OAuth", function() {
     const response = await s.inject(accessTokenRequest);
     Code.expect(response.statusCode).to.equal(403);
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST access_token - invalid client id", async () => {
@@ -1176,7 +1176,7 @@ lab.experiment("OAuth", function() {
     const response = await s.inject(accessTokenRequest);
     Code.expect(response.statusCode).to.equal(403);
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST access_token - invalid grant_type", async () => {
@@ -1200,7 +1200,7 @@ lab.experiment("OAuth", function() {
     Code.expect(response.result).to.exist();
     Code.expect(response.result.message).to.equal("invalid payload: grant_type");
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST access_token - missing client_id", async () => {
@@ -1223,7 +1223,7 @@ lab.experiment("OAuth", function() {
     Code.expect(response.statusCode).to.equal(400);
     Code.expect(response.result.message).to.equal("invalid payload: client_id");
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST access_token - missing client_secret", async () => {
@@ -1246,7 +1246,7 @@ lab.experiment("OAuth", function() {
     Code.expect(response.statusCode).to.equal(400);
     Code.expect(response.result.message).to.equal("invalid payload: client_secret");
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST access_token - missing grant_type", async () => {
@@ -1269,7 +1269,7 @@ lab.experiment("OAuth", function() {
     Code.expect(response.statusCode).to.equal(400);
     Code.expect(response.result.message).to.equal("invalid payload: grant_type");
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST access_token, password grant", async () => {
@@ -1294,7 +1294,7 @@ lab.experiment("OAuth", function() {
     Code.expect(response.result.scopes).to.contain("user", "projects");
     Code.expect(response.result.token_type).to.equal("token");
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST access_token, password grant fails with invalid credentials", async () => {
@@ -1316,7 +1316,7 @@ lab.experiment("OAuth", function() {
     const response = await s.inject(accessTokenRequest);
     Code.expect(response.statusCode).to.equal(401);
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST access_token, password grant fails with invalid client_id", async () => {
@@ -1339,7 +1339,7 @@ lab.experiment("OAuth", function() {
     Code.expect(response.statusCode).to.equal(400);
     Code.expect(response.result.message).to.equal("invalid client_id");
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST access_token - no code with password grant", async () => {
@@ -1362,7 +1362,7 @@ lab.experiment("OAuth", function() {
     Code.expect(response.statusCode).to.equal(400);
     Code.expect(response.result.message).to.equal("invalid payload: code");
 
-     await ls.stop();
+     return await ls.stop();
   });
 
   lab.test("POST access_token - no client_secret with password grant", async () => {
@@ -1385,7 +1385,7 @@ lab.experiment("OAuth", function() {
     Code.expect(response.statusCode).to.equal(400);
     Code.expect(response.result.message).to.equal("invalid payload: client_secret");
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST access_token - uid required with password grant", async () => {
@@ -1408,7 +1408,7 @@ lab.experiment("OAuth", function() {
     Code.expect(response.statusCode).to.equal(400);
     Code.expect(response.result.message).to.equal("invalid payload: uid");
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST access_token - password required with password grant", async () => {
@@ -1431,7 +1431,7 @@ lab.experiment("OAuth", function() {
     Code.expect(response.statusCode).to.equal(400);
     Code.expect(response.result.message).to.equal("invalid payload: password");
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST access_token - no uid with authorization_code grant", async () => {
@@ -1454,7 +1454,7 @@ lab.experiment("OAuth", function() {
     Code.expect(response.statusCode).to.equal(400);
     Code.expect(response.result.message).to.equal("invalid payload: uid");
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST access_token - no password with authorization_code grant", async () => {
@@ -1478,7 +1478,7 @@ lab.experiment("OAuth", function() {
     Code.expect(response.statusCode).to.equal(400);
     Code.expect(response.result.message).to.equal("invalid payload: password");
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST access_token - no scope with authorization_code grant", async () => {
@@ -1501,7 +1501,7 @@ lab.experiment("OAuth", function() {
     Code.expect(response.statusCode).to.equal(400);
     Code.expect(response.result.message).to.equal("invalid payload: scopes");
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST access_token - no uid with authorization_code grant", async () => {
@@ -1524,7 +1524,7 @@ lab.experiment("OAuth", function() {
     Code.expect(response.statusCode).to.equal(400);
     Code.expect(response.result.message).to.equal("invalid payload: client_secret");
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST access_token - client not allowed password grant", async () => {
@@ -1547,7 +1547,7 @@ lab.experiment("OAuth", function() {
     Code.expect(response.statusCode).to.equal(403);
     Code.expect(response.result.message).to.equal("Invalid Client Credentials");
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST access_token - client not allowed authorization_code grant", async () => {
@@ -1570,7 +1570,7 @@ lab.experiment("OAuth", function() {
     Code.expect(response.statusCode).to.equal(403);
     Code.expect(response.result.message).to.equal("Invalid Client Credentials");
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("GET /user", async () => {
@@ -1594,7 +1594,7 @@ lab.experiment("OAuth", function() {
     Code.expect(response.result.email).to.equal("test@example.com");
     Code.expect(response.result.scope).to.include(["user", "email"]);
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("GET /user works with additional scopes set on token", async () => {
@@ -1618,7 +1618,7 @@ lab.experiment("OAuth", function() {
     Code.expect(response.result.email).to.equal("test@example.com");
     Code.expect(response.result.scope).to.include(["user", "email", "foo"]);
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("GET /user returns 401 with malformed Authorization header", async () => {
@@ -1639,7 +1639,7 @@ lab.experiment("OAuth", function() {
     const response = await s.inject(getUserRequest);
     Code.expect(response.statusCode).to.equal(401);
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("GET /user returns 401 with malformed Authorization header", async () => {
@@ -1660,7 +1660,7 @@ lab.experiment("OAuth", function() {
     const response = await s.inject(getUserRequest);
     Code.expect(response.statusCode).to.equal(401);
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("GET /user returns 401 with invalid access token", async () => {
@@ -1681,7 +1681,7 @@ lab.experiment("OAuth", function() {
     const response = await s.inject(getUserRequest);
     Code.expect(response.statusCode).to.equal(401);
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("GET /user returns 401 with expired access token", async () => {
@@ -1702,7 +1702,7 @@ lab.experiment("OAuth", function() {
     const response = await s.inject(getUserRequest);
     Code.expect(response.statusCode).to.equal(401);
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("GET /user returns 401 with no authorization header", async () => {
@@ -1720,7 +1720,7 @@ lab.experiment("OAuth", function() {
     const response = await s.inject(getUserRequest);
     Code.expect(response.statusCode).to.equal(401);
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("GET /user returns 401 when token has insufficient scope", async () => {
@@ -1741,7 +1741,7 @@ lab.experiment("OAuth", function() {
     const response = await s.inject(getUserRequest);
     Code.expect(response.statusCode).to.equal(401);
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("GET /user returns 500 when loginAPI fails", async () => {
@@ -1762,7 +1762,7 @@ lab.experiment("OAuth", function() {
     const response = await s.inject(getUserRequest);
     Code.expect(response.statusCode).to.equal(500);
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST /request-migration-email succeeds", async () => {
@@ -1786,7 +1786,7 @@ lab.experiment("OAuth", function() {
     const response = await s.inject(migrationEmailRequest);
     Code.expect(response.statusCode).to.equal(200);
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST /request-migration-email with CSRF Token Headers succeeds", async () => {
@@ -1814,7 +1814,7 @@ lab.experiment("OAuth", function() {
     const response = await s2.inject(migrationEmailRequest);
     Code.expect(response.statusCode).to.equal(200);
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST /request-migration-email Without CSRF Token Headers returns 403", async () => {
@@ -1838,7 +1838,7 @@ lab.experiment("OAuth", function() {
     const response = await s2.inject(migrationEmailRequest);
     Code.expect(response.statusCode).to.equal(403);
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST /request-migration-email fails if user not found on loginapi", async () => {
@@ -1862,7 +1862,7 @@ lab.experiment("OAuth", function() {
     const response = await s.inject(migrationEmailRequest);
     Code.expect(response.statusCode).to.equal(500);
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST /migrate-user", async () => {
@@ -1885,7 +1885,7 @@ lab.experiment("OAuth", function() {
     const response = await s.inject(migrateUserRequest);
     Code.expect(response.statusCode).to.equal(200);
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST /migrate-user - With CSRF Token Headers succeeds", async () => {
@@ -1912,7 +1912,7 @@ lab.experiment("OAuth", function() {
     const response = await s2.inject(migrateUserRequest);
     Code.expect(response.statusCode).to.equal(200);
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST /migrate-user - Without CSRF Token Headers returns 403", async () => {
@@ -1935,7 +1935,7 @@ lab.experiment("OAuth", function() {
     const response = await s2.inject(migrateUserRequest);
     Code.expect(response.statusCode).to.equal(403);
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST /migrate-user returns 401 if using invalid username", async () => {
@@ -1958,7 +1958,7 @@ lab.experiment("OAuth", function() {
     const response = await s.inject(migrateUserRequest);
     Code.expect(response.statusCode).to.equal(401);
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST /migrate-user returns 401 if using bad token", async () => {
@@ -1981,7 +1981,7 @@ lab.experiment("OAuth", function() {
     const response = await s.inject(migrateUserRequest);
     Code.expect(response.statusCode).to.equal(401);
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST /migrate-user returns 400 if sent no password", async () => {
@@ -2003,7 +2003,7 @@ lab.experiment("OAuth", function() {
     const response = await s.inject(migrateUserRequest);
     Code.expect(response.statusCode).to.equal(400);
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST /migrate-user returns 400 if sent a weak password", async () => {
@@ -2026,7 +2026,7 @@ lab.experiment("OAuth", function() {
     const response = await s.inject(migrateUserRequest);
     Code.expect(response.statusCode).to.equal(400);
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST /migrate-user returns 500 if set password fails on login", async () => {
@@ -2049,7 +2049,7 @@ lab.experiment("OAuth", function() {
     const response = await s.inject(migrateUserRequest);
     Code.expect(response.statusCode).to.equal(500);
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST /check-username returns 200, exists & usePasswordLogin true", async () => {
@@ -2072,7 +2072,7 @@ lab.experiment("OAuth", function() {
     Code.expect(response.result.exists).to.equal(true);
     Code.expect(response.result.usePasswordLogin).to.equal(true);
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST /check-username - With CSRF Token Headers succeeds", async () => {
@@ -2099,7 +2099,7 @@ lab.experiment("OAuth", function() {
     Code.expect(response.result.exists).to.equal(true);
     Code.expect(response.result.usePasswordLogin).to.equal(true);
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST /check-username - Without CSRF Token Headers returns 403", async () => {
@@ -2120,7 +2120,7 @@ lab.experiment("OAuth", function() {
     const response = await s2.inject(checkUsernameRequest);
     Code.expect(response.statusCode).to.equal(403);
 
-    await ls.stop();
+    return await ls.stop();
   });
 
   lab.test("POST /check-username returns 404 for non-existent user", async () => {
@@ -2141,6 +2141,6 @@ lab.experiment("OAuth", function() {
     const response = await s.inject(checkUsernameRequest);
     Code.expect(response.statusCode).to.equal(404);
 
-    await ls.stop();
+    return await ls.stop();
   });
 });
