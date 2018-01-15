@@ -98,11 +98,15 @@ lab.experiment("OAuth", function() {
       }
     };
 
-    const response = await s.inject(request);
-    Code.expect(response.statusCode).to.equal(200);
-    Code.expect(response.headers["set-cookie"]).to.exist();
-    Code.expect(response.result.email).to.equal("webmaker@example.com");
-    Code.expect(response.result.username).to.equal("webmaker");
+    try {
+      const response = await s.inject(request);
+      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(response.headers["set-cookie"]).to.exist();
+      Code.expect(response.result.email).to.equal("webmaker@example.com");
+      Code.expect(response.result.username).to.equal("webmaker");
+    } catch (error) {
+      console.log(error); // eslint-disable-line no-console
+    }
   });
 
   lab.test("POST Create User - with CSRF Token Headers succeeds", async () => {
