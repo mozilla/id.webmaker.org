@@ -28,7 +28,7 @@ module.exports = {
   },
   module: {
     loaders: [
-      { test: /\.jsx$/, loaders: ['babel', 'jsx-loader'] },
+      { test: /\.jsx$/, loaders: ['babel?plugins=babel-plugin-object-assign', 'jsx-loader'] },
       { test: require.resolve('json-schema-validation-strategy'), loader: 'babel?plugins=babel-plugin-object-assign' },
       { test: require.resolve('react-validation-mixin/lib/validationFactory'), loader: 'babel?plugins=babel-plugin-object-assign' },
       // https://github.com/webpack/webpack/issues/558#issuecomment-60889168
