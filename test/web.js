@@ -968,7 +968,7 @@ lab.experiment("OAuth", function() {
     const response = await s.inject(accessTokenRequest);
     Code.expect(response.statusCode).to.equal(200);
     Code.expect(response.result.access_token).to.be.a.string();
-    Code.expect(response.result.scopes).to.contain("user", "projects");
+    Code.expect(response.result.scopes).to.contain(["user", "projects"]);
     Code.expect(response.result.token_type).to.equal("token");
   });
 
