@@ -40,12 +40,30 @@ module.exports = async function server(options) {
 
   if ( options.logging ) {
     await server.register({
-      plugin: require('hapi-bunyan'),
+      plugin: require('good'),
       options: {
-        logger: require('bunyan').createLogger({
-          name: 'id-webmaker-org',
-          level: options.logLevel
-        })
+        reporters: {
+          bunyan: [{
+            module: 'good-bunyan',
+            args: [{
+              response: '*',
+              log: '*',
+              error: '*',
+              request: '*'
+            }, {
+              logger: require('bunyan').createLogger({
+                name: 'id-webmaker-org',
+                level: 'error'
+              }),
+              levels: {
+                response: 'info',
+                log: 'error',
+                error: 'error',
+                request: 'debug'
+              }
+            }]
+          }]
+        }
       }
     });
   }
