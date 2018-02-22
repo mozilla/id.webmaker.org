@@ -23,7 +23,7 @@
     "test:server": "npm run test:setup && lab -t 95",
     "watch:js": "npm run build:js -- --watch",
     "watch:css": "autoless --source-map templates/less public",
-    "server": "node web/index.js"
+    "server": "node web/index.js | bunyan"
   },
   "repository": {
     "type": "git",
