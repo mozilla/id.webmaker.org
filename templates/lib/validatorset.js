@@ -1,25 +1,56 @@
-var Joi = require('joi');
 var regex = require('./regex/regex.js');
 
 var fieldValidators = {
-  username:       Joi.string().regex(regex.username).label('Username'),
-  uid:            Joi.alternatives().try(
-                    Joi.string().regex(regex.username).label('Username'),
-                    Joi.string().regex(regex.email).label('Email')
-                  ),
-  password:       Joi.string().regex(/^\S{8,128}$/).label('Password'),
-  email:          Joi.string().regex(regex.email).label('Email'),
-  feedback:       Joi.boolean().required().label('Feedback')
+  username: {
+    type: 'string',
+    label: 'Username',
+    pattern: regex.username,
+    invalidMessage: 'Invalid username'
+  },
+  uid: {
+    oneOf: [{
+      type: 'string',
+      pattern: regex.username
+    }, {
+      type: 'string',
+      pattern: regex.email
+    }],
+    label: 'Username or Email',
+    invalidMessage: 'Invalid username or email'
+  },
+  password: {
+    type: 'string',
+    label: 'Password',
+    pattern: /^\S{8,128}$/,
+    invalidMessage: 'Invalid password'
+  },
+  email: {
+    type: 'string',
+    label: 'Email',
+    pattern: regex.email,
+    invalidMessage: 'Invalid email'
+  },
+  feedback: {
+    type: 'boolean',
+    label: 'Feedback'
+  }
 };
 
 module.exports = {
   getValidatorSet: function (fieldValues) {
-    var validators = {};
+    var validators = {
+      type: 'object',
+      properties: {}
+    };
     fieldValues.forEach(function(entry) {
       var isDisabled = entry[Object.keys(entry)].disabled;
       Object.keys(entry).forEach(function(name) {
         if (!isDisabled && fieldValidators[name]) {
-          validators[name] = fieldValidators[name];
+          validators.properties[name] = fieldValidators[name];
+
+          if (name === 'feedback') {
+            validators.required = ['feedback'];
+          }
         }
       });
     });

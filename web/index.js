@@ -1,6 +1,6 @@
 require('habitat').load();
 
-var Hoek = require('hoek');
+const initializeServer = require('./server');
 
 var options = {
   host: process.env.HOST,
@@ -18,10 +18,11 @@ var options = {
   redisUrl: process.env.REDIS_URL
 };
 
-var server = require('./server')(options);
+const start = async () => {
+  var server = await initializeServer(options);
 
-server.start(function(error) {
-  Hoek.assert(!error, error);
+  await server.start();
+  console.log('Server running at: %s', server.info.uri); // eslint-disable-line no-console
+};
 
-  console.log('Server running at: %s', server.info.uri);
-});
+start();
