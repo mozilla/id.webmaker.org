@@ -22,7 +22,8 @@ lab.experiment("OAuth", function() {
       oauth_clients: testCreds.clients,
       authCodes: testCreds.authCodes,
       accessTokens: testCreds.accessTokens,
-      enableCSRF: false
+      enableCSRF: false,
+      recaptchaDisabled: true
     });
 
     s2 = await server({
@@ -31,7 +32,8 @@ lab.experiment("OAuth", function() {
       oauth_clients: testCreds.clients,
       authCodes: testCreds.authCodes,
       accessTokens: testCreds.accessTokens,
-      enableCSRF: true
+      enableCSRF: true,
+      recaptchaDisabled: true
     });
 
     ls = loginServer();
@@ -78,9 +80,11 @@ lab.experiment("OAuth", function() {
     Code.expect(response.headers["content-security-policy"]).to.equal(
       "base-uri 'self';" +
       "connect-src 'self';default-src 'none';font-src 'self' https://fonts.gstatic.com;" +
+      "frame-src https://www.google.com/recaptcha/api2/;" +
       "img-src 'self' data: https://www.google-analytics.com http://www.google-analytics.com;" +
-      "script-src 'self' 'unsafe-eval' https://www.google-analytics.com http://www.google-analytics.com;" +
-      "style-src 'self' https://fonts.googleapis.com"
+      "script-src 'self' 'unsafe-eval' https://www.google-analytics.com http://www.google-analytics.com " +
+      "https://www.google.com/recaptcha/api.js https://www.gstatic.com/recaptcha/api2/;" + 
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com"
     );
   });
 
@@ -94,12 +98,12 @@ lab.experiment("OAuth", function() {
         password: "CantGuessThis1234",
         feedback: true,
         client_id: "test",
-        lang: "en-US"
+        lang: "en-US",
+        recaptchaToken: ""
       }
     };
 
     const response = await s.inject(request);
-    console.log(response.result); // eslint-disable-line no-console
     Code.expect(response.statusCode).to.equal(200);
     Code.expect(response.headers["set-cookie"]).to.exist();
     Code.expect(response.result.email).to.equal("webmaker@example.com");
@@ -120,7 +124,8 @@ lab.experiment("OAuth", function() {
         password: "CantGuessThis123",
         feedback: true,
         client_id: "test",
-        lang: "en-US"
+        lang: "en-US",
+        recaptchaToken: ""
       }
     };
 
@@ -144,7 +149,8 @@ lab.experiment("OAuth", function() {
         username: "webmaker",
         password: "CantGuessThis123",
         feedback: true,
-        client_id: "test"
+        client_id: "test",
+        recaptchaToken: ""
       }
     };
 
@@ -170,7 +176,8 @@ lab.experiment("OAuth", function() {
         password: "CantGuessThis123",
         feedback: true,
         client_id: "test",
-        lang: "it-CH"
+        lang: "it-CH",
+        recaptchaToken: ""
       }
     };
 
@@ -192,7 +199,8 @@ lab.experiment("OAuth", function() {
         password: "CantGuessThis1234",
         feedback: true,
         client_id: "test",
-        lang: "en-US"
+        lang: "en-US",
+        recaptchaToken: ""
       }
     };
 
@@ -210,7 +218,8 @@ lab.experiment("OAuth", function() {
         password: "CantGuessThis1234",
         feedback: true,
         client_id: "test",
-        lang: "en-US"
+        lang: "en-US",
+        recaptchaToken: ""
       }
     };
 
@@ -230,7 +239,8 @@ lab.experiment("OAuth", function() {
           password: "password",
           feedback: true,
           client_id: "test",
-          lang: "en-US"
+          lang: "en-US",
+          recaptchaToken: ""
         }
       };
 
@@ -252,7 +262,8 @@ lab.experiment("OAuth", function() {
           password: "CantGuessThis",
           feedback: true,
           client_id: "test",
-          lang: "en-US"
+          lang: "en-US",
+          recaptchaToken: ""
         }
       };
 
@@ -273,7 +284,8 @@ lab.experiment("OAuth", function() {
           password: "CantGuessThis",
           feedback: true,
           client_id: "test",
-          lang: "en-US"
+          lang: "en-US",
+          recaptchaToken: ""
         }
       };
 
@@ -294,7 +306,8 @@ lab.experiment("OAuth", function() {
           username: "webmaker",
           feedback: true,
           client_id: "test",
-          lang: "en-US"
+          lang: "en-US",
+          recaptchaToken: ""
         }
       };
 
@@ -315,7 +328,8 @@ lab.experiment("OAuth", function() {
           username: "webmaker",
           password: "CantGuessThis",
           client_id: "test",
-          lang: "en-US"
+          lang: "en-US",
+          recaptchaToken: ""
         }
       };
 

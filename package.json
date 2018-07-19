@@ -20,7 +20,7 @@
     "test:insertdata": "node scripts/test-data",
     "pretest:browser": "ncp node_modules/mocha/mocha.js public/tests/mocha.js && ncp node_modules/mocha/mocha.css public/tests/mocha.css",
     "test:browser": "npm run build && mocha-phantomjs -s loadImages=false public/tests/index.html",
-    "test:server": "npm run test:setup && lab -t 95",
+    "test:server": "npm run test:setup && lab",
     "watch:js": "npm run build:js -- --watch",
     "watch:css": "autoless --source-map templates/less public",
     "server": "node web/index.js | bunyan"
@@ -92,7 +92,7 @@
     "eslint-plugin-react": "^7.5.1",
     "js-beautify": "1.5.5",
     "json-loader": "0.5.1",
-    "lab": "13.1.0",
+    "lab": "14.3.4",
     "mocha": "2.2.1",
     "mocha-phantomjs": "^4.1.0",
     "ncp": "2.0.0",

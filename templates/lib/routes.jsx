@@ -32,5 +32,9 @@ module.exports = {
       ga.pageview(state.pathname);
       React.render(<Handler/>, el);
     });
+
+    var recaptchaEl = document.createElement('script');
+    recaptchaEl.setAttribute('src', `https://www.google.com/recaptcha/api.js?render=${process.env.RECAPTCHA_SITE_KEY}`);
+    el.appendChild(recaptchaEl);
   }
 };
