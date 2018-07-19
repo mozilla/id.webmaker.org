@@ -503,7 +503,7 @@ module.exports = async function server(options) {
           async function(request) {
             var recaptchaToken = request.payload.recaptchaToken || '';
             return new Promise((resolve, reject) => {
-              if (options.recaptchaDisabled === 'true') {
+              if (options.recaptchaDisabled) {
                 return resolve("OK");
               }
 
