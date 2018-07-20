@@ -117,62 +117,82 @@ var Signup = React.createClass({
       userform.validatePassword(value);
     }
   },
-  handleFormData: function(data) {
-    var error = data.err;
-    var data = data.user;
+  handleFormData: function(formData) {
+    var error = formData.err;
+    var data = formData.user;
+    var that = this;
+
     if ( error ) {
       ga.event({category: 'Signup', action: 'Error during form validation'});
-      this.enableButton();
-      console.error("validation error", error);
+      that.enableButton();
       return;
     }
-    var userform = this.refs.userform;
+
+    var userform = that.refs.userform;
     var csrfToken = cookiejs.parse(document.cookie).crumb;
     var queryObj = Url.parse(window.location.href, true).query;
-    var that = this;
     userform.validatePassword(data.password);
-    fetch("/create-user", {
-      method: "post",
-      credentials: 'same-origin',
-      headers: {
-        "Accept": "application/json; charset=utf-8",
-        "Content-Type": "application/json; charset=utf-8",
-        "X-CSRF-Token": csrfToken
-      },
-      body: JSON.stringify({
-        email: data.email,
-        username: data.username,
-        password: data.password,
-        feedback: data.feedback,
-        client_id: queryObj.client_id,
-        lang: navigator.language
-      })
-    }).then(function(response) {
-      if ( response.status === 200 ) {
-        var redirectObj = Url.parse("/login/oauth/authorize", true);
-        redirectObj.query = {
+
+    function expectGrecaptcha(submitFormCallback) {
+      if (process.env.RECAPTCHA_DISABLED === 'true') {
+        return submitFormCallback('');
+      }
+
+      if (!window.grecaptcha || !window.grecaptcha.ready) {
+        return this.setTimeout(() => expectGrecaptcha(submitFormCallback), 100);
+      }
+
+      window.grecaptcha.ready(() => {
+        window.grecaptcha.execute(
+          process.env.RECAPTCHA_SITE_KEY,
+          { action: 'signup' }
+        ).then(recaptchaToken => submitFormCallback(recaptchaToken));
+      });
+    }
+
+    expectGrecaptcha( recaptchaToken => {
+      fetch("/create-user", {
+        method: "post",
+        credentials: 'same-origin',
+        headers: {
+          "Accept": "application/json; charset=utf-8",
+          "Content-Type": "application/json; charset=utf-8",
+          "X-CSRF-Token": csrfToken
+        },
+        body: JSON.stringify({
+          email: data.email,
+          username: data.username,
+          password: data.password,
+          feedback: data.feedback,
           client_id: queryObj.client_id,
-          response_type: queryObj.response_type,
-          state: queryObj.state,
-          scopes: queryObj.scopes
-        };
+          lang: navigator.language,
+          recaptchaToken: recaptchaToken || ''
+        })
+      }).then(function(response) {
+        if ( response.status === 200 ) {
+          var redirectObj = Url.parse("/login/oauth/authorize", true);
+          redirectObj.query = {
+            client_id: queryObj.client_id,
+            response_type: queryObj.response_type,
+            state: queryObj.state,
+            scopes: queryObj.scopes
+          };
 
-        ga.event({category: 'Signup', action: 'Successfully created an account'});
-        window.location = Url.format(redirectObj);
-      }
+          ga.event({category: 'Signup', action: 'Successfully created an account'});
+          window.location = Url.format(redirectObj);
+        }
 
-      if( response.status >= 400 ) {
+        if( response.status >= 400 ) {
+          that.enableButton();
+        }
+
+      }).catch(function(ex) {
+        ga.event({category: 'Signup', action: 'Error', label: 'Error parsing response from the server'});
+        console.error("Error parsing response", ex);
         that.enableButton();
-      }
-
-    }).catch(function(ex) {
-      ga.event({category: 'Signup', action: 'Error', label: 'Error parsing response from the server'});
-      console.error("Error parsing response", ex);
-      that.enableButton();
+      });
     });
-
   }
-
 });
 
 module.exports = Signup;

@@ -3,6 +3,7 @@ var Hapi = require('hapi');
 var Joi = require('joi');
 var Path = require('path');
 var url = require('url');
+var request = require('request');
 var OAuthDB = require('../lib/oauth-db');
 var Scopes = require('../lib/scopes');
 
@@ -14,6 +15,10 @@ var passTest = new PassTest({
   minPhraseLength: 20,
   minOptionalTestsToPass: 2,
   allowPassphrases: true
+});
+
+var httpRequest = request.defaults({
+  timeout: 25000
 });
 
 module.exports = async function server(options) {
@@ -80,6 +85,7 @@ module.exports = async function server(options) {
         ],
         styleSrc: [
           '\'self\'',
+          '\'unsafe-inline\'',
           'https://fonts.googleapis.com'
         ],
         imgSrc: [
@@ -88,11 +94,16 @@ module.exports = async function server(options) {
           'https://www.google-analytics.com',
           'http://www.google-analytics.com'
         ],
+        frameSrc: [
+          'https://www.google.com/recaptcha/api2/'
+        ],
         scriptSrc: [
           '\'self\'',
           '\'unsafe-eval\'',
           'https://www.google-analytics.com',
-          'http://www.google-analytics.com'
+          'http://www.google-analytics.com',
+          'https://www.google.com/recaptcha/api.js',
+          'https://www.gstatic.com/recaptcha/api2/'
         ],
         fontSrc: [
           '\'self\'',
@@ -453,7 +464,8 @@ module.exports = async function server(options) {
             password: Joi.string().regex(/^\S{8,128}$/).required(),
             feedback: Joi.boolean().required(),
             client_id: Joi.string().required(),
-            lang: Joi.string().default('en-US')
+            lang: Joi.string().default('en-US'),
+            recaptchaToken: Joi.string().allow('')
           },
           failAction(request, h, error) {
             const { source , keys: [ key ] } = error.output.payload.validation;
@@ -487,6 +499,34 @@ module.exports = async function server(options) {
             async method(request) {
               return await oauthDb.getClient(request.payload.client_id);
             }
+          },
+          async function(request) {
+            var recaptchaToken = request.payload.recaptchaToken || '';
+            return new Promise((resolve, reject) => {
+              if (options.recaptchaDisabled) {
+                return resolve("OK");
+              }
+
+              httpRequest({
+                url: 'https://www.google.com/recaptcha/api/siteverify',
+                method: 'POST',
+                json: true,
+                form: {
+                  'secret': options.recaptchaSecretKey,
+                  'response': recaptchaToken
+                }
+              }, function(err, httpResponse, body) {
+                if (err) {
+                  return reject(err);
+                }
+
+                if (!body.success) {
+                  reject(new Boom(403, body.errorCodes, body));
+                }
+
+                resolve("OK");
+              });
+            });
           }
         ]
       },

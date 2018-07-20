@@ -47,7 +47,9 @@ module.exports = {
       'GA_TRACKING_ID',
       'GA_DEBUG',
       'OPTIMIZELY_ID',
-      'OPTIMIZELY_ACTIVE'
+      'OPTIMIZELY_ACTIVE',
+      'RECAPTCHA_DISABLED',
+      'RECAPTCHA_SITE_KEY'
     ]))
   ]
 };

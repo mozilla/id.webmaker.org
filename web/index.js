@@ -15,7 +15,9 @@ var options = {
   enableCSRF: process.env.ENABLE_CSRF !== 'false',
   logging: process.env.LOGGING === 'true',
   logLevel: process.env.LOG_LEVEL ? process.env.LOG_LEVEL : 'info',
-  redisUrl: process.env.REDIS_URL
+  redisUrl: process.env.REDIS_URL,
+  recaptchaDisabled: process.env.RECAPTCHA_DISABLED === 'true',
+  recaptchaSecretKey: process.env.RECAPTCHA_SECRET_KEY
 };
 
 const start = async () => {
