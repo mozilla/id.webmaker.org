@@ -183,6 +183,7 @@ var Signup = React.createClass({
         }
 
         if( response.status >= 400 ) {
+          console.error('You have failed the reCAPTCHA test');
           that.enableButton();
         }
 
