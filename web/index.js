@@ -17,7 +17,8 @@ var options = {
   logLevel: process.env.LOG_LEVEL ? process.env.LOG_LEVEL : 'info',
   redisUrl: process.env.REDIS_URL,
   recaptchaDisabled: process.env.RECAPTCHA_DISABLED === 'true',
-  recaptchaSecretKey: process.env.RECAPTCHA_SECRET_KEY
+  recaptchaSecretKey: process.env.RECAPTCHA_SECRET_KEY,
+  recaptchaFailureThreshold: process.env.RECAPTCHA_FAILURE_THRESHOLD || 0.5
 };
 
 const start = async () => {

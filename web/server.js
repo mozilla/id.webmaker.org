@@ -521,7 +521,7 @@ module.exports = async function server(options) {
                 }
 
                 // disallow scores of less than 0.5  (see "interpreting the score" on https://developers.google.com/recaptcha/docs/v3)
-                if (body.score < 0.5) {
+                if (body.score < options.recaptchaFailureThreshold) {
                   return reject(new Boom(403, 'reCAPTCHA test failed'));
                 }
 
