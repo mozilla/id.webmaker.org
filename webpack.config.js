@@ -1,3 +1,4 @@
+require('habitat').load('.env');
 var webpack = require('webpack');
 
 var IMPORT_ES5_SHIM = 'imports?shim=es5-shim/es5-shim&' +
@@ -7,8 +8,10 @@ function importEnvVars(keys) {
   var result = {};
 
   keys.forEach(function(key) {
-    if (typeof (process.env[key]) === 'string') {
-      result['process.env.' + key] = JSON.stringify(process.env[key]);
+    var value = process.env[key];
+
+    if ( typeof value === 'string' ) {
+      result['process.env.' + key] = JSON.stringify(value);
     }
   });
 
