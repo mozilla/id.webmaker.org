@@ -6,7 +6,7 @@
   "scripts": {
     "start": "npm-run-all --parallel server watch:css watch:js ",
     "test": "npm run lint && npm run test:server && npm run test:browser",
-    "build": "npm run build:css && npm run build:js",
+    "build:dev": "npm run build:css && npm run build:js",
     "build:production": "npm run build:css && npm run build:js -- --optimize-minimize --optimize-dedupe",
     "build:css": "npm run watch:css -- --no-watch",
     "build:js": "webpack --config webpack.config.js --progress --profile --colors",
@@ -19,7 +19,7 @@
     "test:createtables": "node scripts/create-tables",
     "test:insertdata": "node scripts/test-data",
     "pretest:browser": "ncp node_modules/mocha/mocha.js public/tests/mocha.js && ncp node_modules/mocha/mocha.css public/tests/mocha.css",
-    "test:browser": "npm run build && mocha-phantomjs -s loadImages=false public/tests/index.html",
+    "test:browser": "npm run build:dev && mocha-phantomjs -s loadImages=false public/tests/index.html",
     "test:server": "npm run test:setup && lab",
     "watch:js": "npm run build:js -- --watch",
     "watch:css": "autoless --source-map templates/less public",
