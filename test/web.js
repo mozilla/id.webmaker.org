@@ -84,7 +84,7 @@ lab.experiment("OAuth", function() {
       "img-src 'self' data: https://www.google-analytics.com http://www.google-analytics.com;" +
       "script-src 'self' 'unsafe-eval' https://www.google-analytics.com http://www.google-analytics.com " +
       "https://www.google.com/recaptcha/api.js https://www.gstatic.com/recaptcha/api2/;" + 
-      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;worker-src 'self'"
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com"
     );
   });
 
