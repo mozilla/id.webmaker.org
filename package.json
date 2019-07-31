@@ -46,7 +46,7 @@
     "babel-core": "^6.26.0",
     "babel-loader": "5.0.0",
     "babel-runtime": "^6.26.0",
-    "blankie": "^4.0.0",
+    "blankie": "~4.0.0",
     "boom": "^7.1.1",
     "bootstrap": "3.3.4",
     "bunyan": "^1.8.12",
@@ -81,7 +81,7 @@
     "react-router-viewports": "0.0.4",
     "react-validation-mixin": "^5.4.0",
     "redis-url": "1.2.1",
-    "scooter": "^5.0.0",
+    "scooter": "~5.0.0",
     "should": "5.2.0",
     "webpack": "1.7.3"
   },
